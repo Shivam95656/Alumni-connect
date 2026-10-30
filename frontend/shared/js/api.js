@@ -1,4 +1,11 @@
-const API_BASE_URL = 'http://localhost:5000/api';
+// Environment detection: use localhost during local development, Render in production
+const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+
+// Production Render backend URL (update if your service name on Render is different)
+const PROD_API_URL = 'https://alumni-connect-backend.onrender.com/api';
+const LOCAL_API_URL = 'http://localhost:5000/api';
+
+const API_BASE_URL = isLocal ? LOCAL_API_URL : PROD_API_URL;
 
 // Store token in localStorage
 const setToken = (token) => {
