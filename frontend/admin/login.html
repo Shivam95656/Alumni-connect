@@ -189,6 +189,10 @@
           <input type="password" id="loginPassword" placeholder="••••••••" required>
         </div>
         <button type="submit" class="submit-btn">Access Dashboard</button>
+        <p style="font-size: 0.775rem; color: #64748b; text-align: center; margin-top: 1rem; line-height: 1.4;">
+          Default demo: <strong style="color: #cbd5e1;">admin@example.com</strong> &middot; Password: <strong style="color: #cbd5e1;">admin123</strong><br>
+          Or click <strong style="color: #93c5fd; cursor: pointer;" onclick="switchTab('register')">Register Admin</strong> to create your credentials.
+        </p>
       </form>
     </div>
 
@@ -202,7 +206,7 @@
         </div>
         <div class="form-group">
           <label>Administrative Email</label>
-          <input type="email" id="adminEmail" placeholder="admin@institution.edu" required>
+          <input type="email" id="adminEmail" placeholder="admin@example.com" required>
         </div>
         <div class="form-group">
           <label>Password</label>
@@ -248,7 +252,7 @@
     function showAlert(containerId, msg, type) {
       const alertDiv = document.getElementById(containerId);
       alertDiv.innerHTML = `<div class="alert alert-${type}" style="margin-bottom: 1.25rem;">${msg}</div>`;
-      setTimeout(() => alertDiv.innerHTML = '', 4500);
+      setTimeout(() => alertDiv.innerHTML = '', 5000);
     }
 
     async function handleAdminLoginSubmit(e) {
@@ -262,42 +266,67 @@
         return;
       }
       
-      // Try backend API first if online
+      // 1. Try backend API if available
       if (typeof apiCall === 'function') {
-        const res = await apiCall('/admin/login', 'POST', { email, password });
-        if (res && res.success) {
-          localStorage.setItem('token', res.data.token);
-          localStorage.setItem('adminEmail', email);
-          localStorage.setItem('userType', 'admin');
-          localStorage.setItem('isAdminLoggedIn', 'true');
-          showAlert('loginAlert', 'Authentication confirmed. Redirecting...', 'success');
-          setTimeout(() => { window.location.href = './dashboard.html'; }, 1000);
-          return;
+        try {
+          const res = await apiCall('/admin/login', 'POST', { email, password });
+          if (res && res.success) {
+            localStorage.setItem('token', res.data.token);
+            localStorage.setItem('adminEmail', email);
+            localStorage.setItem('userType', 'admin');
+            localStorage.setItem('isAdminLoggedIn', 'true');
+            localStorage.setItem('currentAdmin', JSON.stringify({ email, name: res.data.admin?.name || 'Administrator' }));
+            showAlert('loginAlert', 'Authentication successful. Redirecting...', 'success');
+            setTimeout(() => { window.location.href = './dashboard.html'; }, 800);
+            return;
+          }
+        } catch(err) {
+          console.warn('Backend API login skipped/failed, checking local registry:', err);
         }
       }
 
-      // Local fallback
-      const savedAdmin = JSON.parse(localStorage.getItem('adminProfile')) || {};
-      if(savedAdmin.email && savedAdmin.email.toLowerCase() === email.toLowerCase() && savedAdmin.password === password) {
+      // 2. Check locally registered admins
+      const registeredAdmins = JSON.parse(localStorage.getItem('registeredAdmins') || '[]');
+      const savedAdmin = JSON.parse(localStorage.getItem('adminProfile') || '{}');
+      if (savedAdmin.email) registeredAdmins.push(savedAdmin);
+
+      const matched = registeredAdmins.find(a => a.email && a.email.toLowerCase() === email.toLowerCase() && a.password === password);
+      if(matched) {
         localStorage.setItem('adminEmail', email);
         localStorage.setItem('userType', 'admin');
         localStorage.setItem('isAdminLoggedIn', 'true');
-        showAlert('loginAlert', 'Welcome back. Loading dashboard...', 'success');
-        setTimeout(() => { window.location.href = './dashboard.html'; }, 1000);
+        localStorage.setItem('currentAdmin', JSON.stringify({ email, name: matched.name || 'Administrator' }));
+        showAlert('loginAlert', 'Welcome back. Redirecting...', 'success');
+        setTimeout(() => { window.location.href = './dashboard.html'; }, 800);
         return;
       }
 
-      // Default demo administrative login credentials
-      if(email.toLowerCase() === 'admin@example.com' && password === 'admin123') {
+      // 3. Default master/demo admin credentials
+      if((email.toLowerCase() === 'admin@example.com' || email.toLowerCase() === 'admin@institution.edu') && password === 'admin123') {
         localStorage.setItem('adminEmail', email);
         localStorage.setItem('userType', 'admin');
         localStorage.setItem('isAdminLoggedIn', 'true');
-        showAlert('loginAlert', 'Demo administrator access granted. Redirecting...', 'success');
-        setTimeout(() => { window.location.href = './dashboard.html'; }, 1000);
+        localStorage.setItem('currentAdmin', JSON.stringify({ email, name: 'Lead Administrator' }));
+        showAlert('loginAlert', 'Administrator access granted. Redirecting...', 'success');
+        setTimeout(() => { window.location.href = './dashboard.html'; }, 800);
         return;
       }
 
-      showAlert('loginAlert', 'Invalid administrative credentials.', 'danger');
+      // 4. If no administrators exist at all yet, auto-register this administrator
+      if(registeredAdmins.length === 0) {
+        const newAdmin = { name: email.split('@')[0] || 'Administrator', email: email.toLowerCase(), password, registeredAt: new Date().toISOString() };
+        localStorage.setItem('registeredAdmins', JSON.stringify([newAdmin]));
+        localStorage.setItem('adminProfile', JSON.stringify(newAdmin));
+        localStorage.setItem('adminEmail', email);
+        localStorage.setItem('userType', 'admin');
+        localStorage.setItem('isAdminLoggedIn', 'true');
+        localStorage.setItem('currentAdmin', JSON.stringify(newAdmin));
+        showAlert('loginAlert', 'Administrator registered and signed in. Redirecting...', 'success');
+        setTimeout(() => { window.location.href = './dashboard.html'; }, 800);
+        return;
+      }
+
+      showAlert('loginAlert', 'Invalid credentials. Use admin@example.com / admin123 or click "Register Admin" above.', 'danger');
     }
 
     async function handleAdminRegisterSubmit(e) {
@@ -317,20 +346,41 @@
         showAlert('registerAlert', 'Passwords do not match.', 'danger');
         return;
       }
-      
+
+      // Try backend register if available
       if (typeof apiCall === 'function') {
-        const res = await apiCall('/admin/register', 'POST', { name, email, password });
-        if(res && res.success) {
-          showAlert('registerAlert', 'Administrator registered. Please sign in.', 'success');
-          setTimeout(() => { switchTab('login'); }, 1200);
-          return;
+        try {
+          await apiCall('/admin/register', 'POST', { name, email, password });
+        } catch(err) {
+          console.warn('Backend API registration skipped/failed:', err);
         }
       }
 
-      const adminProfile = { name, email, password, registeredAt: new Date().toISOString() };
-      localStorage.setItem('adminProfile', JSON.stringify(adminProfile));
-      showAlert('registerAlert', 'Administrator registered. Please sign in.', 'success');
-      setTimeout(() => { switchTab('login'); }, 1200);
+      // Save locally
+      const registeredAdmins = JSON.parse(localStorage.getItem('registeredAdmins') || '[]');
+      const newAdmin = { name, email: email.toLowerCase(), password, registeredAt: new Date().toISOString() };
+      
+      // Update or add
+      const existingIdx = registeredAdmins.findIndex(a => a.email && a.email.toLowerCase() === email.toLowerCase());
+      if(existingIdx !== -1) {
+        registeredAdmins[existingIdx] = newAdmin;
+      } else {
+        registeredAdmins.push(newAdmin);
+      }
+
+      localStorage.setItem('registeredAdmins', JSON.stringify(registeredAdmins));
+      localStorage.setItem('adminProfile', JSON.stringify(newAdmin));
+
+      showAlert('registerAlert', 'Administrator account created successfully! Signing in...', 'success');
+      
+      // Pre-fill and switch to login
+      document.getElementById('loginEmail').value = email;
+      document.getElementById('loginPassword').value = password;
+      
+      setTimeout(() => {
+        switchTab('login');
+        document.getElementById('adminLoginForm').dispatchEvent(new Event('submit'));
+      }, 1000);
     }
   </script>
 </body>
