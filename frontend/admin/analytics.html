@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Analytics - Alumni Connect</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #f0fdf4; }
+    
+    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+    @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+
+    .navbar { background: linear-gradient(135deg, #16a34a 0%, #15803d 100%); color: white; padding: 1.2rem 2rem; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 8px 20px rgba(22, 163, 74, 0.2); position: sticky; top: 0; z-index: 1000; }
+    .navbar h1 { font-size: 1.5rem; font-weight: 700; }
+    .nav-menu { display: flex; gap: 2rem; list-style: none; align-items: center; }
+    .nav-menu a { color: white; text-decoration: none; font-weight: 600; transition: all 0.3s; cursor: pointer; }
+    .nav-menu a.active { color: #fbbf24; }
+    .logout-btn { background: rgba(255, 255, 255, 0.2); color: white; padding: 8px 16px; border: 1px solid rgba(255, 255, 255, 0.3); border-radius: 6px; cursor: pointer; font-weight: 600; }
+    .logout-btn:hover { background: rgba(255, 255, 255, 0.3); }
+
+    .container { max-width: 1600px; margin: 0 auto; padding: 2rem; }
+    .section { display: none; animation: fadeIn 0.3s ease-out; }
+    .section.active { display: block; }
+
+    .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1.5rem; margin-bottom: 3rem; }
+    .stat-card { background: white; padding: 2rem; border-radius: 12px; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06); border-left: 4px solid #16a34a; animation: slideUp 0.3s ease-out; }
+    .stat-number { font-size: 2.8rem; color: #16a34a; font-weight: 700; }
+    .stat-label { color: #666; margin-top: 0.5rem; font-weight: 600; }
+    .stat-subtext { font-size: 0.85rem; color: #999; margin-top: 0.5rem; }
+
+    .dashboard-grid { display: grid; grid-template-columns: 2fr 1fr; gap: 2rem; margin-bottom: 2rem; }
+    .card { background: white; padding: 2rem; border-radius: 12px; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06); }
+    .card h3 { color: #16a34a; margin-bottom: 1.5rem; font-size: 1.2rem; border-bottom: 2px solid #f0fdf4; padding-bottom: 1rem; }
+
+    .table { width: 100%; border-collapse: collapse; }
+    .table th { background: #f0fdf4; padding: 1rem; text-align: left; color: #333; font-weight: 600; border-bottom: 2px solid #16a34a; }
+    .table td { padding: 1rem; border-bottom: 1px solid #e5e7eb; }
+    .table tr:hover { background: #f9fafb; }
+
+    .chart-container { height: 300px; margin: 1rem 0; }
+    .mini-stat { padding: 1rem; background: #f9fafb; border-left: 3px solid #16a34a; margin-bottom: 1rem; border-radius: 6px; }
+    .mini-stat strong { color: #16a34a; font-size: 1.3rem; }
+
+    .badge { display: inline-block; padding: 0.4rem 0.8rem; border-radius: 20px; font-size: 0.85rem; font-weight: 600; }
+    .badge-approved { background: #dcfce7; color: #166534; }
+    .badge-pending { background: #fef3c7; color: #92400e; }
+    .badge-rejected { background: #fee2e2; color: #7f1d1d; }
+
+    .btn { padding: 0.6rem 1.2rem; border: none; border-radius: 6px; cursor: pointer; font-weight: 600; transition: all 0.3s; }
+    .btn-primary { background: #16a34a; color: white; }
+    .btn-primary:hover { background: #15803d; }
+    .btn-danger { background: #ef4444; color: white; }
+    .btn-danger:hover { background: #dc2626; }
+    .btn-success { background: #10b981; color: white; }
+
+    @media (max-width: 1024px) {
+      .dashboard-grid { grid-template-columns: 1fr; }
+    }
+
+    @media (max-width: 768px) {
+      .nav-menu { gap: 0.5rem; font-size: 0.9rem; }
+      .stats-grid { grid-template-columns: 1fr 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <nav class="navbar">
+    <h1>📊 Admin Analytics Dashboard</h1>
+    <ul class="nav-menu">
+      <li><a id="dashboardLink" onclick="switchTab('dashboard')" class="active">Dashboard</a></li>
+      <li><a id="approvalsLink" onclick="switchTab('approvals')">Approvals</a></li>
+      <li><a id="reportsLink" onclick="switchTab('reports')">Reports</a></li>
+      <li><a id="dataLink" onclick="switchTab('data')">Data</a></li>
+      <li><a href="../admin/dashboard.html" style="color: #fbbf24;">← Admin</a></li>
+      <li><button class="logout-btn" onclick="logout()">Logout</button></li>
+    </ul>
+  </nav>
+
+  <div class="container">
+    <!-- Dashboard Section -->
+    <div id="dashboard" class="section active">
+      <h2 style="color: #16a34a; font-size: 1.8rem; margin-bottom: 1.5rem;">📈 Overview</h2>
+
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-number" id="totalAlumni">0</div>
+          <div class="stat-label">Total Approved Alumni</div>
+          <div class="stat-subtext">Active members in network</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-number" id="totalApplications">0</div>
+          <div class="stat-label">Total Applications</div>
+          <div class="stat-subtext">Across all opportunities</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-number" id="totalOpportunities">0</div>
+          <div class="stat-label">Active Opportunities</div>
+          <div class="stat-subtext">Internships + Placements</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-number" id="totalEvents">0</div>
+          <div class="stat-label">Total Events</div>
+          <div class="stat-subtext">Organized this quarter</div>
+        </div>
+      </div>
+
+      <div class="dashboard-grid">
+        <div class="card">
+          <h3>📊 Department Distribution</h3>
+          <div id="departmentStats"></div>
+        </div>
+        <div class="card">
+          <h3>🎯 Application Status</h3>
+          <div id="applicationStats"></div>
+        </div>
+      </div>
+
+      <div class="dashboard-grid">
+        <div class="card">
+          <h3>📅 Recent Applications</h3>
+          <table class="table">
+            <thead>
+              <tr>
+                <th>Alumni</th>
+                <th>Position</th>
+                <th>Company</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody id="recentApps"></tbody>
+          </table>
+        </div>
+        <div class="card">
+          <h3>🎓 Top Departments</h3>
+          <div id="topDepts"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Approvals Section -->
+    <div id="approvals" class="section">
+      <h2 style="color: #16a34a; font-size: 1.8rem; margin-bottom: 1.5rem;">✅ Pending Approvals</h2>
+      
+      <div class="card">
+        <table class="table">
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>Email</th>
+              <th>Department</th>
+              <th>Batch</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="approvalsTable"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Reports Section -->
+    <div id="reports" class="section">
+      <h2 style="color: #16a34a; font-size: 1.8rem; margin-bottom: 1.5rem;">📋 Reports</h2>
+      
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 2rem;">
+        <div class="card">
+          <h3>Alumni Metrics</h3>
+          <div id="metricsReport"></div>
+        </div>
+        <div class="card">
+          <h3>Opportunity Analytics</h3>
+          <div id="oppReport"></div>
+        </div>
+        <div class="card">
+          <h3>Event Coverage</h3>
+          <div id="eventReport"></div>
+        </div>
+      </div>
+
+      <div class="card" style="margin-top: 2rem;">
+        <h3>Export Data</h3>
+        <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
+          <button class="btn btn-primary" onclick="exportToCSV('alumni')">📥 Alumni List (CSV)</button>
+          <button class="btn btn-primary" onclick="exportToCSV('applications')">📥 Applications (CSV)</button>
+          <button class="btn btn-primary" onclick="exportToCSV('events')">📥 Events (CSV)</button>
+          <button class="btn btn-primary" onclick="exportToJSON()">📥 All Data (JSON)</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Data Management -->
+    <div id="data" class="section">
+      <h2 style="color: #16a34a; font-size: 1.8rem; margin-bottom: 1.5rem;">🗂️ Data Management</h2>
+      
+      <div style="display: grid; grid-template-columns: 1fr; gap: 2rem;">
+        <div class="card">
+          <h3>💾 Backup & Restore</h3>
+          <div style="display: flex; gap: 1rem; flex-wrap: wrap; margin: 1rem 0;">
+            <button class="btn btn-primary" onclick="backupData()">💾 Backup All Data</button>
+            <button class="btn btn-success" onclick="document.getElementById('restoreFile').click()">♻️ Restore Data</button>
+            <input type="file" id="restoreFile" accept=".json" style="display: none;" onchange="restoreData(event)">
+          </div>
+        </div>
+
+        <div class="card">
+          <h3>🔧 Quick Stats</h3>
+          <div id="quickStats"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      const isAdminLoggedIn = localStorage.getItem('isAdminLoggedIn');
+      if(!isAdminLoggedIn || isAdminLoggedIn !== 'true') {
+        window.location.href = '../admin/login.html';
+        return;
+      }
+      
+      loadAnalytics();
+    });
+
+    function loadAnalytics() {
+      const approvedAlumni = JSON.parse(localStorage.getItem('approvedAlumni')) || [];
+      const applications = JSON.parse(localStorage.getItem('applications')) || [];
+      const internships = JSON.parse(localStorage.getItem('adminInternships')) || [];
+      const placements = JSON.parse(localStorage.getItem('adminPlacements')) || [];
+      const events = JSON.parse(localStorage.getItem('adminEvents')) || [];
+      
+      // Update stats
+      document.getElementById('totalAlumni').textContent = approvedAlumni.length;
+      document.getElementById('totalApplications').textContent = applications.length;
+      document.getElementById('totalOpportunities').textContent = internships.length + placements.length;
+      document.getElementById('totalEvents').textContent = events.length;
+
+      // Department Distribution
+      const deptMap = {};
+      approvedAlumni.forEach(a => {
+        deptMap[a.department] = (deptMap[a.department] || 0) + 1;
+      });
+      const deptHtml = Object.entries(deptMap).map(([dept, count]) => 
+        `<div class="mini-stat"><strong>${count}</strong> from ${dept}</div>`
+      ).join('');
+      document.getElementById('departmentStats').innerHTML = deptHtml || '<p>No data</p>';
+
+      // Application Status
+      const statusMap = {
+        pending: 0,
+        accepted: 0,
+        rejected: 0
+      };
+      applications.forEach(a => {
+        statusMap[a.status]++;
+      });
+      const statusHtml = Object.entries(statusMap).map(([status, count]) =>
+        `<div class="mini-stat"><strong>${count}</strong> ${status.toUpperCase()}</div>`
+      ).join('');
+      document.getElementById('applicationStats').innerHTML = statusHtml;
+
+      // Recent Applications
+      const recent = applications.slice(-5).reverse().map(app => `
+        <tr>
+          <td>${app.email}</td>
+          <td>${app.position}</td>
+          <td>${app.company}</td>
+          <td><span class="badge badge-${app.status}">${app.status}</span></td>
+        </tr>
+      `).join('') || '<tr><td colspan="4" style="text-align: center;">No applications</td></tr>';
+      document.getElementById('recentApps').innerHTML = recent;
+
+      // Top Departments
+      const topDepts = Object.entries(deptMap)
+        .sort((a, b) => b[1] - a[1])
+        .slice(0, 5)
+        .map(([dept, count]) => `<div class="mini-stat"><strong>${count}</strong> ${dept}</div>`)
+        .join('');
+      document.getElementById('topDepts').innerHTML = topDepts;
+
+      // Load Approvals
+      const pendingAlumni = JSON.parse(localStorage.getItem('pendingAlumni')) || [];
+      const approvalHtml = pendingAlumni.map(alum => `
+        <tr>
+          <td>${alum.firstName} ${alum.lastName}</td>
+          <td>${alum.email}</td>
+          <td>${alum.department}</td>
+          <td>${alum.batch}</td>
+          <td>
+            <button class="btn btn-success" onclick="approveAlumni('${alum.id}')">Approve</button>
+            <button class="btn btn-danger" onclick="rejectAlumni('${alum.id}')">Reject</button>
+          </td>
+        </tr>
+      `).join('') || '<tr><td colspan="5" style="text-align: center;">No pending approvals</td></tr>';
+      document.getElementById('approvalsTable').innerHTML = approvalHtml;
+
+      // Reports
+      document.getElementById('metricsReport').innerHTML = `
+        <div class="mini-stat"><strong>Alumni</strong><br>${approvedAlumni.length} approved</div>
+        <div class="mini-stat"><strong>Pending</strong><br>${pendingAlumni.length} awaiting approval</div>
+        <div class="mini-stat"><strong>Avg Applications</strong><br>${approvedAlumni.length > 0 ? (applications.length / approvedAlumni.length).toFixed(1) : 0} per alumni</div>
+      `;
+
+      document.getElementById('oppReport').innerHTML = `
+        <div class="mini-stat"><strong>Internships</strong><br>${internships.length} posted</div>
+        <div class="mini-stat"><strong>Placements</strong><br>${placements.length} posted</div>
+        <div class="mini-stat"><strong>Total Applied</strong><br>${applications.length} submissions</div>
+      `;
+
+      document.getElementById('eventReport').innerHTML = `
+        <div class="mini-stat"><strong>Events Organized</strong><br>${events.length}</div>
+        <div class="mini-stat"><strong>Registrations</strong><br>${JSON.parse(localStorage.getItem('eventRegistrations') || '[]').length}</div>
+      `;
+
+      document.getElementById('quickStats').innerHTML = `
+        <div class="mini-stat"><strong>${approvedAlumni.length}</strong> Active Alumni</div>
+        <div class="mini-stat"><strong>${pendingAlumni.length}</strong> Pending Approvals</div>
+        <div class="mini-stat"><strong>${internships.length + placements.length}</strong> Open Positions</div>
+        <div class="mini-stat"><strong>${applications.length}</strong> Total Applications</div>
+      `;
+    }
+
+    function switchTab(tab) {
+      document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+      document.querySelectorAll('.nav-menu a').forEach(a => a.classList.remove('active'));
+      document.getElementById(tab).classList.add('active');
+      document.getElementById(tab + 'Link').classList.add('active');
+    }
+
+    function approveAlumni(id) {
+      const pendingAlumni = JSON.parse(localStorage.getItem('pendingAlumni')) || [];
+      const approvedAlumni = JSON.parse(localStorage.getItem('approvedAlumni')) || [];
+      const alumni = pendingAlumni.find(a => a.id === id);
+      
+      if(!alumni) return;
+      
+      localStorage.setItem('pendingAlumni', JSON.stringify(pendingAlumni.filter(a => a.id !== id)));
+      approvedAlumni.push(alumni);
+      localStorage.setItem('approvedAlumni', JSON.stringify(approvedAlumni));
+      alert('✅ Alumni approved!');
+      loadAnalytics();
+    }
+
+    function rejectAlumni(id) {
+      if(!confirm('Reject this application?')) return;
+      const pending = JSON.parse(localStorage.getItem('pendingAlumni')) || [];
+      localStorage.setItem('pendingAlumni', JSON.stringify(pending.filter(a => a.id !== id)));
+      alert('❌ Application rejected');
+      loadAnalytics();
+    }
+
+    function exportToCSV(type) {
+      let data = [];
+      let headers = [];
+      
+      if(type === 'alumni') {
+        const alumni = JSON.parse(localStorage.getItem('approvedAlumni')) || [];
+        headers = ['First Name', 'Last Name', 'Email', 'Phone', 'Department', 'Batch', 'Year'];
+        data = alumni.map(a => [a.firstName, a.lastName, a.email, a.phone, a.department, a.batch, a.year]);
+      } else if(type === 'applications') {
+        const apps = JSON.parse(localStorage.getItem('applications')) || [];
+        headers = ['Email', 'Position', 'Company', 'Status', 'Applied Date'];
+        data = apps.map(a => [a.email, a.position, a.company, a.status, new Date(a.appliedAt).toLocaleDateString()]);
+      } else if(type === 'events') {
+        const events = JSON.parse(localStorage.getItem('adminEvents')) || [];
+        headers = ['Title', 'Date', 'Location', 'Description'];
+        data = events.map(e => [e.title, new Date(e.date).toLocaleDateString(), e.location, e.description]);
+      }
+      
+      const csv = [headers, ...data].map(row => row.map(cell => `"${cell}"`).join(',')).join('\\n');
+      const blob = new Blob([csv], { type: 'text/csv' });
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `${type}_${new Date().toISOString().split('T')[0]}.csv`;
+      a.click();
+    }
+
+    function exportToJSON() {
+      const data = {
+        alumni: JSON.parse(localStorage.getItem('approvedAlumni')) || [],
+        pending: JSON.parse(localStorage.getItem('pendingAlumni')) || [],
+        applications: JSON.parse(localStorage.getItem('applications')) || [],
+        events: JSON.parse(localStorage.getItem('adminEvents')) || [],
+        internships: JSON.parse(localStorage.getItem('adminInternships')) || [],
+        placements: JSON.parse(localStorage.getItem('adminPlacements')) || [],
+        exportedAt: new Date().toISOString()
+      };
+      
+      const json = JSON.stringify(data, null, 2);
+      const blob = new Blob([json], { type: 'application/json' });
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `alumni_connect_backup_${new Date().toISOString().split('T')[0]}.json`;
+      a.click();
+    }
+
+    function backupData() {
+      exportToJSON();
+      alert('✅ Backup created successfully!');
+    }
+
+    function restoreData(event) {
+      const file = event.target.files[0];
+      if(!file) return;
+      
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        try {
+          const data = JSON.parse(e.target.result);
+          if(data.alumni) localStorage.setItem('approvedAlumni', JSON.stringify(data.alumni));
+          if(data.pending) localStorage.setItem('pendingAlumni', JSON.stringify(data.pending));
+          if(data.applications) localStorage.setItem('applications', JSON.stringify(data.applications));
+          if(data.events) localStorage.setItem('adminEvents', JSON.stringify(data.events));
+          if(data.internships) localStorage.setItem('adminInternships', JSON.stringify(data.internships));
+          if(data.placements) localStorage.setItem('adminPlacements', JSON.stringify(data.placements));
+          
+          alert('✅ Data restored successfully!');
+          loadAnalytics();
+        } catch(err) {
+          alert('❌ Invalid backup file');
+        }
+      };
+      reader.readAsText(file);
+    }   
+
+    function logout() {
+      if(confirm('Logout?')) {
+        localStorage.removeItem('isAdminLoggedIn');
+        window.location.href = '../admin/login.html';
+      }
+    }
+  </script>
+</body>
+</html>

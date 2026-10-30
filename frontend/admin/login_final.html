@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Login - Alumni Connect</title>
+  <link rel="stylesheet" href="../shared/css/style.css">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #2d3561 0%, #1a1a2e 50%, #16213e 100%);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .login-container {
+      background: white;
+      border-radius: 20px;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+      max-width: 450px;
+      width: 90%;
+      padding: 3rem;
+      animation: slideUp 0.6s ease-out;
+    }
+
+    @keyframes slideUp {
+      from {
+        opacity: 0;
+        transform: translateY(50px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .login-header {
+      text-align: center;
+      margin-bottom: 2rem;
+    }
+
+    .login-header h1 {
+      color: #2d3561;
+      font-size: 2rem;
+      margin-bottom: 0.5rem;
+      animation: slideDown 0.6s ease-out;
+    }
+
+    .login-header p {
+      color: #666;
+      font-size: 0.95rem;
+      animation: slideDown 0.8s ease-out;
+    }
+
+    .admin-badge {
+      display: inline-block;
+      background: linear-gradient(135deg, #d97706, #f59e0b);
+      color: white;
+      padding: 4px 12px;
+      border-radius: 20px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      margin-top: 0.5rem;
+    }
+
+    .form-group {
+      margin-bottom: 1.5rem;
+    }
+
+    .form-group label {
+      display: block;
+      color: #333;
+      font-weight: 600;
+      margin-bottom: 0.5rem;
+      font-size: 0.95rem;
+    }
+
+    .form-group input {
+      width: 100%;
+      padding: 12px 16px;
+      border: 2px solid #e0e0e0;
+      border-radius: 10px;
+      font-size: 1rem;
+      transition: all 0.3s ease;
+      background: #f8f9fa;
+    }
+
+    .form-group input:focus {
+      outline: none;
+      border-color: #2d3561;
+      background: white;
+      box-shadow: 0 0 0 3px rgba(45, 53, 97, 0.1);
+    }
+
+    .form-group input::placeholder {
+      color: #999;
+    }
+
+    .tabs {
+      display: flex;
+      gap: 1rem;
+      margin-bottom: 2rem;
+      border-bottom: 2px solid #f0f0f0;
+    }
+
+    .tab-btn {
+      padding: 12px 20px;
+      background: none;
+      border: none;
+      cursor: pointer;
+      font-weight: 600;
+      color: #999;
+      transition: all 0.3s ease;
+      position: relative;
+    }
+
+    .tab-btn.active {
+      color: #2d3561;
+    }
+
+    .tab-btn.active::after {
+      content: '';
+      position: absolute;
+      bottom: -2px;
+      left: 0;
+      right: 0;
+      height: 2px;
+      background: linear-gradient(90deg, #2d3561, #4f46e5);
+    }
+
+    .form-content {
+      display: none;
+    }
+
+    .form-content.active {
+      display: block;
+      animation: fadeIn 0.3s ease-out;
+    }
+
+    @keyframes slideDown {
+      from {
+        opacity: 0;
+        transform: translateY(-20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+      }
+      to {
+        opacity: 1;
+      }
+    }
+
+    .submit-btn {
+      width: 100%;
+      padding: 14px;
+      background: linear-gradient(135deg, #2d3561, #4f46e5);
+      color: white;
+      border: none;
+      border-radius: 10px;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 15px rgba(45, 53, 97, 0.3);
+      margin-bottom: 1rem;
+    }
+
+    .submit-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 25px rgba(45, 53, 97, 0.4);
+    }
+
+    .home-btn {
+      width: 100%;
+      padding: 14px;
+      background: white;
+      color: #2d3561;
+      border: 2px solid #2d3561;
+      border-radius: 10px;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .home-btn:hover {
+      background: #f8f9ff;
+      transform: translateY(-2px);
+    }
+
+    .login-footer {
+      text-align: center;
+      margin-top: 1.5rem;
+      color: #666;
+      font-size: 0.9rem;
+    }
+
+    .alert {
+      padding: 1rem;
+      border-radius: 10px;
+      margin-bottom: 1rem;
+      animation: slideDown 0.4s ease-out;
+    }
+
+    .alert.success {
+      background: #d4edda;
+      color: #155724;
+      border: 1px solid #c3e6cb;
+    }
+
+    .alert.danger {
+      background: #f8d7da;
+      color: #721c24;
+      border: 1px solid #f5c6cb;
+    }
+
+    @media (max-width: 480px) {
+      .login-container {
+        padding: 2rem 1.5rem;
+      }
+
+      .login-header h1 {
+        font-size: 1.5rem;
+      }
+
+      .submit-btn, .home-btn {
+        padding: 12px;
+        font-size: 0.95rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="login-container">
+    <div class="login-header">
+      <h1>📊 Admin Panel</h1>
+      <p>Alumni Connect Administration</p>
+      <div class="admin-badge">🔐 ADMIN ONLY</div>
+    </div>
+
+    <div id="alertContainer"></div>
+
+    <div class="tabs">
+      <button class="tab-btn active" onclick="switchTab('login')">🔐 Login</button>
+      <button class="tab-btn" onclick="switchTab('register')">📝 Register</button>
+    </div>
+
+    <!-- Login Form -->
+    <form id="loginForm" class="form-content active" onsubmit="handleLogin(event)">
+      <div class="form-group">
+        <label>Admin Email</label>
+        <input type="email" id="loginEmail" placeholder="admin@example.com" required>
+      </div>
+
+      <div class="form-group">
+        <label>Password</label>
+        <input type="password" id="loginPassword" placeholder="Enter your password" required>
+      </div>
+
+      <button type="submit" class="submit-btn">🔓 Sign In as Admin</button>
+    </form>
+
+    <!-- Register Form (Admin Creation) -->
+    <form id="registerForm" class="form-content" onsubmit="handleRegister(event)">
+      <div class="form-group">
+        <label>Admin Name *</label>
+        <input type="text" id="regName" placeholder="Full Name" required>
+      </div>
+
+      <div class="form-group">
+        <label>Email Address *</label>
+        <input type="email" id="regEmail" placeholder="admin@example.com" required>
+      </div>
+
+      <div class="form-group">
+        <label>Password *</label>
+        <input type="password" id="regPassword" placeholder="Min 6 characters" required>
+      </div>
+
+      <div class="form-group">
+        <label>Confirm Password *</label>
+        <input type="password" id="regConfirmPassword" placeholder="Confirm password" required>
+      </div>
+
+      <button type="submit" class="submit-btn">✨ Create Admin Account</button>
+    </form>
+
+    <button class="home-btn" onclick="goHome()">🏠 Back to Home</button>
+  </div>
+
+  <script src="../shared/js/api.js"></script>
+  <script>
+    function switchTab(tab) {
+      document.querySelectorAll('.form-content').forEach(el => el.classList.remove('active'));
+      document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
+      
+      document.getElementById(tab === 'login' ? 'loginForm' : 'registerForm').classList.add('active');
+      event.target.classList.add('active');
+    }
+
+    function goHome() {
+      window.location.href = '../../index_final.html';
+    }
+
+    async function handleLogin(e) {
+      e.preventDefault();
+      const email = document.getElementById('loginEmail').value;
+      const password = document.getElementById('loginPassword').value;
+
+      const formData = {
+        email: email,
+        password: password
+      };
+
+      const result = await apiCall('/admin/login', 'POST', formData);
+
+      if (result.success) {
+        localStorage.setItem('token', result.data.token);
+        localStorage.setItem('userType', 'admin');
+        showAlert('Admin login successful! Redirecting...', 'success');
+        setTimeout(() => {
+          window.location.href = './dashboard_final.html';
+        }, 1000);
+      } else {
+        showAlert(result.error || 'Login failed', 'danger');
+      }
+    }
+
+    async function handleRegister(e) {
+      e.preventDefault();
+      
+      const password = document.getElementById('regPassword').value;
+      const confirmPassword = document.getElementById('regConfirmPassword').value;
+
+      if (password !== confirmPassword) {
+        showAlert('Passwords do not match!', 'danger');
+        return;
+      }
+
+      const formData = {
+        name: document.getElementById('regName').value,
+        email: document.getElementById('regEmail').value,
+        password: password
+      };
+
+      const result = await apiCall('/admin/register', 'POST', formData);
+
+      if (result.success) {
+        showAlert('Admin account created! Please login.', 'success');
+        setTimeout(() => {
+          document.getElementById('registerForm').reset();
+          document.querySelector('[onclick="switchTab(\'login\')"]').click();
+        }, 1000);
+      } else {
+        showAlert(result.error || 'Registration failed', 'danger');
+      }
+    }
+
+    function showAlert(message, type) {
+      const alertContainer = document.getElementById('alertContainer');
+      alertContainer.innerHTML = `<div class="alert ${type}">${message}</div>`;
+      setTimeout(() => {
+        alertContainer.innerHTML = '';
+      }, 4000);
+    }
+  </script>
+</body>
+</html>

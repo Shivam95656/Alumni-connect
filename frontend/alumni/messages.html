@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Messages - Alumni Connect</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #f0fdf4; color: #333; }
+    
+    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+    @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+    @keyframes slideIn { from { opacity: 0; transform: translateX(20px); } to { opacity: 1; transform: translateX(0); } }
+
+    .navbar { background: linear-gradient(135deg, #16a34a 0%, #15803d 100%); color: white; padding: 1rem 2rem; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 8px 20px rgba(22, 163, 74, 0.2); position: sticky; top: 0; z-index: 1000; }
+    .navbar h1 { font-size: 1.3rem; font-weight: 700; }
+    .nav-links { display: flex; gap: 2rem; list-style: none; align-items: center; }
+    .nav-links a { color: white; text-decoration: none; font-weight: 600; cursor: pointer; }
+    .nav-links a:hover { color: #fbbf24; }
+    .logout-btn { background: rgba(255, 255, 255, 0.2); color: white; padding: 8px 16px; border: 1px solid rgba(255, 255, 255, 0.3); border-radius: 6px; cursor: pointer; font-weight: 600; }
+
+    .container { max-width: 1400px; margin: 0 auto; padding: 2rem; }
+    
+    .messaging-layout { display: grid; grid-template-columns: 300px 1fr; gap: 2rem; min-height: calc(100vh - 200px); }
+    
+    .conversations-panel { background: white; border-radius: 12px; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06); display: flex; flex-direction: column; animation: slideUp 0.3s ease-out; }
+    .conv-header { padding: 1.5rem; border-bottom: 2px solid #f0fdf4; }
+    .conv-header h2 { color: #16a34a; margin-bottom: 1rem; font-size: 1.2rem; }
+    .new-msg-btn { width: 100%; padding: 0.75rem; background: #16a34a; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: 600; transition: all 0.3s; }
+    .new-msg-btn:hover { background: #15803d; }
+
+    .search-box { padding: 0 1rem; margin-bottom: 1rem; }
+    .search-box input { width: 100%; padding: 0.6rem; border: 1px solid #ddd; border-radius: 6px; font-size: 0.9rem; }
+    .search-box input:focus { outline: none; border-color: #16a34a; }
+
+    .conversations-list { flex: 1; overflow-y: auto; }
+    .conversation { padding: 1rem; border-bottom: 1px solid #f0fdf4; cursor: pointer; transition: all 0.3s; display: flex; gap: 1rem; align-items: center; }
+    .conversation:hover { background: #f9fafb; }
+    .conversation.active { background: #dcfce7; border-left: 4px solid #16a34a; }
+    .conv-avatar { width: 50px; height: 50px; border-radius: 50%; background: linear-gradient(135deg, #16a34a 0%, #15803d 100%); color: white; display: flex; align-items: center; justify-content: center; font-weight: 700; flex-shrink: 0; }
+    .conv-info { flex: 1; min-width: 0; }
+    .conv-name { font-weight: 700; color: #16a34a; margin-bottom: 0.3rem; }
+    .conv-preview { font-size: 0.85rem; color: #666; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .conv-time { font-size: 0.75rem; color: #999; }
+
+    .chat-panel { background: white; border-radius: 12px; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06); display: flex; flex-direction: column; animation: slideIn 0.3s ease-out; }
+    .chat-empty { flex: 1; display: flex; align-items: center; justify-content: center; color: #999; text-align: center; font-size: 1.1rem; }
+
+    .chat-header { padding: 1.5rem; border-bottom: 2px solid #f0fdf4; display: flex; justify-content: space-between; align-items: center; }
+    .chat-partner { display: flex; align-items: center; gap: 1rem; }
+    .chat-partner-avatar { width: 50px; height: 50px; border-radius: 50%; background: linear-gradient(135deg, #16a34a 0%, #15803d 100%); color: white; display: flex; align-items: center; justify-content: center; font-weight: 700; }
+    .chat-partner-info h3 { color: #16a34a; }
+    .chat-partner-info p { font-size: 0.85rem; color: #666; }
+
+    .messages-container { flex: 1; overflow-y: auto; padding: 1.5rem; display: flex; flex-direction: column; gap: 1rem; }
+    .message { display: flex; gap: 0.75rem; animation: slideUp 0.3s ease-out; }
+    .message.sent { justify-content: flex-end; }
+    .message.received { justify-content: flex-start; }
+    .message-content { max-width: 60%; padding: 0.75rem 1rem; border-radius: 10px; word-wrap: break-word; }
+    .message.sent .message-content { background: #16a34a; color: white; border-bottom-right-radius: 2px; }
+    .message.received .message-content { background: #f0fdf4; color: #333; border-bottom-left-radius: 2px; border: 1px solid #ddd; }
+    .message-time { font-size: 0.75rem; color: #999; padding: 0 0.5rem; }
+    .message.sent .message-time { text-align: right; }
+
+    .input-area { padding: 1.5rem; border-top: 2px solid #f0fdf4; display: flex; gap: 1rem; }
+    .message-input { flex: 1; padding: 0.75rem; border: 1px solid #ddd; border-radius: 6px; font-family: inherit; font-size: 1rem; resize: none; max-height: 120px; }
+    .message-input:focus { outline: none; border-color: #16a34a; }
+    .send-btn { padding: 0.75rem 1.5rem; background: #16a34a; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: 600; transition: all 0.3s; height: fit-content; }
+    .send-btn:hover { background: #15803d; }
+
+    .modal { display: none; position: fixed; z-index: 2000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.5); align-items: center; justify-content: center; }
+    .modal.active { display: flex; animation: fadeIn 0.3s ease-out; }
+    .modal-content { background: white; padding: 2.5rem; border-radius: 12px; max-width: 500px; width: 90%; animation: slideUp 0.3s ease-out; }
+    .modal-close { float: right; font-size: 2rem; cursor: pointer; color: #999; }
+    .modal-close:hover { color: #333; }
+
+    .form-group { margin-bottom: 1rem; }
+    .form-group label { display: block; margin-bottom: 0.4rem; color: #333; font-weight: 600; }
+    .form-group input, .form-group select { width: 100%; padding: 0.6rem; border: 1px solid #ddd; border-radius: 6px; font-size: 1rem; font-family: inherit; }
+    .form-group input:focus, .form-group select:focus { outline: none; border-color: #16a34a; }
+
+    .btn { padding: 0.6rem 1.2rem; border: none; border-radius: 6px; cursor: pointer; font-weight: 600; transition: all 0.3s; }
+    .btn-primary { background: #16a34a; color: white; width: 100%; margin-top: 1rem; }
+    .btn-primary:hover { background: #15803d; }
+    .btn-secondary { background: #e5e7eb; color: #333; }
+
+    @media (max-width: 1024px) {
+      .messaging-layout { grid-template-columns: 250px 1fr; }
+    }
+
+    @media (max-width: 768px) {
+      .messaging-layout { grid-template-columns: 1fr; }
+      .conversations-panel { display: none; }
+      .conversations-panel.mobile-active { display: flex; position: fixed; left: 0; top: 70px; width: 100%; height: calc(100vh - 70px); z-index: 999; border-radius: 0; }
+      .message-content { max-width: 80%; }
+    }
+  </style>
+</head>
+<body>
+  <nav class="navbar">
+    <h1>💬 Messages</h1>
+    <ul class="nav-links">
+      <li><a href="./dashboard.html" style="color: #fbbf24;">← Dashboard</a></li>
+      <li><button class="logout-btn" onclick="logout()">Logout</button></li>
+    </ul>
+  </nav>
+
+  <div class="container">
+    <div class="messaging-layout">
+      <!-- Conversations Panel -->
+      <div class="conversations-panel">
+        <div class="conv-header">
+          <h2>💬 Inbox</h2>
+          <button class="new-msg-btn" onclick="openNewMessageModal()">+ New Message</button>
+        </div>
+        <div class="search-box">
+          <input type="text" id="searchConv" placeholder="Search conversations..." onkeyup="filterConversations()">
+        </div>
+        <div class="conversations-list" id="conversationsList"></div>
+      </div>
+
+      <!-- Chat Panel -->
+      <div class="chat-panel">
+        <div id="chatEmpty" class="chat-empty">
+          <div>
+            <div style="font-size: 3rem; margin-bottom: 1rem;">💬</div>
+            <div>Select a conversation to start messaging</div>
+          </div>
+        </div>
+
+        <div id="chatContent" style="display: none; flex: 1; display: flex; flex-direction: column;">
+          <div class="chat-header">
+            <div class="chat-partner">
+              <div class="chat-partner-avatar" id="chatAvatar">👤</div>
+              <div class="chat-partner-info">
+                <h3 id="chatPartnerName">-</h3>
+                <p id="chatPartnerDept">-</p>
+              </div>
+            </div>
+            <button class="btn btn-secondary" onclick="closeChat()" style="padding: 0.5rem 1rem;">Close</button>
+          </div>
+
+          <div class="messages-container" id="messagesContainer"></div>
+
+          <div class="input-area">
+            <textarea class="message-input" id="messageInput" placeholder="Type a message..." rows="1"></textarea>
+            <button class="send-btn" onclick="sendMessage()">Send</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- New Message Modal -->
+  <div id="newMessageModal" class="modal">
+    <div class="modal-content">
+      <span class="modal-close" onclick="closeNewMessageModal()">&times;</span>
+      <h2 style="color: #16a34a; margin-bottom: 1.5rem;">Start Conversation</h2>
+      <form onsubmit="startNewConversation(event)">
+        <div class="form-group">
+          <label>Select Alumni</label>
+          <select id="selectAlumni" required>
+            <option value="">Choose an alumni...</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Message</label>
+          <textarea id="firstMessage" rows="3" placeholder="Write your first message..." required></textarea>
+        </div>
+        <button type="submit" class="btn btn-primary">Start Conversation</button>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    let currentConversation = null;
+
+    document.addEventListener('DOMContentLoaded', function() {
+      const isLoggedIn = localStorage.getItem('isLoggedIn');
+      const userEmail = localStorage.getItem('userEmail');
+      const approvedAlumni = JSON.parse(localStorage.getItem('approvedAlumni')) || [];
+
+      if(!isLoggedIn || !userEmail || !approvedAlumni.find(a => a.email === userEmail)) {
+        window.location.href = '../alumni/login.html';
+        return;
+      }
+
+      loadConversations();
+      loadAlumniOptions();
+      
+      // Auto-refresh conversations every 2 seconds
+      setInterval(loadConversations, 2000);
+    });
+
+    function loadConversations() {
+      const userEmail = localStorage.getItem('userEmail');
+      const messages = JSON.parse(localStorage.getItem('messages_' + userEmail)) || [];
+      const approvedAlumni = JSON.parse(localStorage.getItem('approvedAlumni')) || [];
+
+      const conversationMap = {};
+      messages.forEach(msg => {
+        const key = msg.from === userEmail ? msg.to : msg.from;
+        if(!conversationMap[key]) {
+          conversationMap[key] = [];
+        }
+        conversationMap[key].push(msg);
+      });
+
+      const html = Object.entries(conversationMap).map(([email, msgs]) => {
+        const partner = approvedAlumni.find(a => a.email === email);
+        const lastMsg = msgs[msgs.length - 1];
+        const isActive = currentConversation === email;
+
+        return `
+          <div class="conversation ${isActive ? 'active' : ''}" onclick="openConversation('${email}')">
+            <div class="conv-avatar">${partner ? (partner.firstName[0] + partner.lastName[0]).toUpperCase() : '👤'}</div>
+            <div class="conv-info">
+              <div class="conv-name">${partner ? partner.firstName + ' ' + partner.lastName : email}</div>
+              <div class="conv-preview">${lastMsg.text.substring(0, 30)}...</div>
+            </div>
+            <div class="conv-time">${new Date(lastMsg.timestamp).toLocaleTimeString()}</div>
+          </div>
+        `;
+      }).join('');
+
+      document.getElementById('conversationsList').innerHTML = html || '<div style="padding: 1rem; color: #999; text-align: center;">No conversations yet</div>';
+    }
+
+    function filterConversations() {
+      const search = document.getElementById('searchConv').value.toLowerCase();
+      document.querySelectorAll('.conversation').forEach(conv => {
+        const text = conv.textContent.toLowerCase();
+        conv.style.display = text.includes(search) ? '' : 'none';
+      });
+    }
+
+    function openConversation(email) {
+      currentConversation = email;
+      const userEmail = localStorage.getItem('userEmail');
+      const approvedAlumni = JSON.parse(localStorage.getItem('approvedAlumni')) || [];
+      const partner = approvedAlumni.find(a => a.email === email);
+      const messages = JSON.parse(localStorage.getItem('messages_' + userEmail)) || [];
+      const conversationMsgs = messages.filter(m => (m.from === email && m.to === userEmail) || (m.from === userEmail && m.to === email));
+
+      document.getElementById('chatEmpty').style.display = 'none';
+      document.getElementById('chatContent').style.display = 'flex';
+
+      if(partner) {
+        document.getElementById('chatAvatar').textContent = (partner.firstName[0] + partner.lastName[0]).toUpperCase();
+        document.getElementById('chatPartnerName').textContent = partner.firstName + ' ' + partner.lastName;
+        document.getElementById('chatPartnerDept').textContent = partner.department + ' • Batch ' + partner.batch;
+      }
+
+      const html = conversationMsgs.map(msg => `
+        <div class="message ${msg.from === userEmail ? 'sent' : 'received'}">
+          <div>
+            <div class="message-content">${escapeHtml(msg.text)}</div>
+            <div class="message-time">${new Date(msg.timestamp).toLocaleTimeString()}</div>
+          </div>
+        </div>
+      `).join('');
+
+      document.getElementById('messagesContainer').innerHTML = html;
+      document.getElementById('messagesContainer').scrollTop = document.getElementById('messagesContainer').scrollHeight;
+      document.getElementById('messageInput').focus();
+
+      loadConversations();
+    }
+
+    function closeChat() {
+      currentConversation = null;
+      document.getElementById('chatEmpty').style.display = 'flex';
+      document.getElementById('chatContent').style.display = 'none';
+      document.getElementById('messageInput').value = '';
+      loadConversations();
+    }
+
+    function sendMessage() {
+      if(!currentConversation) return;
+
+      const text = document.getElementById('messageInput').value.trim();
+      if(!text) return;
+
+      const userEmail = localStorage.getItem('userEmail');
+      const messages = JSON.parse(localStorage.getItem('messages_' + userEmail)) || [];
+
+      messages.push({
+        from: userEmail,
+        to: currentConversation,
+        text: text,
+        timestamp: new Date().toISOString()
+      });
+
+      localStorage.setItem('messages_' + userEmail, JSON.stringify(messages));
+
+      // Also save to recipient's inbox
+      const recipientMsgs = JSON.parse(localStorage.getItem('messages_' + currentConversation)) || [];
+      recipientMsgs.push({
+        from: userEmail,
+        to: currentConversation,
+        text: text,
+        timestamp: new Date().toISOString()
+      });
+      localStorage.setItem('messages_' + currentConversation, JSON.stringify(recipientMsgs));
+
+      document.getElementById('messageInput').value = '';
+      openConversation(currentConversation);
+    }
+
+    function loadAlumniOptions() {
+      const userEmail = localStorage.getItem('userEmail');
+      const approvedAlumni = JSON.parse(localStorage.getItem('approvedAlumni')) || [];
+
+      const html = approvedAlumni
+        .filter(a => a.email !== userEmail)
+        .map(a => `<option value="${a.email}">${a.firstName} ${a.lastName} (${a.email})</option>`)
+        .join('');
+
+      document.getElementById('selectAlumni').innerHTML = '<option value="">Choose an alumni...</option>' + html;
+    }
+
+    function openNewMessageModal() {
+      document.getElementById('newMessageModal').classList.add('active');
+    }
+
+    function closeNewMessageModal() {
+      document.getElementById('newMessageModal').classList.remove('active');
+    }
+
+    function startNewConversation(e) {
+      e.preventDefault();
+      const userEmail = localStorage.getItem('userEmail');
+      const toEmail = document.getElementById('selectAlumni').value;
+      const messageText = document.getElementById('firstMessage').value;
+
+      const messages = JSON.parse(localStorage.getItem('messages_' + userEmail)) || [];
+      messages.push({
+        from: userEmail,
+        to: toEmail,
+        text: messageText,
+        timestamp: new Date().toISOString()
+      });
+      localStorage.setItem('messages_' + userEmail, JSON.stringify(messages));
+
+      const recipientMsgs = JSON.parse(localStorage.getItem('messages_' + toEmail)) || [];
+      recipientMsgs.push({
+        from: userEmail,
+        to: toEmail,
+        text: messageText,
+        timestamp: new Date().toISOString()
+      });
+      localStorage.setItem('messages_' + toEmail, JSON.stringify(recipientMsgs));
+
+      closeNewMessageModal();
+      document.getElementById('selectAlumni').value = '';
+      document.getElementById('firstMessage').value = '';
+      
+      currentConversation = toEmail;
+      openConversation(toEmail);
+      loadConversations();
+    }
+
+    function escapeHtml(text) {
+      const div = document.createElement('div');
+      div.textContent = text;
+      return div.innerHTML;
+    }
+
+    function logout() {
+      if(confirm('Logout?')) {
+        localStorage.removeItem('isLoggedIn');
+        localStorage.removeItem('userEmail');
+        window.location.href = '../alumni/login.html';
+      }
+    }
+
+    // Allow Enter key to send message
+    document.addEventListener('keypress', (e) => {
+      if(e.key === 'Enter' && !e.shiftKey && currentConversation) {
+        e.preventDefault();
+        sendMessage();
+      }
+    });
+  </script>
+</body>
+</html>

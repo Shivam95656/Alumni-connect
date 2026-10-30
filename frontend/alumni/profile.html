@@ -1,0 +1,582 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Profile - Alumni Connect</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #f8f9fa; }
+    
+    @keyframes slideUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
+    @keyframes scaleIn { from { opacity: 0; transform: scale(0.9); } to { opacity: 1; transform: scale(1); } }
+
+    .navbar { background: linear-gradient(135deg, #16a34a 0%, #15803d 100%); color: white; padding: 1.2rem 2rem; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 8px 20px rgba(22, 163, 74, 0.2); position: sticky; top: 0; z-index: 1000; }
+    .navbar h1 { font-size: 1.5rem; font-weight: 700; }
+    .nav-menu { display: flex; gap: 1.5rem; list-style: none; align-items: center; }
+    .nav-menu a { color: #e0e0e0; text-decoration: none; font-weight: 500; transition: color 0.3s; cursor: pointer; }
+    .nav-menu a:hover { color: white; }
+    .logout-btn { background: rgba(255, 255, 255, 0.2); color: white; padding: 8px 16px; border: 1px solid rgba(255, 255, 255, 0.3); border-radius: 6px; cursor: pointer; transition: all 0.3s; }
+    .logout-btn:hover { background: rgba(255, 255, 255, 0.3); }
+
+    .container { max-width: 1200px; margin: 0 auto; padding: 2rem; }
+    .section { animation: slideUp 0.5s ease-out; }
+    .hidden { display: none; }
+
+    /* Profile Header */
+    .profile-header { background: linear-gradient(135deg, #16a34a 0%, #15803d 100%); color: white; padding: 3rem 2rem; border-radius: 16px; margin-bottom: 2rem; box-shadow: 0 8px 20px rgba(22, 163, 74, 0.2); display: grid; grid-template-columns: auto 1fr; gap: 2rem; align-items: center; }
+    .profile-avatar { width: 120px; height: 120px; border-radius: 50%; background: linear-gradient(135deg, #4ade80 0%, #86efac 100%); display: flex; align-items: center; justify-content: center; font-size: 3rem; border: 4px solid white; box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2); }
+    .profile-info h2 { font-size: 2rem; margin-bottom: 0.5rem; }
+    .profile-info p { opacity: 0.9; margin: 0.3rem 0; }
+    .profile-meta { display: flex; gap: 2rem; margin-top: 1rem; }
+    .meta-item { display: flex; flex-direction: column; }
+    .meta-item span { font-size: 0.9rem; opacity: 0.8; }
+    .meta-item strong { font-size: 1.2rem; }
+
+    /* Completion Tracker */
+    .completion-card { background: white; padding: 2rem; border-radius: 12px; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08); margin-bottom: 2rem; animation: slideUp 0.5s ease-out 0.1s both; }
+    .completion-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; }
+    .completion-header h3 { color: #6366f1; font-size: 1.3rem; }
+    .completion-percent { font-size: 2rem; font-weight: 700; color: #10b981; }
+    .completion-bar { width: 100%; height: 10px; background: #e5e7eb; border-radius: 10px; overflow: hidden; margin-bottom: 1rem; }
+    .completion-fill { height: 100%; background: linear-gradient(90deg, #10b981, #06b6d4); border-radius: 10px; transition: width 0.3s ease; width: 60%; }
+    .completion-items { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; }
+    .completion-item { display: flex; align-items: center; gap: 0.75rem; padding: 0.75rem; background: #f8f9fa; border-radius: 8px; }
+    .completion-item.done { background: #d1fae5; }
+    .completion-checkbox { width: 24px; height: 24px; border-radius: 50%; background: #e5e7eb; display: flex; align-items: center; justify-content: center; font-size: 0.8rem; }
+    .completion-item.done .completion-checkbox { background: #10b981; color: white; }
+
+    /* Tabs */
+    .section-tabs { display: flex; gap: 0; border-bottom: 2px solid #e5e7eb; margin-bottom: 2rem; }
+    .tab-btn { padding: 1rem 1.5rem; background: none; border: none; cursor: pointer; font-size: 1rem; font-weight: 500; color: #666; border-bottom: 3px solid transparent; transition: all 0.3s; }
+    .tab-btn.active { color: #6366f1; border-bottom-color: #6366f1; }
+    .tab-btn:hover { color: #6366f1; }
+
+    /* Tab Content */
+    .tab-content { animation: slideUp 0.3s ease-out; }
+
+    /* Form Styles */
+    .form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.5rem; margin-bottom: 2rem; }
+    .form-group { display: flex; flex-direction: column; }
+    .form-group label { font-weight: 600; color: #333; margin-bottom: 0.5rem; }
+    .form-group input, .form-group textarea, .form-group select { padding: 0.75rem; border: 1px solid #ddd; border-radius: 8px; font-size: 1rem; font-family: inherit; transition: border-color 0.3s; }
+    .form-group input:focus, .form-group textarea:focus, .form-group select:focus { outline: none; border-color: #6366f1; box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1); }
+    .form-group textarea { resize: vertical; min-height: 120px; }
+
+    /* Cards */
+    .data-card { background: white; padding: 1.5rem; border-radius: 12px; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06); margin-bottom: 1rem; animation: slideUp 0.5s ease-out both; display: grid; grid-template-columns: 1fr auto; gap: 2rem; align-items: center; }
+    .data-card:hover { box-shadow: 0 4px 15px rgba(99, 102, 241, 0.1); }
+    .card-content h4 { color: #6366f1; margin-bottom: 0.3rem; }
+    .card-content p { color: #666; margin: 0.2rem 0; }
+    .card-actions { display: flex; gap: 0.5rem; }
+    .btn-sm { padding: 6px 12px; font-size: 0.85rem; border: none; border-radius: 6px; cursor: pointer; transition: all 0.3s; }
+    .btn-edit { background: #6366f1; color: white; }
+    .btn-edit:hover { background: #4f46e5; }
+    .btn-delete { background: #ef4444; color: white; }
+    .btn-delete:hover { background: #dc2626; }
+    .btn-add { background: #10b981; color: white; padding: 0.75rem 1.5rem; display: inline-block; margin-bottom: 1rem; }
+    .btn-add:hover { background: #059669; }
+
+    /* Section Styling */
+    .content-section { background: white; padding: 2rem; border-radius: 12px; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08); margin-bottom: 2rem; animation: slideUp 0.5s ease-out both; }
+    .content-section h3 { color: #6366f1; font-size: 1.3rem; margin-bottom: 1.5rem; padding-bottom: 1rem; border-bottom: 2px solid #e5e7eb; }
+
+    /* Stats Grid */
+    .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 1rem; margin-bottom: 2rem; }
+    .stat-box { background: linear-gradient(135deg, #6366f1 0%, #818cf8 100%); color: white; padding: 1.5rem; border-radius: 12px; text-align: center; }
+    .stat-box h4 { font-size: 1.8rem; margin-bottom: 0.5rem; }
+    .stat-box p { font-size: 0.9rem; opacity: 0.9; }
+
+    /* Modal */
+    .modal { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0, 0, 0, 0.5); z-index: 2000; align-items: center; justify-content: center; }
+    .modal.show { display: flex; animation: scaleIn 0.3s ease-out; }
+    .modal-content { background: white; padding: 2rem; border-radius: 16px; max-width: 600px; width: 90%; max-height: 90vh; overflow-y: auto; box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3); }
+    .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; }
+    .modal-header h2 { color: #6366f1; }
+    .modal-close { background: none; border: none; font-size: 1.5rem; cursor: pointer; }
+    .modal-buttons { display: flex; gap: 1rem; justify-content: flex-end; margin-top: 1.5rem; }
+    .btn-primary { background: #6366f1; color: white; padding: 0.75rem 1.5rem; border: none; border-radius: 8px; cursor: pointer; }
+    .btn-primary:hover { background: #4f46e5; }
+    .btn-secondary { background: #e5e7eb; color: #333; padding: 0.75rem 1.5rem; border: none; border-radius: 8px; cursor: pointer; }
+    .btn-secondary:hover { background: #d1d5db; }
+
+    /* Alerts */
+    .alert { padding: 1rem; border-radius: 8px; margin-bottom: 1rem; animation: slideUp 0.3s ease-out; }
+    .alert-success { background: #d1fae5; color: #065f46; border-left: 4px solid #10b981; }
+    .alert-error { background: #fee2e2; color: #7f1d1d; border-left: 4px solid #ef4444; }
+
+    @media (max-width: 768px) {
+      .profile-header { grid-template-columns: 1fr; text-align: center; }
+      .profile-meta { justify-content: center; }
+      .data-card { grid-template-columns: 1fr; }
+      .form-grid { grid-template-columns: 1fr; }
+      .completion-items { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <nav class="navbar">
+    <h1>🎓 Alumni Connect</h1>
+    <ul class="nav-menu">
+      <li><a id="goToDashboard">← Dashboard</a></li>
+      <li><button class="logout-btn" onclick="logout()">Logout</button></li>
+    </ul>
+  </nav>
+
+  <div class="container">
+    <!-- Profile Header -->
+    <div class="profile-header">
+      <div class="profile-avatar" id="profileAvatar">👤</div>
+      <div class="profile-info">
+        <h2 id="profileName">John Doe</h2>
+        <p id="profileEmail">john@example.com</p>
+        <div class="profile-meta">
+          <div class="meta-item"><span>Batch</span><strong id="profileBatch">2022</strong></div>
+          <div class="meta-item"><span>Department</span><strong id="profileDept">CSE</strong></div>
+          <div class="meta-item"><span>Year</span><strong id="profileYear">3</strong></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Profile Completion Tracker -->
+    <div class="completion-card">
+      <div class="completion-header">
+        <h3>📊 Profile Completion</h3>
+        <div class="completion-percent" id="completionPercent">60%</div>
+      </div>
+      <div class="completion-bar">
+        <div class="completion-fill" id="completionFill"></div>
+      </div>
+      <div class="completion-items">
+        <div class="completion-item done">
+          <div class="completion-checkbox">✓</div>
+          <span>Basic Info</span>
+        </div>
+        <div class="completion-item done">
+          <div class="completion-checkbox">✓</div>
+          <span>Contact Details</span>
+        </div>
+        <div class="completion-item">
+          <div class="completion-checkbox">○</div>
+          <span>Skills</span>
+        </div>
+        <div class="completion-item">
+          <div class="completion-checkbox">○</div>
+          <span>Experience</span>
+        </div>
+        <div class="completion-item">
+          <div class="completion-checkbox">○</div>
+          <span>Achievements</span>
+        </div>
+        <div class="completion-item">
+          <div class="completion-checkbox">○</div>
+          <span>Resume</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tabs -->
+    <div style="margin-bottom: 2rem;">
+      <div class="section-tabs">
+        <button class="tab-btn active" onclick="switchTab('personal')">👤 Personal Info</button>
+        <button class="tab-btn" onclick="switchTab('professional')">💼 Professional</button>
+        <button class="tab-btn" onclick="switchTab('skills')">⭐ Skills</button>
+        <button class="tab-btn" onclick="switchTab('achievements')">🏆 Achievements</button>
+        <button class="tab-btn" onclick="switchTab('resume')">📄 Resume</button>
+      </div>
+
+      <!-- Personal Info Tab -->
+      <div id="personal" class="tab-content content-section">
+        <h3>Personal Information</h3>
+        <div class="form-grid">
+          <div class="form-group">
+            <label>First Name</label>
+            <input type="text" id="firstName" value="John">
+          </div>
+          <div class="form-group">
+            <label>Last Name</label>
+            <input type="text" id="lastName" value="Doe">
+          </div>
+          <div class="form-group">
+            <label>Email</label>
+            <input type="email" id="email" value="john@example.com">
+          </div>
+          <div class="form-group">
+            <label>Phone</label>
+            <input type="text" id="phone" value="">
+          </div>
+          <div class="form-group">
+            <label>Date of Birth</label>
+            <input type="date" id="dob">
+          </div>
+          <div class="form-group">
+            <label>Location</label>
+            <input type="text" id="location" placeholder="City, Country">
+          </div>
+          <div class="form-group" style="grid-column: 1/-1;">
+            <label>Bio</label>
+            <textarea id="bio" placeholder="Tell us about yourself..."></textarea>
+          </div>
+        </div>
+        <button class="btn-add" onclick="saveProfile()">💾 Save Changes</button>
+      </div>
+
+      <!-- Professional Tab -->
+      <div id="professional" class="tab-content content-section hidden">
+        <h3>Professional Information</h3>
+        <div class="form-grid">
+          <div class="form-group">
+            <label>Current Company</label>
+            <input type="text" id="company" placeholder="e.g., Google, Microsoft">
+          </div>
+          <div class="form-group">
+            <label>Current Position</label>
+            <input type="text" id="position" placeholder="e.g., Software Engineer">
+          </div>
+          <div class="form-group">
+            <label>Years of Experience</label>
+            <input type="number" id="experience" min="0" max="50">
+          </div>
+          <div class="form-group">
+            <label>LinkedIn Profile</label>
+            <input type="url" id="linkedin" placeholder="https://linkedin.com/in/yourprofile">
+          </div>
+          <div class="form-group">
+            <label>GitHub Profile</label>
+            <input type="url" id="github" placeholder="https://github.com/yourprofile">
+          </div>
+          <div class="form-group">
+            <label>Portfolio Website</label>
+            <input type="url" id="portfolio" placeholder="https://yourportfolio.com">
+          </div>
+        </div>
+        <h4 style="margin-top: 2rem; color: #6366f1;">Work Experience</h4>
+        <button class="btn-add" onclick="showAddExperienceModal()">+ Add Experience</button>
+        <div id="experienceList"></div>
+      </div>
+
+      <!-- Skills Tab -->
+      <div id="skills" class="tab-content content-section hidden">
+        <h3>Skills</h3>
+        <button class="btn-add" onclick="showAddSkillModal()">+ Add Skill</button>
+        <div id="skillsList"></div>
+      </div>
+
+      <!-- Achievements Tab -->
+      <div id="achievements" class="tab-content content-section hidden">
+        <h3>Achievements & Certifications</h3>
+        <button class="btn-add" onclick="showAddAchievementModal()">+ Add Achievement</button>
+        <div id="achievementsList"></div>
+      </div>
+
+      <!-- Resume Tab -->
+      <div id="resume" class="tab-content content-section hidden">
+        <h3>Resume</h3>
+        <div class="form-group">
+          <label>Upload Resume (PDF)</label>
+          <input type="file" id="resumeFile" accept=".pdf,.doc,.docx">
+        </div>
+        <button class="btn-add" onclick="uploadResume()">📤 Upload Resume</button>
+        <div id="resumeInfo" style="margin-top: 1rem;"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modals -->
+  <div id="addSkillModal" class="modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2>Add Skill</h2>
+        <button class="modal-close" onclick="closeModal('addSkillModal')">×</button>
+      </div>
+      <div class="form-group">
+        <label>Skill Name</label>
+        <input type="text" id="skilName" placeholder="e.g., Python, JavaScript">
+      </div>
+      <div class="form-group">
+        <label>Proficiency Level</label>
+        <select id="skillLevel">
+          <option>Beginner</option>
+          <option>Intermediate</option>
+          <option>Advanced</option>
+          <option>Expert</option>
+        </select>
+      </div>
+      <div class="modal-buttons">
+        <button class="btn-secondary" onclick="closeModal('addSkillModal')">Cancel</button>
+        <button class="btn-primary" onclick="addSkill()">Add Skill</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="addExperienceModal" class="modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2>Add Work Experience</h2>
+        <button class="modal-close" onclick="closeModal('addExperienceModal')">×</button>
+      </div>
+      <div class="form-group">
+        <label>Company</label>
+        <input type="text" id="expCompany" placeholder="Company name">
+      </div>
+      <div class="form-group">
+        <label>Position</label>
+        <input type="text" id="expPosition" placeholder="Job title">
+      </div>
+      <div class="form-grid" style="grid-template-columns: 1fr 1fr;">
+        <div class="form-group">
+          <label>Start Date</label>
+          <input type="date" id="expStart">
+        </div>
+        <div class="form-group">
+          <label>End Date</label>
+          <input type="date" id="expEnd">
+        </div>
+      </div>
+      <div class="form-group">
+        <label>Description</label>
+        <textarea id="expDescription" placeholder="What did you do here?"></textarea>
+      </div>
+      <div class="modal-buttons">
+        <button class="btn-secondary" onclick="closeModal('addExperienceModal')">Cancel</button>
+        <button class="btn-primary" onclick="addExperience()">Add Experience</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="addAchievementModal" class="modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2>Add Achievement</h2>
+        <button class="modal-close" onclick="closeModal('addAchievementModal')">×</button>
+      </div>
+      <div class="form-group">
+        <label>Achievement Title</label>
+        <input type="text" id="achTitle" placeholder="e.g., Best Project Award">
+      </div>
+      <div class="form-group">
+        <label>Description</label>
+        <textarea id="achDescription" placeholder="Tell us about this achievement"></textarea>
+      </div>
+      <div class="form-group">
+        <label>Date</label>
+        <input type="date" id="achDate">
+      </div>
+      <div class="modal-buttons">
+        <button class="btn-secondary" onclick="closeModal('addAchievementModal')">Cancel</button>
+        <button class="btn-primary" onclick="addAchievement()">Add Achievement</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Load profile data
+    function loadProfile() {
+      const profile = JSON.parse(localStorage.getItem('userProfile')) || {};
+      document.getElementById('firstName').value = profile.firstName || 'John';
+      document.getElementById('lastName').value = profile.lastName || 'Doe';
+      document.getElementById('email').value = profile.email || 'john@example.com';
+      document.getElementById('phone').value = profile.phone || '';
+      document.getElementById('company').value = profile.company || '';
+      document.getElementById('position').value = profile.position || '';
+      document.getElementById('experience').value = profile.experience || '';
+      document.getElementById('bio').value = profile.bio || '';
+      document.getElementById('location').value = profile.location || '';
+      updateDisplay();
+      loadSkills();
+      loadExperience();
+      loadAchievements();
+    }
+
+    function saveProfile() {
+      const profile = {
+        firstName: document.getElementById('firstName').value,
+        lastName: document.getElementById('lastName').value,
+        email: document.getElementById('email').value,
+        phone: document.getElementById('phone').value,
+        company: document.getElementById('company').value,
+        position: document.getElementById('position').value,
+        experience: document.getElementById('experience').value,
+        bio: document.getElementById('bio').value,
+        location: document.getElementById('location').value
+      };
+      localStorage.setItem('userProfile', JSON.stringify(profile));
+      showAlert('✅ Profile saved successfully!', 'success');
+      updateDisplay();
+    }
+
+    function updateDisplay() {
+      const profile = JSON.parse(localStorage.getItem('userProfile')) || {};
+      document.getElementById('profileName').textContent = `${profile.firstName || 'John'} ${profile.lastName || 'Doe'}`;
+      document.getElementById('profileEmail').textContent = profile.email || 'john@example.com';
+    }
+
+    function switchTab(tab) {
+      document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+      document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
+      document.getElementById(tab).classList.remove('hidden');
+      event.target.classList.add('active');
+    }
+
+    function showAddSkillModal() {
+      document.getElementById('addSkillModal').classList.add('show');
+    }
+
+    function showAddExperienceModal() {
+      document.getElementById('addExperienceModal').classList.add('show');
+    }
+
+    function showAddAchievementModal() {
+      document.getElementById('addAchievementModal').classList.add('show');
+    }
+
+    function closeModal(modalId) {
+      document.getElementById(modalId).classList.remove('show');
+    }
+
+    function addSkill() {
+      const name = document.getElementById('skilName').value;
+      const level = document.getElementById('skillLevel').value;
+      if(!name) {showAlert('Please enter skill name', 'error'); return;}
+      let skills = JSON.parse(localStorage.getItem('skills') || '[]');
+      skills.push({name, level});
+      localStorage.setItem('skills', JSON.stringify(skills));
+      closeModal('addSkillModal');
+      loadSkills();
+      document.getElementById('skilName').value = '';
+      showAlert('✅ Skill added!', 'success');
+    }
+
+    function addExperience() {
+      const company = document.getElementById('expCompany').value;
+      const position = document.getElementById('expPosition').value;
+      const start = document.getElementById('expStart').value;
+      const end = document.getElementById('expEnd').value;
+      const description = document.getElementById('expDescription').value;
+      if(!company || !position) {showAlert('Please fill required fields', 'error'); return;}
+      let experiences = JSON.parse(localStorage.getItem('experiences') || '[]');
+      experiences.push({company, position, start, end, description});
+      localStorage.setItem('experiences', JSON.stringify(experiences));
+      closeModal('addExperienceModal');
+      loadExperience();
+      showAlert('✅ Experience added!', 'success');
+    }
+
+    function addAchievement() {
+      const title = document.getElementById('achTitle').value;
+      const description = document.getElementById('achDescription').value;
+      const date = document.getElementById('achDate').value;
+      if(!title) {showAlert('Please enter achievement title', 'error'); return;}
+      let achievements = JSON.parse(localStorage.getItem('achievements') || '[]');
+      achievements.push({title, description, date});
+      localStorage.setItem('achievements', JSON.stringify(achievements));
+      closeModal('addAchievementModal');
+      loadAchievements();
+      showAlert('✅ Achievement added!', 'success');
+    }
+
+    function loadSkills() {
+      const skills = JSON.parse(localStorage.getItem('skills') || '[]');
+      const list = document.getElementById('skillsList');
+      list.innerHTML = skills.map((skill, i) => `
+        <div class="data-card">
+          <div class="card-content">
+            <h4>${skill.name}</h4>
+            <p>${skill.level}</p>
+          </div>
+          <div class="card-actions">
+            <button class="btn-sm btn-delete" onclick="deleteSkill(${i})">Delete</button>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function loadExperience() {
+      const experiences = JSON.parse(localStorage.getItem('experiences') || '[]');
+      const list = document.getElementById('experienceList');
+      list.innerHTML = experiences.map((exp, i) => `
+        <div class="data-card">
+          <div class="card-content">
+            <h4>${exp.position} at ${exp.company}</h4>
+            <p>${exp.start} to ${exp.end}</p>
+            <p>${exp.description}</p>
+          </div>
+          <div class="card-actions">
+            <button class="btn-sm btn-delete" onclick="deleteExperience(${i})">Delete</button>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function loadAchievements() {
+      const achievements = JSON.parse(localStorage.getItem('achievements') || '[]');
+      const list = document.getElementById('achievementsList');
+      list.innerHTML = achievements.map((ach, i) => `
+        <div class="data-card">
+          <div class="card-content">
+            <h4>${ach.title}</h4>
+            <p>${ach.date}</p>
+            <p>${ach.description}</p>
+          </div>
+          <div class="card-actions">
+            <button class="btn-sm btn-delete" onclick="deleteAchievement(${i})">Delete</button>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function deleteSkill(i) {
+      let skills = JSON.parse(localStorage.getItem('skills') || '[]');
+      skills.splice(i, 1);
+      localStorage.setItem('skills', JSON.stringify(skills));
+      loadSkills();
+      showAlert('✅ Skill deleted!', 'success');
+    }
+
+    function deleteExperience(i) {
+      let experiences = JSON.parse(localStorage.getItem('experiences') || '[]');
+      experiences.splice(i, 1);
+      localStorage.setItem('experiences', JSON.stringify(experiences));
+      loadExperience();
+      showAlert('✅ Experience deleted!', 'success');
+    }
+
+    function deleteAchievement(i) {
+      let achievements = JSON.parse(localStorage.getItem('achievements') || '[]');
+      achievements.splice(i, 1);
+      localStorage.setItem('achievements', JSON.stringify(achievements));
+      loadAchievements();
+      showAlert('✅ Achievement deleted!', 'success');
+    }
+
+    function uploadResume() {
+      const file = document.getElementById('resumeFile').files[0];
+      if(!file) {showAlert('Please select a file', 'error'); return;}
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        localStorage.setItem('resume', JSON.stringify({name: file.name, size: file.size, type: file.type}));
+        showAlert('✅ Resume uploaded!', 'success');
+      };
+      reader.readAsDataURL(file);
+    }
+
+    function showAlert(msg, type) {
+      const alert = document.createElement('div');
+      alert.className = `alert alert-${type}`;
+      alert.textContent = msg;
+      document.body.insertBefore(alert, document.querySelector('.container'));
+      setTimeout(() => alert.remove(), 3000);
+    }
+
+    function logout() {
+      if(confirm('Are you sure?')) {
+        localStorage.removeItem('token');
+        window.location.href = 'login.html';
+      }
+    }
+
+    document.getElementById('goToDashboard').onclick = () => window.location.href = 'dashboard.html';
+    loadProfile();
+  </script>
+</body>
+</html>
