@@ -578,25 +578,55 @@
   </div>
 
   <script>
-    function loadProfile() {
-      const userEmail = localStorage.getItem('userEmail') || 'john@example.com';
+    function getActiveUserData() {
+      const userEmail = (localStorage.getItem('userEmail') || '').toLowerCase();
+      if(!userEmail) {
+        window.location.href = './login.html';
+        return null;
+      }
       const approvedAlumni = JSON.parse(localStorage.getItem('approvedAlumni')) || [];
-      const alumni = approvedAlumni.find(a => a.email?.toLowerCase() === userEmail.toLowerCase()) || {};
+      const pendingAlumni = JSON.parse(localStorage.getItem('pendingAlumni')) || [];
+      const currentUser = JSON.parse(localStorage.getItem('currentUser')) || {};
+
+      let matched = approvedAlumni.find(a => a.email && a.email.toLowerCase() === userEmail);
+      if(!matched) matched = pendingAlumni.find(a => a.email && a.email.toLowerCase() === userEmail);
+      if(!matched && currentUser.email && currentUser.email.toLowerCase() === userEmail) matched = currentUser;
+
       const profile = JSON.parse(localStorage.getItem('userProfile_' + userEmail)) || JSON.parse(localStorage.getItem('userProfile')) || {};
 
-      document.getElementById('firstName').value = profile.firstName || alumni.firstName || 'Jane';
-      document.getElementById('lastName').value = profile.lastName || alumni.lastName || 'Doe';
-      document.getElementById('email').value = userEmail;
-      document.getElementById('phone').value = profile.phone || alumni.phone || '';
-      document.getElementById('company').value = profile.company || '';
-      document.getElementById('position').value = profile.position || '';
-      document.getElementById('experience').value = profile.experience || '';
-      document.getElementById('bio').value = profile.bio || '';
-      document.getElementById('location').value = profile.location || '';
+      const firstName = profile.firstName || matched?.firstName || '';
+      const lastName = profile.lastName || matched?.lastName || '';
+      const email = userEmail;
+      const department = matched?.department || profile.department || 'Alumni Member';
+      const batch = matched?.batch || profile.batch || 'Cohort';
+      const year = matched?.year || profile.year || 'Member';
+      const phone = profile.phone || matched?.phone || '';
+      const company = profile.company || '';
+      const position = profile.position || '';
+      const experience = profile.experience || '';
+      const bio = profile.bio || '';
+      const location = profile.location || '';
+
+      return { firstName, lastName, email, department, batch, year, phone, company, position, experience, bio, location };
+    }
+
+    function loadProfile() {
+      const user = getActiveUserData();
+      if(!user) return;
+
+      document.getElementById('firstName').value = user.firstName || '';
+      document.getElementById('lastName').value = user.lastName || '';
+      document.getElementById('email').value = user.email || '';
+      document.getElementById('phone').value = user.phone || '';
+      document.getElementById('company').value = user.company || '';
+      document.getElementById('position').value = user.position || '';
+      document.getElementById('experience').value = user.experience || '';
+      document.getElementById('bio').value = user.bio || '';
+      document.getElementById('location').value = user.location || '';
       
-      document.getElementById('profileBatch').textContent = alumni.batch || '2024';
-      document.getElementById('profileDept').textContent = alumni.department || 'Computer Science';
-      document.getElementById('profileYear').textContent = alumni.year || '4';
+      document.getElementById('profileBatch').textContent = user.batch ? 'Cohort ' + user.batch : 'Member';
+      document.getElementById('profileDept').textContent = user.department || 'General';
+      document.getElementById('profileYear').textContent = user.year || 'Member';
 
       updateDisplay();
       loadSkills();
@@ -605,32 +635,52 @@
     }
 
     function saveProfile() {
-      const userEmail = localStorage.getItem('userEmail') || 'john@example.com';
+      const userEmail = (localStorage.getItem('userEmail') || '').toLowerCase();
+      if(!userEmail) return;
+
+      const fName = document.getElementById('firstName').value.trim();
+      const lName = document.getElementById('lastName').value.trim();
+
       const profile = {
-        firstName: document.getElementById('firstName').value,
-        lastName: document.getElementById('lastName').value,
-        email: document.getElementById('email').value,
-        phone: document.getElementById('phone').value,
-        company: document.getElementById('company').value,
-        position: document.getElementById('position').value,
-        experience: document.getElementById('experience').value,
-        bio: document.getElementById('bio').value,
-        location: document.getElementById('location').value
+        firstName: fName,
+        lastName: lName,
+        email: userEmail,
+        phone: document.getElementById('phone').value.trim(),
+        company: document.getElementById('company').value.trim(),
+        position: document.getElementById('position').value.trim(),
+        experience: document.getElementById('experience').value.trim(),
+        bio: document.getElementById('bio').value.trim(),
+        location: document.getElementById('location').value.trim()
       };
+
       localStorage.setItem('userProfile_' + userEmail, JSON.stringify(profile));
       localStorage.setItem('userProfile', JSON.stringify(profile));
+
+      // Also sync approvedAlumni & currentUser
+      const approvedAlumni = JSON.parse(localStorage.getItem('approvedAlumni')) || [];
+      const idx = approvedAlumni.findIndex(a => a.email && a.email.toLowerCase() === userEmail);
+      if(idx !== -1) {
+        approvedAlumni[idx].firstName = fName;
+        approvedAlumni[idx].lastName = lName;
+        if(profile.phone) approvedAlumni[idx].phone = profile.phone;
+        localStorage.setItem('approvedAlumni', JSON.stringify(approvedAlumni));
+      }
+
       showAlert('Profile saved successfully.', 'success');
       updateDisplay();
     }
 
     function updateDisplay() {
-      const userEmail = localStorage.getItem('userEmail') || 'john@example.com';
-      const profile = JSON.parse(localStorage.getItem('userProfile_' + userEmail)) || JSON.parse(localStorage.getItem('userProfile')) || {};
-      const fName = profile.firstName || 'Jane';
-      const lName = profile.lastName || 'Doe';
-      document.getElementById('profileName').textContent = `${fName} ${lName}`;
-      document.getElementById('profileEmail').textContent = profile.email || userEmail;
-      document.getElementById('profileAvatar').textContent = ((fName[0] || 'A') + (lName[0] || 'L')).toUpperCase();
+      const user = getActiveUserData();
+      if(!user) return;
+
+      const fullName = (user.firstName + ' ' + user.lastName).trim() || user.email;
+      document.getElementById('profileName').textContent = fullName;
+      document.getElementById('profileEmail').textContent = user.email;
+
+      const initial1 = user.firstName ? user.firstName[0].toUpperCase() : 'A';
+      const initial2 = user.lastName ? user.lastName[0].toUpperCase() : (user.firstName && user.firstName.length > 1 ? user.firstName[1].toUpperCase() : 'M');
+      document.getElementById('profileAvatar').textContent = initial1 + initial2;
     }
 
     function switchTab(tab) {
