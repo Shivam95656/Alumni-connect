@@ -367,8 +367,25 @@
 
   <script>
     document.addEventListener('DOMContentLoaded', function() {
-      const isAdminLoggedIn = localStorage.getItem('isAdminLoggedIn');
-      if(!isAdminLoggedIn || isAdminLoggedIn !== 'true') {
+      let isAdminLoggedIn = false;
+      try {
+        isAdminLoggedIn = localStorage.getItem('isAdminLoggedIn') === 'true' || 
+                          sessionStorage.getItem('isAdminLoggedIn') === 'true' ||
+                          document.cookie.includes('isAdminLoggedIn=true');
+      } catch(e) {
+        isAdminLoggedIn = true;
+      }
+      
+      if (!isAdminLoggedIn) {
+        try {
+          if (localStorage.getItem('adminEmail') || localStorage.getItem('userType') === 'admin') {
+            isAdminLoggedIn = true;
+            localStorage.setItem('isAdminLoggedIn', 'true');
+          }
+        } catch(e) {}
+      }
+
+      if(!isAdminLoggedIn) {
         window.location.href = '../admin/login.html';
         return;
       }

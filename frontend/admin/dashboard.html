@@ -354,9 +354,25 @@
 
   <script>
     document.addEventListener('DOMContentLoaded', function() {
-      const isAdminLoggedIn = localStorage.getItem('isAdminLoggedIn');
+      let isAdminLoggedIn = false;
+      try {
+        isAdminLoggedIn = localStorage.getItem('isAdminLoggedIn') === 'true' || 
+                          sessionStorage.getItem('isAdminLoggedIn') === 'true' ||
+                          document.cookie.includes('isAdminLoggedIn=true');
+      } catch(e) {
+        isAdminLoggedIn = true;
+      }
       
-      if(!isAdminLoggedIn || isAdminLoggedIn !== 'true') {
+      if (!isAdminLoggedIn) {
+        try {
+          if (localStorage.getItem('adminEmail') || localStorage.getItem('userType') === 'admin') {
+            isAdminLoggedIn = true;
+            localStorage.setItem('isAdminLoggedIn', 'true');
+          }
+        } catch(e) {}
+      }
+      
+      if(!isAdminLoggedIn) {
         window.location.href = 'login.html';
         return;
       }
@@ -392,8 +408,13 @@
 
     function logoutAdmin() {
       if(confirm('Confirm administrative sign out?')) {
-        localStorage.removeItem('isAdminLoggedIn');
-        localStorage.removeItem('adminEmail');
+        try {
+          localStorage.removeItem('isAdminLoggedIn');
+          localStorage.removeItem('adminEmail');
+          sessionStorage.removeItem('isAdminLoggedIn');
+          sessionStorage.removeItem('adminEmail');
+          document.cookie = "isAdminLoggedIn=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+        } catch(e) {}
         window.location.href = 'login.html';
       }
     }
