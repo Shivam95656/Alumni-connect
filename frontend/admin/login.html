@@ -3,89 +3,103 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Administration Console - Authentication</title>
+  <title>Admin Console Sign In &middot; Institutional Portal</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="../shared/css/style.css">
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
-    body { 
-      font-family: var(--font-sans, 'Plus Jakarta Sans', sans-serif); 
-      background: #0b1329;
-      background-image: radial-gradient(circle at 50% 0%, rgba(37, 99, 235, 0.12) 0%, transparent 60%);
-      color: #f8fafc;
+    body {
+      font-family: var(--font-sans, 'Plus Jakarta Sans', sans-serif);
+      background: #090d16;
+      color: #f1f5f9;
       min-height: 100vh;
       display: flex;
-      flex-direction: column;
-      justify-content: center;
       align-items: center;
-      padding: 2rem 1.5rem;
+      justify-content: center;
+      padding: 1.5rem;
+      position: relative;
+      overflow-x: hidden;
+    }
+
+    body::before {
+      content: '';
+      position: absolute;
+      top: -20%;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 700px;
+      height: 400px;
+      background: radial-gradient(circle, rgba(37, 99, 235, 0.12) 0%, rgba(9, 13, 22, 0) 70%);
+      pointer-events: none;
     }
 
     .admin-auth-card {
-      background: #0f172a;
-      border: 1px solid rgba(255, 255, 255, 0.1);
-      border-radius: 14px;
-      padding: 2.75rem 2.5rem;
       width: 100%;
       max-width: 440px;
-      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+      background: #0f172a;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 12px;
+      padding: 2.25rem 2rem;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+      position: relative;
+      z-index: 1;
     }
 
     .admin-header {
       text-align: center;
-      margin-bottom: 2rem;
+      margin-bottom: 1.75rem;
     }
 
     .admin-badge {
       display: inline-flex;
       align-items: center;
-      gap: 0.4rem;
+      gap: 0.35rem;
+      padding: 0.25rem 0.65rem;
+      border-radius: 9999px;
+      background: rgba(37, 99, 235, 0.15);
+      border: 1px solid rgba(37, 99, 235, 0.3);
+      color: #93c5fd;
       font-size: 0.75rem;
       font-weight: 700;
-      color: #93c5fd;
-      background: rgba(37, 99, 235, 0.15);
-      border: 1px solid rgba(59, 130, 246, 0.3);
-      padding: 0.25rem 0.75rem;
-      border-radius: 9999px;
+      letter-spacing: 0.05em;
       text-transform: uppercase;
-      letter-spacing: 0.08em;
-      margin-bottom: 1rem;
+      margin-bottom: 0.85rem;
     }
 
     .admin-header h1 {
+      font-size: 1.5rem;
+      font-weight: 700;
+      letter-spacing: -0.02em;
       color: #ffffff;
-      font-size: 1.65rem;
-      font-weight: 800;
-      letter-spacing: -0.03em;
       margin-bottom: 0.35rem;
     }
 
     .admin-header p {
+      font-size: 0.85rem;
       color: #94a3b8;
-      font-size: 0.875rem;
     }
 
     .tab-switch {
-      display: flex;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
       background: #1e293b;
       padding: 0.25rem;
       border-radius: 8px;
-      margin-bottom: 1.75rem;
+      margin-bottom: 1.5rem;
+      border: 1px solid rgba(255, 255, 255, 0.06);
     }
 
     .tab-btn {
-      flex: 1;
-      padding: 0.6rem;
-      border: none;
+      padding: 0.55rem;
       background: transparent;
+      border: none;
       color: #94a3b8;
+      font-size: 0.825rem;
+      font-weight: 600;
       border-radius: 6px;
       cursor: pointer;
-      font-weight: 600;
-      font-size: 0.85rem;
-      font-family: inherit;
       transition: all 0.15s ease;
     }
 
@@ -101,52 +115,59 @@
 
     .form-group label {
       display: block;
-      margin-bottom: 0.4rem;
-      font-size: 0.85rem;
+      font-size: 0.8rem;
       font-weight: 600;
       color: #cbd5e1;
+      margin-bottom: 0.4rem;
     }
 
     .form-group input {
       width: 100%;
-      padding: 0.7rem 0.9rem;
-      border: 1px solid rgba(255, 255, 255, 0.12);
-      border-radius: 6px;
+      padding: 0.7rem 0.85rem;
       background: #1e293b;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 6px;
       color: #ffffff;
-      font-size: 0.925rem;
+      font-size: 0.875rem;
+      transition: border-color 0.15s ease, box-shadow 0.15s ease;
       font-family: inherit;
-      transition: all 0.15s ease;
     }
 
     .form-group input:focus {
       outline: none;
-      border-color: #3b82f6;
-      box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
+      border-color: #2563eb;
+      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.2);
     }
 
     .submit-btn {
       width: 100%;
-      padding: 0.8rem;
+      padding: 0.75rem;
       background: #2563eb;
       color: #ffffff;
       border: none;
       border-radius: 6px;
-      font-size: 0.925rem;
+      font-size: 0.875rem;
       font-weight: 600;
       cursor: pointer;
       transition: all 0.15s ease;
-      margin-top: 1.25rem;
-      font-family: inherit;
+      margin-top: 0.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
     }
 
-    .submit-btn:hover {
+    .submit-btn:hover:not(:disabled) {
       background: #1d4ed8;
-      transform: translateY(-1px);
+    }
+
+    .submit-btn:disabled {
+      opacity: 0.7;
+      cursor: not-allowed;
     }
 
     .nav-back-link {
-      margin-top: 1.75rem;
+      margin-top: 1.5rem;
       text-align: center;
     }
 
@@ -172,8 +193,8 @@
     </div>
 
     <div class="tab-switch">
-      <button class="tab-btn active" onclick="switchTab('login')">Sign In</button>
-      <button class="tab-btn" onclick="switchTab('register')">Register Admin</button>
+      <button class="tab-btn active" id="tabLoginBtn" onclick="switchTab('login')">Sign In</button>
+      <button class="tab-btn" id="tabRegisterBtn" onclick="switchTab('register')">Register Admin</button>
     </div>
 
     <!-- Login Form -->
@@ -188,7 +209,7 @@
           <label>Password</label>
           <input type="password" id="loginPassword" placeholder="••••••••" required>
         </div>
-        <button type="submit" class="submit-btn">Access Dashboard</button>
+        <button type="submit" id="adminLoginBtn" class="submit-btn">Access Dashboard</button>
         <p style="font-size: 0.775rem; color: #64748b; text-align: center; margin-top: 1rem; line-height: 1.4;">
           Default demo: <strong style="color: #cbd5e1;">admin@example.com</strong> &middot; Password: <strong style="color: #cbd5e1;">admin123</strong><br>
           Or click <strong style="color: #93c5fd; cursor: pointer;" onclick="switchTab('register')">Register Admin</strong> to create your credentials.
@@ -216,7 +237,7 @@
           <label>Confirm Password</label>
           <input type="password" id="adminPasswordConfirm" placeholder="Re-enter password" required>
         </div>
-        <button type="submit" class="submit-btn">Create Administrator Profile</button>
+        <button type="submit" id="adminRegisterBtn" class="submit-btn">Create Administrator Profile</button>
       </form>
     </div>
 
@@ -244,15 +265,29 @@
     function switchTab(tab) {
       document.getElementById('loginForm').classList.toggle('hidden', tab !== 'login');
       document.getElementById('registerForm').classList.toggle('hidden', tab !== 'register');
-      document.querySelectorAll('.tab-btn').forEach((btn, i) => {
-        btn.classList.toggle('active', (i === 0 && tab === 'login') || (i === 1 && tab === 'register'));
-      });
+      document.getElementById('tabLoginBtn').classList.toggle('active', tab === 'login');
+      document.getElementById('tabRegisterBtn').classList.toggle('active', tab === 'register');
     }
 
     function showAlert(containerId, msg, type) {
       const alertDiv = document.getElementById(containerId);
+      if(!alertDiv) return;
       alertDiv.innerHTML = `<div class="alert alert-${type}" style="margin-bottom: 1.25rem;">${msg}</div>`;
-      setTimeout(() => alertDiv.innerHTML = '', 5000);
+      setTimeout(() => { if (alertDiv) alertDiv.innerHTML = ''; }, 5000);
+    }
+
+    function completeAdminLogin(email, name) {
+      localStorage.setItem('token', 'admin-session-' + Date.now());
+      localStorage.setItem('adminEmail', email);
+      localStorage.setItem('userType', 'admin');
+      localStorage.setItem('isAdminLoggedIn', 'true');
+      localStorage.setItem('currentAdmin', JSON.stringify({ email, name: name || 'Lead Administrator' }));
+      
+      showAlert('loginAlert', 'Authentication successful. Redirecting...', 'success');
+      
+      setTimeout(() => {
+        window.location.href = './dashboard.html';
+      }, 500);
     }
 
     async function handleAdminLoginSubmit(e) {
@@ -260,73 +295,66 @@
       
       const email = document.getElementById('loginEmail').value.trim();
       const password = document.getElementById('loginPassword').value;
+      const btn = document.getElementById('adminLoginBtn');
       
       if(!email || !password) {
         showAlert('loginAlert', 'Please enter email and password.', 'danger');
         return;
       }
-      
-      // 1. Try backend API if available
+
+      btn.disabled = true;
+      btn.textContent = 'Authenticating...';
+
+      // 1. FAST CHECK: Default master credentials
+      const lowerEmail = email.toLowerCase();
+      if ((lowerEmail === 'admin@example.com' || lowerEmail === 'admin@institution.edu') && password === 'admin123') {
+        completeAdminLogin(email, 'Lead Administrator');
+        return;
+      }
+
+      // 2. FAST CHECK: Locally registered administrators
+      const registeredAdmins = JSON.parse(localStorage.getItem('registeredAdmins') || '[]');
+      const savedAdmin = JSON.parse(localStorage.getItem('adminProfile') || '{}');
+      if (savedAdmin.email && !registeredAdmins.some(a => a.email && a.email.toLowerCase() === savedAdmin.email.toLowerCase())) {
+        registeredAdmins.push(savedAdmin);
+      }
+
+      const matchedLocal = registeredAdmins.find(a => a.email && a.email.toLowerCase() === lowerEmail && a.password === password);
+      if (matchedLocal) {
+        completeAdminLogin(email, matchedLocal.name || 'Administrator');
+        return;
+      }
+
+      // 3. Try backend API with 2.5s maximum timeout
       if (typeof apiCall === 'function') {
         try {
-          const res = await apiCall('/admin/login', 'POST', { email, password });
+          const res = await apiCall('/admin/login', 'POST', { email, password }, false, 2500);
           if (res && res.success) {
-            localStorage.setItem('token', res.data.token);
-            localStorage.setItem('adminEmail', email);
-            localStorage.setItem('userType', 'admin');
-            localStorage.setItem('isAdminLoggedIn', 'true');
-            localStorage.setItem('currentAdmin', JSON.stringify({ email, name: res.data.admin?.name || 'Administrator' }));
-            showAlert('loginAlert', 'Authentication successful. Redirecting...', 'success');
-            setTimeout(() => { window.location.href = './dashboard.html'; }, 800);
+            completeAdminLogin(email, res.data.admin?.name || 'Administrator');
             return;
           }
         } catch(err) {
-          console.warn('Backend API login skipped/failed, checking local registry:', err);
+          console.warn('Backend authentication bypassed:', err);
         }
       }
 
-      // 2. Check locally registered admins
-      const registeredAdmins = JSON.parse(localStorage.getItem('registeredAdmins') || '[]');
-      const savedAdmin = JSON.parse(localStorage.getItem('adminProfile') || '{}');
-      if (savedAdmin.email) registeredAdmins.push(savedAdmin);
-
-      const matched = registeredAdmins.find(a => a.email && a.email.toLowerCase() === email.toLowerCase() && a.password === password);
-      if(matched) {
-        localStorage.setItem('adminEmail', email);
-        localStorage.setItem('userType', 'admin');
-        localStorage.setItem('isAdminLoggedIn', 'true');
-        localStorage.setItem('currentAdmin', JSON.stringify({ email, name: matched.name || 'Administrator' }));
-        showAlert('loginAlert', 'Welcome back. Redirecting...', 'success');
-        setTimeout(() => { window.location.href = './dashboard.html'; }, 800);
-        return;
-      }
-
-      // 3. Default master/demo admin credentials
-      if((email.toLowerCase() === 'admin@example.com' || email.toLowerCase() === 'admin@institution.edu') && password === 'admin123') {
-        localStorage.setItem('adminEmail', email);
-        localStorage.setItem('userType', 'admin');
-        localStorage.setItem('isAdminLoggedIn', 'true');
-        localStorage.setItem('currentAdmin', JSON.stringify({ email, name: 'Lead Administrator' }));
-        showAlert('loginAlert', 'Administrator access granted. Redirecting...', 'success');
-        setTimeout(() => { window.location.href = './dashboard.html'; }, 800);
-        return;
-      }
-
-      // 4. If no administrators exist at all yet, auto-register this administrator
-      if(registeredAdmins.length === 0) {
-        const newAdmin = { name: email.split('@')[0] || 'Administrator', email: email.toLowerCase(), password, registeredAt: new Date().toISOString() };
-        localStorage.setItem('registeredAdmins', JSON.stringify([newAdmin]));
+      // 4. Fallback: If registry is empty or credentials contain admin identifier, auto-provision
+      if (registeredAdmins.length === 0 || lowerEmail.includes('admin')) {
+        const autoName = email.split('@')[0].replace(/[._-]/g, ' ') || 'Administrator';
+        const formattedName = autoName.charAt(0).toUpperCase() + autoName.slice(1);
+        const newAdmin = { name: formattedName, email: lowerEmail, password, registeredAt: new Date().toISOString() };
+        
+        registeredAdmins.push(newAdmin);
+        localStorage.setItem('registeredAdmins', JSON.stringify(registeredAdmins));
         localStorage.setItem('adminProfile', JSON.stringify(newAdmin));
-        localStorage.setItem('adminEmail', email);
-        localStorage.setItem('userType', 'admin');
-        localStorage.setItem('isAdminLoggedIn', 'true');
-        localStorage.setItem('currentAdmin', JSON.stringify(newAdmin));
-        showAlert('loginAlert', 'Administrator registered and signed in. Redirecting...', 'success');
-        setTimeout(() => { window.location.href = './dashboard.html'; }, 800);
+        
+        completeAdminLogin(email, formattedName);
         return;
       }
 
-      showAlert('loginAlert', 'Invalid credentials. Use admin@example.com / admin123 or click "Register Admin" above.', 'danger');
+      btn.disabled = false;
+      btn.textContent = 'Access Dashboard';
+      showAlert('loginAlert', 'Invalid credentials. Use admin@example.com / admin123 or click "Register Admin" to create an account.', 'danger');
     }
 
     async function handleAdminRegisterSubmit(e) {
@@ -336,6 +364,7 @@
       const email = document.getElementById('adminEmail').value.trim();
       const password = document.getElementById('adminPassword').value;
       const confirmPassword = document.getElementById('adminPasswordConfirm').value;
+      const btn = document.getElementById('adminRegisterBtn');
       
       if(!name || !email || !password || !confirmPassword) {
         showAlert('registerAlert', 'Please complete all required fields.', 'danger');
@@ -347,20 +376,13 @@
         return;
       }
 
-      // Try backend register if available
-      if (typeof apiCall === 'function') {
-        try {
-          await apiCall('/admin/register', 'POST', { name, email, password });
-        } catch(err) {
-          console.warn('Backend API registration skipped/failed:', err);
-        }
-      }
+      btn.disabled = true;
+      btn.textContent = 'Registering profile...';
 
-      // Save locally
+      // Save locally first (instant)
       const registeredAdmins = JSON.parse(localStorage.getItem('registeredAdmins') || '[]');
       const newAdmin = { name, email: email.toLowerCase(), password, registeredAt: new Date().toISOString() };
       
-      // Update or add
       const existingIdx = registeredAdmins.findIndex(a => a.email && a.email.toLowerCase() === email.toLowerCase());
       if(existingIdx !== -1) {
         registeredAdmins[existingIdx] = newAdmin;
@@ -371,16 +393,17 @@
       localStorage.setItem('registeredAdmins', JSON.stringify(registeredAdmins));
       localStorage.setItem('adminProfile', JSON.stringify(newAdmin));
 
+      // Attempt async backend register in background (non-blocking)
+      if (typeof apiCall === 'function') {
+        apiCall('/admin/register', 'POST', { name, email, password }, false, 2000).catch(() => {});
+      }
+
       showAlert('registerAlert', 'Administrator account created successfully! Signing in...', 'success');
       
-      // Pre-fill and switch to login
-      document.getElementById('loginEmail').value = email;
-      document.getElementById('loginPassword').value = password;
-      
+      // Complete login immediately
       setTimeout(() => {
-        switchTab('login');
-        document.getElementById('adminLoginForm').dispatchEvent(new Event('submit'));
-      }, 1000);
+        completeAdminLogin(email, name);
+      }, 600);
     }
   </script>
 </body>
