@@ -1,6 +1,5 @@
 // Environment detection: use localhost during local development, Render in production
-const isFileProtocol = typeof window !== 'undefined' && window.location.protocol === 'file:';
-const isLocal = typeof window !== 'undefined' && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1');
+const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
 
 // Production Render backend URL (update if your service name on Render is different)
 const PROD_API_URL = 'https://alumni-connect-backend.onrender.com/api';
@@ -30,27 +29,13 @@ const getAuthHeader = () => {
   };
 };
 
-// API Call Helper with 2.5s timeout to prevent buffering/hanging
-const apiCall = async (endpoint, method = 'GET', body = null, needsAuth = false, timeoutMs = 2500) => {
-  // If loaded via file:// protocol without a server, skip network wait
-  if (isFileProtocol) {
-    return { success: false, error: 'Running in offline/file mode' };
-  }
-
+// API Call Helper
+const apiCall = async (endpoint, method = 'GET', body = null, needsAuth = false) => {
   const headers = needsAuth ? getAuthHeader() : { 'Content-Type': 'application/json' };
   
-  let signal;
-  let timer;
-  if (typeof AbortController !== 'undefined') {
-    const controller = new AbortController();
-    timer = setTimeout(() => controller.abort(), timeoutMs);
-    signal = controller.signal;
-  }
-
   const options = {
     method,
-    headers,
-    signal
+    headers
   };
 
   if (body) {
@@ -59,7 +44,6 @@ const apiCall = async (endpoint, method = 'GET', body = null, needsAuth = false,
 
   try {
     const response = await fetch(`${API_BASE_URL}${endpoint}`, options);
-    if (timer) clearTimeout(timer);
     const data = await response.json();
 
     if (!response.ok) {
@@ -68,8 +52,7 @@ const apiCall = async (endpoint, method = 'GET', body = null, needsAuth = false,
 
     return { success: true, data };
   } catch (error) {
-    if (timer) clearTimeout(timer);
-    return { success: false, error: error.name === 'AbortError' ? 'Network timeout' : error.message };
+    return { success: false, error: error.message };
   }
 };
 

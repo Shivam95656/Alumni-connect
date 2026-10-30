@@ -3,447 +3,600 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Admin Console Sign In &middot; Institutional Portal</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <title>Admin Login - Alumni Connect</title>
   <link rel="stylesheet" href="../shared/css/style.css">
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
-    body {
-      font-family: var(--font-sans, 'Plus Jakarta Sans', sans-serif);
-      background: #090d16;
-      color: #f1f5f9;
-      min-height: 100vh;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 1.5rem;
-      position: relative;
-      overflow-x: hidden;
-    }
+    body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: linear-gradient(135deg, #ffffff 0%, #f0fdf4 100%); min-height: 100vh; display: flex; flex-direction: column; }
+    
+    @keyframes slideUp { from { opacity: 0; transform: translateY(50px); } to { opacity: 1; transform: translateY(0); } }
 
-    body::before {
-      content: '';
-      position: absolute;
-      top: -20%;
-      left: 50%;
-      transform: translateX(-50%);
-      width: 700px;
-      height: 400px;
-      background: radial-gradient(circle, rgba(37, 99, 235, 0.12) 0%, rgba(9, 13, 22, 0) 70%);
-      pointer-events: none;
-    }
+    .navbar { background: white; padding: 1.5rem 2rem; text-align: center; box-shadow: 0 2px 10px rgba(22, 163, 74, 0.1); }
+    .navbar h1 { color: #16a34a; font-size: 2rem; font-weight: 800; }
+    .admin-badge { display: inline-block; background: #dcfce7; color: #166534; padding: 0.3rem 0.8rem; border-radius: 20px; font-size: 0.8rem; font-weight: 700; margin-top: 0.5rem; border: 1px solid #16a34a; }
+    .home-btn { position: absolute; top: 1.5rem; left: 2rem; background: linear-gradient(135deg, #16a34a, #15803d); color: white; padding: 10px 20px; border-radius: 50px; text-decoration: none; transition: all 0.3s; border: none; box-shadow: 0 4px 12px rgba(22, 163, 74, 0.2); }
+    .home-btn:hover { transform: translateY(-2px); box-shadow: 0 6px 16px rgba(22, 163, 74, 0.3); }
 
-    .admin-auth-card {
-      width: 100%;
-      max-width: 440px;
-      background: #0f172a;
-      border: 1px solid rgba(255, 255, 255, 0.08);
-      border-radius: 12px;
-      padding: 2.25rem 2rem;
-      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
-      position: relative;
-      z-index: 1;
-    }
+    .auth-container { flex: 1; display: flex; justify-content: center; align-items: center; padding: 2rem; }
+    .auth-box { background: white; border-radius: 16px; padding: 2.5rem; width: 100%; max-width: 450px; box-shadow: 0 20px 60px rgba(22, 163, 74, 0.15); animation: slideUp 0.5s ease-out; border: 1px solid rgba(22, 163, 74, 0.1); }
+    .auth-box h2 { color: #16a34a; font-size: 1.8rem; margin-bottom: 0.5rem; text-align: center; }
+    .auth-badge { text-align: center; margin-bottom: 1.5rem; }
+    .auth-badge span { background: #dcfce7; color: #166534; padding: 0.4rem 0.8rem; border-radius: 20px; font-size: 0.85rem; font-weight: 700; display: inline-block; border: 1px solid #16a34a; }
 
-    .admin-header {
-      text-align: center;
-      margin-bottom: 1.75rem;
-    }
+    .tab-switch { display: flex; gap: 1rem; margin-bottom: 2rem; }
+    .tab-btn { flex: 1; padding: 0.75rem; border: 2px solid #e5e7eb; background: white; color: #666; border-radius: 8px; cursor: pointer; font-weight: 600; transition: all 0.3s; }
+    .tab-btn.active { background: linear-gradient(135deg, #16a34a, #15803d); color: white; border-color: #16a34a; }
 
-    .admin-badge {
-      display: inline-flex;
-      align-items: center;
-      gap: 0.35rem;
-      padding: 0.25rem 0.65rem;
-      border-radius: 9999px;
-      background: rgba(37, 99, 235, 0.15);
-      border: 1px solid rgba(37, 99, 235, 0.3);
-      color: #93c5fd;
-      font-size: 0.75rem;
-      font-weight: 700;
-      letter-spacing: 0.05em;
-      text-transform: uppercase;
-      margin-bottom: 0.85rem;
-    }
+    .form-group { margin-bottom: 1.2rem; }
+    .form-group label { display: block; margin-bottom: 0.5rem; color: #333; font-weight: 600; }
+    .form-group input, .form-group select { width: 100%; padding: 0.75rem; border: 1px solid #ddd; border-radius: 8px; font-size: 1rem; transition: border-color 0.3s; }
+    .form-group input:focus, .form-group select:focus { outline: none; border-color: #16a34a; box-shadow: 0 0 0 3px rgba(22, 163, 74, 0.1); }
 
-    .admin-header h1 {
-      font-size: 1.5rem;
-      font-weight: 700;
-      letter-spacing: -0.02em;
-      color: #ffffff;
-      margin-bottom: 0.35rem;
-    }
+    .submit-btn { width: 100%; padding: 0.9rem; background: linear-gradient(135deg, #16a34a, #15803d); color: white; border: none; border-radius: 8px; font-size: 1rem; font-weight: 600; cursor: pointer; transition: all 0.3s; }
+    .submit-btn:hover { transform: translateY(-2px); box-shadow: 0 10px 25px rgba(22, 163, 74, 0.3); }
 
-    .admin-header p {
-      font-size: 0.85rem;
-      color: #94a3b8;
-    }
+    .toggle-text { text-align: center; margin-top: 1.5rem; color: #666; }
+    .toggle-text a { color: #16a34a; text-decoration: none; font-weight: 600; cursor: pointer; }
+    .toggle-text a:hover { text-decoration: underline; }
 
-    .tab-switch {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      background: #1e293b;
-      padding: 0.25rem;
-      border-radius: 8px;
-      margin-bottom: 1.5rem;
-      border: 1px solid rgba(255, 255, 255, 0.06);
-    }
+    .alert { padding: 1rem; border-radius: 8px; margin-bottom: 1rem; animation: slideUp 0.3s; }
+    .alert-success { background: #dcfce7; color: #166534; border-left: 4px solid #16a34a; }
+    .alert-danger { background: #fee2e2; color: #7f1d1d; border-left: 4px solid #ef4444; }
 
-    .tab-btn {
-      padding: 0.55rem;
-      background: transparent;
-      border: none;
-      color: #94a3b8;
-      font-size: 0.825rem;
-      font-weight: 600;
-      border-radius: 6px;
-      cursor: pointer;
-      transition: all 0.15s ease;
-    }
+    .hidden { display: none !important; }
 
-    .tab-btn.active {
-      background: #0f172a;
-      color: #ffffff;
-      box-shadow: 0 1px 3px rgba(0,0,0,0.3);
-    }
-
-    .form-group {
-      margin-bottom: 1.15rem;
-    }
-
-    .form-group label {
-      display: block;
-      font-size: 0.8rem;
-      font-weight: 600;
-      color: #cbd5e1;
-      margin-bottom: 0.4rem;
-    }
-
-    .form-group input {
-      width: 100%;
-      padding: 0.7rem 0.85rem;
-      background: #1e293b;
-      border: 1px solid rgba(255, 255, 255, 0.1);
-      border-radius: 6px;
-      color: #ffffff;
-      font-size: 0.875rem;
-      transition: border-color 0.15s ease, box-shadow 0.15s ease;
-      font-family: inherit;
-    }
-
-    .form-group input:focus {
-      outline: none;
-      border-color: #2563eb;
-      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.2);
-    }
-
-    .submit-btn {
-      width: 100%;
-      padding: 0.75rem;
-      background: #2563eb;
-      color: #ffffff;
-      border: none;
-      border-radius: 6px;
-      font-size: 0.875rem;
-      font-weight: 600;
-      cursor: pointer;
-      transition: all 0.15s ease;
-      margin-top: 0.5rem;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 0.5rem;
-    }
-
-    .submit-btn:hover:not(:disabled) {
-      background: #1d4ed8;
-    }
-
-    .submit-btn:disabled {
-      opacity: 0.7;
-      cursor: not-allowed;
-    }
-
-    .nav-back-link {
-      margin-top: 1.5rem;
-      text-align: center;
-    }
-
-    .nav-back-link a {
-      color: #64748b;
-      font-size: 0.85rem;
-      text-decoration: none;
-      font-weight: 500;
-      transition: color 0.15s ease;
-    }
-
-    .nav-back-link a:hover {
-      color: #94a3b8;
-    }
-
-    .hidden {
-      display: none !important;
+    @media (max-width: 768px) {
+      .auth-box { padding: 1.5rem; }
+      .home-btn { padding: 8px 16px; font-size: 0.9rem; }
     }
   </style>
 </head>
 <body>
-  <div class="admin-auth-card">
-    <div class="admin-header">
-      <div class="admin-badge">Institutional Administration</div>
-      <h1>Admin Console</h1>
-      <p>Secure authentication for verified operators</p>
-    </div>
+  <a href="../../index.html" class="home-btn">🏠 Home</a>
 
-    <div class="tab-switch">
-      <button type="button" class="tab-btn active" id="tabLoginBtn" onclick="switchTab('login')">Sign In</button>
-      <button type="button" class="tab-btn" id="tabRegisterBtn" onclick="switchTab('register')">Register Admin</button>
-    </div>
+  <nav class="navbar">
+    <h1>🎓 Alumni Connect</h1>
+    <div class="auth-badge"><span>🔐 ADMIN ONLY</span></div>
+  </nav>
 
-    <!-- Login Form -->
-    <div id="loginForm">
-      <form id="adminLoginForm" onsubmit="event.preventDefault(); handleAdminLogin(event); return false;">
-        <div id="loginAlert"></div>
-        <div class="form-group">
-          <label for="loginEmail">Administrator Email</label>
-          <input type="email" id="loginEmail" placeholder="admin@example.com" value="admin@example.com" required autocomplete="username">
-        </div>
-        <div class="form-group">
-          <label for="loginPassword">Password</label>
-          <input type="password" id="loginPassword" placeholder="••••••••" value="admin123" required autocomplete="current-password" onkeydown="if(event.key === 'Enter'){ event.preventDefault(); handleAdminLogin(event); }">
-        </div>
-        <button type="button" id="adminLoginBtn" class="submit-btn" onclick="handleAdminLogin(event)">Access Dashboard</button>
-        <p style="font-size: 0.775rem; color: #64748b; text-align: center; margin-top: 1rem; line-height: 1.4;">
-          Default demo: <strong style="color: #cbd5e1;">admin@example.com</strong> &middot; Password: <strong style="color: #cbd5e1;">admin123</strong><br>
-          Or click <strong style="color: #93c5fd; cursor: pointer;" onclick="switchTab('register')">Register Admin</strong> to create your credentials.
-        </p>
-      </form>
-    </div>
+  <div class="auth-container">
+    <div class="auth-box">
+      <h2>Admin Panel</h2>
+      <div class="tab-switch">
+        <button class="tab-btn active" onclick="switchTab('login')">Login</button>
+        <button class="tab-btn" onclick="switchTab('register')">Register</button>
+      </div>
 
-    <!-- Register Form -->
-    <div id="registerForm" class="hidden">
-      <form id="adminRegisterForm" onsubmit="event.preventDefault(); handleAdminRegister(event); return false;">
-        <div id="registerAlert"></div>
-        <div class="form-group">
-          <label for="adminName">Full Name</label>
-          <input type="text" id="adminName" placeholder="Enter administrator name" required>
+      <!-- Login Form -->
+      <div id="loginForm">
+        <form id="adminLoginForm">
+          <div id="loginAlert"></div>
+          <div class="form-group">
+            <label>Email Address</label>
+            <input type="email" id="loginEmail" placeholder="admin@example.com" required>
+          </div>
+          <div class="form-group">
+            <label>Password</label>
+            <input type="password" id="loginPassword" placeholder="••••••••" required>
+          </div>
+          <button type="submit" class="submit-btn">🔓 Admin Login</button>
+        </form>
+        <div class="toggle-text">
+          New admin? <a onclick="switchTab('register')">Register here</a>
         </div>
-        <div class="form-group">
-          <label for="adminEmail">Administrative Email</label>
-          <input type="email" id="adminEmail" placeholder="admin@example.com" required>
-        </div>
-        <div class="form-group">
-          <label for="adminPassword">Password</label>
-          <input type="password" id="adminPassword" placeholder="Minimum 6 characters" required>
-        </div>
-        <div class="form-group">
-          <label for="adminPasswordConfirm">Confirm Password</label>
-          <input type="password" id="adminPasswordConfirm" placeholder="Re-enter password" required onkeydown="if(event.key === 'Enter'){ event.preventDefault(); handleAdminRegister(event); }">
-        </div>
-        <button type="button" id="adminRegisterBtn" class="submit-btn" onclick="handleAdminRegister(event)">Create Administrator Profile</button>
-      </form>
-    </div>
+      </div>
 
-    <div class="nav-back-link">
-      <a href="../../index.html">&larr; Return to main portal</a>
+      <!-- Register Form -->
+      <div id="registerForm" class="hidden">
+        <form id="adminRegisterForm">
+          <div id="registerAlert"></div>
+          <div class="form-group">
+            <label>Full Name</label>
+            <input type="text" id="adminName" placeholder="Admin Name" required>
+          </div>
+          <div class="form-group">
+            <label>Email Address</label>
+            <input type="email" id="adminEmail" placeholder="admin@example.com" required>
+          </div>
+          <div class="form-group">
+            <label>Password</label>
+            <input type="password" id="adminPassword" placeholder="••••••••" required>
+          </div>
+          <div class="form-group">
+            <label>Confirm Password</label>
+            <input type="password" id="adminPasswordConfirm" placeholder="••••••••" required>
+          </div>
+          <button type="submit" class="submit-btn">✅ Register as Admin</button>
+        </form>
+        <div class="toggle-text">
+          Already registered? <a onclick="switchTab('login')">Login here</a>
+        </div>
+      </div>
     </div>
   </div>
 
-  <script src="../shared/js/api.js"></script>
   <script>
-    try {
+    // Initialize on page load
+    document.addEventListener('DOMContentLoaded', function() {
       localStorage.setItem('userType', 'admin');
-    } catch(e) {}
+      
+      const loginForm = document.getElementById('adminLoginForm');
+      if(loginForm) {
+        loginForm.addEventListener('submit', handleAdminLoginSubmit);
+      }
+      
+      const registerForm = document.getElementById('adminRegisterForm');
+      if(registerForm) {
+        registerForm.addEventListener('submit', handleAdminRegisterSubmit);
+      }
+    });
 
     function switchTab(tab) {
-      const loginSection = document.getElementById('loginForm');
-      const registerSection = document.getElementById('registerForm');
-      const tabLoginBtn = document.getElementById('tabLoginBtn');
-      const tabRegisterBtn = document.getElementById('tabRegisterBtn');
-
-      if (tab === 'login') {
-        loginSection.classList.remove('hidden');
-        registerSection.classList.add('hidden');
-        tabLoginBtn.classList.add('active');
-        tabRegisterBtn.classList.remove('active');
-      } else {
-        loginSection.classList.add('hidden');
-        registerSection.classList.remove('hidden');
-        tabLoginBtn.classList.remove('active');
-        tabRegisterBtn.classList.add('active');
-      }
+      document.getElementById('loginForm').classList.toggle('hidden', tab !== 'login');
+      document.getElementById('registerForm').classList.toggle('hidden', tab !== 'register');
+      document.querySelectorAll('.tab-btn').forEach((btn, i) => {
+        btn.classList.toggle('active', (i === 0 && tab === 'login') || (i === 1 && tab === 'register'));
+      });
     }
 
     function showAlert(containerId, msg, type) {
       const alertDiv = document.getElementById(containerId);
-      if (!alertDiv) return;
-      alertDiv.innerHTML = `<div class="alert alert-${type}" style="margin-bottom: 1.25rem;">${msg}</div>`;
-      setTimeout(() => { if (alertDiv) alertDiv.innerHTML = ''; }, 4500);
+      alertDiv.innerHTML = `<div class="alert alert-${type}">${msg}</div>`;
+      setTimeout(() => alertDiv.innerHTML = '', 5000);
     }
 
-    function completeAdminLogin(email, name, token) {
-      const adminName = name || 'Administrator';
-      const authToken = token || ('admin-session-' + Date.now());
-
+    function handleAdminLoginSubmit(e) {
+      e.preventDefault();
+      
       try {
-        localStorage.setItem('token', authToken);
+        const email = document.getElementById('loginEmail').value;
+        const password = document.getElementById('loginPassword').value;
+        
+        if(!email || !password) {
+          showAlert('loginAlert', '❌ Please fill in all fields', 'danger');
+          return;
+        }
+        
+        const userData = {
+          email: email,
+          password: password,
+          loginTime: new Date().toISOString()
+        };
+        
         localStorage.setItem('adminEmail', email);
         localStorage.setItem('userType', 'admin');
         localStorage.setItem('isAdminLoggedIn', 'true');
-        localStorage.setItem('currentAdmin', JSON.stringify({ email, name: adminName }));
-      } catch(e) {}
-
-      try {
-        sessionStorage.setItem('isAdminLoggedIn', 'true');
-        sessionStorage.setItem('adminEmail', email);
-        sessionStorage.setItem('token', authToken);
-      } catch(e) {}
-
-      try {
-        document.cookie = "isAdminLoggedIn=true; path=/";
-      } catch(e) {}
-
-      showAlert('loginAlert', 'Authentication verified. Entering dashboard...', 'success');
-
-      setTimeout(() => {
-        window.location.href = 'dashboard.html';
-      }, 400);
+        localStorage.setItem('currentAdmin', JSON.stringify(userData));
+        
+        showAlert('loginAlert', '✅ Admin login successful! Redirecting...', 'success');
+        
+        setTimeout(() => {
+          window.location.href = './dashboard.html';
+        }, 1500);
+        
+      } catch(error) {
+        console.error('Admin login error:', error);
+        showAlert('loginAlert', '❌ Login failed. Please try again.', 'danger');
+      }
     }
 
-    async function handleAdminLogin(event) {
-      if (event && event.preventDefault) event.preventDefault();
-
-      const emailInput = document.getElementById('loginEmail');
-      const passwordInput = document.getElementById('loginPassword');
-      const btn = document.getElementById('adminLoginBtn');
-
-      const email = emailInput ? emailInput.value.trim() : '';
-      const password = passwordInput ? passwordInput.value : '';
-
-      if (!email || !password) {
-        showAlert('loginAlert', 'Please enter your administrator email and password.', 'danger');
-        return false;
-      }
-
-      btn.disabled = true;
-      btn.textContent = 'Verifying...';
-
-      const lowerEmail = email.toLowerCase();
-
-      // 1. Prioritize Backend API Authentication First
-      if (typeof apiCall === 'function') {
-        try {
-          const res = await apiCall('/admin/login', 'POST', { email, password }, false, 3500);
-          if (res && res.success && res.data && res.data.token) {
-            completeAdminLogin(email, res.data.admin?.name || 'Administrator', res.data.token);
-            return false;
-          }
-        } catch (err) {
-          console.warn('Backend login attempt failed/offline:', err);
-        }
-      }
-
-      // 2. Offline Demo Master Credentials Check
-      if ((lowerEmail === 'admin@example.com' || lowerEmail === 'admin@institution.edu') && password === 'admin123') {
-        completeAdminLogin(email, 'Lead Administrator', null);
-        return false;
-      }
-
-      // 3. Offline Locally Registered Admins Check
-      let registeredAdmins = [];
+    function handleAdminRegisterSubmit(e) {
+      e.preventDefault();
+      
       try {
-        registeredAdmins = JSON.parse(localStorage.getItem('registeredAdmins') || '[]');
-        const savedAdmin = JSON.parse(localStorage.getItem('adminProfile') || '{}');
-        if (savedAdmin.email && !registeredAdmins.some(a => a.email && a.email.toLowerCase() === savedAdmin.email.toLowerCase())) {
-          registeredAdmins.push(savedAdmin);
+        const name = document.getElementById('adminName').value;
+        const email = document.getElementById('adminEmail').value;
+        const password = document.getElementById('adminPassword').value;
+        const confirmPassword = document.getElementById('adminPasswordConfirm').value;
+        
+        if(!name || !email || !password || !confirmPassword) {
+          showAlert('registerAlert', '❌ Please fill in all fields', 'danger');
+          return;
         }
-      } catch(e) {}
-
-      const matchedLocal = registeredAdmins.find(a => a.email && a.email.toLowerCase() === lowerEmail && a.password === password);
-      if (matchedLocal) {
-        completeAdminLogin(email, matchedLocal.name || 'Administrator', null);
-        return false;
+        
+        if(password !== confirmPassword) {
+          showAlert('registerAlert', '❌ Passwords do not match!', 'danger');
+          return;
+        }
+        
+        const adminProfile = {
+          name,
+          email,
+          password,
+          registeredAt: new Date().toISOString()
+        };
+        
+        localStorage.setItem('adminProfile', JSON.stringify(adminProfile));
+        localStorage.setItem('adminEmail', email);
+        localStorage.setItem('userType', 'admin');
+        localStorage.setItem('isAdminLoggedIn', 'true');
+        localStorage.setItem('currentAdmin', JSON.stringify(adminProfile));
+        
+        showAlert('registerAlert', '✅ Admin registered! Redirecting to dashboard...', 'success');
+        
+        setTimeout(() => {
+          window.location.href = './dashboard.html';
+        }, 1500);
+        
+      } catch(error) {
+        console.error('Admin registration error:', error);
+        showAlert('registerAlert', '❌ Registration failed. Please try again.', 'danger');
       }
-
-      // 4. Invalid credentials
-      btn.disabled = false;
-      btn.textContent = 'Access Dashboard';
-      showAlert('loginAlert', 'Invalid credentials. If offline, use admin@example.com / admin123 or register below.', 'danger');
-      return false;
+    }
+  </script>
+</body>
+</html>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
     }
 
-    async function handleAdminRegister(event) {
-      if (event && event.preventDefault) event.preventDefault();
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #2d3561 0%, #1a1a2e 50%, #16213e 100%);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
 
-      const name = document.getElementById('adminName').value.trim();
-      const email = document.getElementById('adminEmail').value.trim();
-      const password = document.getElementById('adminPassword').value;
-      const confirmPassword = document.getElementById('adminPasswordConfirm').value;
-      const btn = document.getElementById('adminRegisterBtn');
+    .login-container {
+      background: white;
+      border-radius: 20px;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+      max-width: 450px;
+      width: 90%;
+      padding: 3rem;
+      animation: slideUp 0.6s ease-out;
+    }
 
-      if (!name || !email || !password || !confirmPassword) {
-        showAlert('registerAlert', 'Please complete all required fields.', 'danger');
-        return false;
+    @keyframes slideUp {
+      from {
+        opacity: 0;
+        transform: translateY(50px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .login-header {
+      text-align: center;
+      margin-bottom: 2rem;
+    }
+
+    .login-header h1 {
+      color: #2d3561;
+      font-size: 2rem;
+      margin-bottom: 0.5rem;
+      animation: slideDown 0.6s ease-out;
+    }
+
+    .login-header p {
+      color: #666;
+      font-size: 0.95rem;
+      animation: slideDown 0.8s ease-out;
+    }
+
+    .admin-badge {
+      display: inline-block;
+      background: linear-gradient(135deg, #d97706, #f59e0b);
+      color: white;
+      padding: 4px 12px;
+      border-radius: 20px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      margin-top: 0.5rem;
+    }
+
+    .form-group {
+      margin-bottom: 1.5rem;
+    }
+
+    .form-group label {
+      display: block;
+      color: #333;
+      font-weight: 600;
+      margin-bottom: 0.5rem;
+      font-size: 0.95rem;
+    }
+
+    .form-group input {
+      width: 100%;
+      padding: 12px 16px;
+      border: 2px solid #e0e0e0;
+      border-radius: 10px;
+      font-size: 1rem;
+      transition: all 0.3s ease;
+      background: #f8f9fa;
+    }
+
+    .form-group input:focus {
+      outline: none;
+      border-color: #2d3561;
+      background: white;
+      box-shadow: 0 0 0 3px rgba(45, 53, 97, 0.1);
+    }
+
+    .form-group input::placeholder {
+      color: #999;
+    }
+
+    .tabs {
+      display: flex;
+      gap: 1rem;
+      margin-bottom: 2rem;
+      border-bottom: 2px solid #f0f0f0;
+    }
+
+    .tab-btn {
+      padding: 12px 20px;
+      background: none;
+      border: none;
+      cursor: pointer;
+      font-weight: 600;
+      color: #999;
+      transition: all 0.3s ease;
+      position: relative;
+    }
+
+    .tab-btn.active {
+      color: #2d3561;
+    }
+
+    .tab-btn.active::after {
+      content: '';
+      position: absolute;
+      bottom: -2px;
+      left: 0;
+      right: 0;
+      height: 2px;
+      background: linear-gradient(90deg, #2d3561, #4f46e5);
+    }
+
+    .form-content {
+      display: none;
+    }
+
+    .form-content.active {
+      display: block;
+      animation: fadeIn 0.3s ease-out;
+    }
+
+    @keyframes slideDown {
+      from {
+        opacity: 0;
+        transform: translateY(-20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+      }
+      to {
+        opacity: 1;
+      }
+    }
+
+    .submit-btn {
+      width: 100%;
+      padding: 14px;
+      background: linear-gradient(135deg, #2d3561, #4f46e5);
+      color: white;
+      border: none;
+      border-radius: 10px;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 15px rgba(45, 53, 97, 0.3);
+      margin-bottom: 1rem;
+    }
+
+    .submit-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 25px rgba(45, 53, 97, 0.4);
+    }
+
+    .home-btn {
+      width: 100%;
+      padding: 14px;
+      background: white;
+      color: #2d3561;
+      border: 2px solid #2d3561;
+      border-radius: 10px;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .home-btn:hover {
+      background: #f8f9ff;
+      transform: translateY(-2px);
+    }
+
+    .login-footer {
+      text-align: center;
+      margin-top: 1.5rem;
+      color: #666;
+      font-size: 0.9rem;
+    }
+
+    .alert {
+      padding: 1rem;
+      border-radius: 10px;
+      margin-bottom: 1rem;
+      animation: slideDown 0.4s ease-out;
+    }
+
+    .alert.success {
+      background: #d4edda;
+      color: #155724;
+      border: 1px solid #c3e6cb;
+    }
+
+    .alert.danger {
+      background: #f8d7da;
+      color: #721c24;
+      border: 1px solid #f5c6cb;
+    }
+
+    @media (max-width: 480px) {
+      .login-container {
+        padding: 2rem 1.5rem;
       }
 
-      if (password.length < 6) {
-        showAlert('registerAlert', 'Password must be at least 6 characters.', 'danger');
-        return false;
+      .login-header h1 {
+        font-size: 1.5rem;
       }
+
+      .submit-btn, .home-btn {
+        padding: 12px;
+        font-size: 0.95rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="login-container">
+    <div class="login-header">
+      <h1>📊 Admin Panel</h1>
+      <p>Alumni Connect Administration</p>
+      <div class="admin-badge">🔐 ADMIN ONLY</div>
+    </div>
+
+    <div id="alertContainer"></div>
+
+    <div class="tabs">
+      <button class="tab-btn active" onclick="switchTab('login')">🔐 Login</button>
+      <button class="tab-btn" onclick="switchTab('register')">📝 Register</button>
+    </div>
+
+    <!-- Login Form -->
+    <form id="loginForm" class="form-content active" onsubmit="handleLogin(event)">
+      <div class="form-group">
+        <label>Admin Email</label>
+        <input type="email" id="loginEmail" placeholder="admin@example.com" required>
+      </div>
+
+      <div class="form-group">
+        <label>Password</label>
+        <input type="password" id="loginPassword" placeholder="Enter your password" required>
+      </div>
+
+      <button type="submit" class="submit-btn">🔓 Sign In as Admin</button>
+    </form>
+
+    <!-- Register Form (Admin Creation) -->
+    <form id="registerForm" class="form-content" onsubmit="handleRegister(event)">
+      <div class="form-group">
+        <label>Admin Name *</label>
+        <input type="text" id="regName" placeholder="Full Name" required>
+      </div>
+
+      <div class="form-group">
+        <label>Email Address *</label>
+        <input type="email" id="regEmail" placeholder="admin@example.com" required>
+      </div>
+
+      <div class="form-group">
+        <label>Password *</label>
+        <input type="password" id="regPassword" placeholder="Min 6 characters" required>
+      </div>
+
+      <div class="form-group">
+        <label>Confirm Password *</label>
+        <input type="password" id="regConfirmPassword" placeholder="Confirm password" required>
+      </div>
+
+      <button type="submit" class="submit-btn">✨ Create Admin Account</button>
+    </form>
+
+    <button class="home-btn" onclick="goHome()">🏠 Back to Home</button>
+  </div>
+
+  <script src="../shared/js/api.js"></script>
+  <script>
+    function switchTab(tab) {
+      document.querySelectorAll('.form-content').forEach(el => el.classList.remove('active'));
+      document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
+      
+      document.getElementById(tab === 'login' ? 'loginForm' : 'registerForm').classList.add('active');
+      event.target.classList.add('active');
+    }
+
+    function goHome() {
+      window.location.href = '../../index_final.html';
+    }
+
+    async function handleLogin(e) {
+      e.preventDefault();
+      const email = document.getElementById('loginEmail').value;
+      const password = document.getElementById('loginPassword').value;
+
+      const formData = {
+        email: email,
+        password: password
+      };
+
+      const result = await apiCall('/admin/login', 'POST', formData);
+
+      if (result.success) {
+        localStorage.setItem('token', result.data.token);
+        localStorage.setItem('userType', 'admin');
+        showAlert('Admin login successful! Redirecting...', 'success');
+        setTimeout(() => {
+          window.location.href = './dashboard_final.html';
+        }, 1000);
+      } else {
+        showAlert(result.error || 'Login failed', 'danger');
+      }
+    }
+
+    async function handleRegister(e) {
+      e.preventDefault();
+      
+      const password = document.getElementById('regPassword').value;
+      const confirmPassword = document.getElementById('regConfirmPassword').value;
 
       if (password !== confirmPassword) {
-        showAlert('registerAlert', 'Passwords do not match.', 'danger');
-        return false;
+        showAlert('Passwords do not match!', 'danger');
+        return;
       }
 
-      btn.disabled = true;
-      btn.textContent = 'Registering account...';
+      const formData = {
+        name: document.getElementById('regName').value,
+        email: document.getElementById('regEmail').value,
+        password: password
+      };
 
-      let authToken = null;
+      const result = await apiCall('/admin/register', 'POST', formData);
 
-      // 1. Attempt Backend Registration and obtain real JWT Token
-      if (typeof apiCall === 'function') {
-        try {
-          const res = await apiCall('/admin/register', 'POST', { name, email, password }, false, 3500);
-          if (res && res.success) {
-            // Log in to retrieve token
-            const loginRes = await apiCall('/admin/login', 'POST', { email, password }, false, 3500);
-            if (loginRes && loginRes.success && loginRes.data && loginRes.data.token) {
-              authToken = loginRes.data.token;
-            }
-          }
-        } catch (err) {
-          console.warn('Backend registration offline, continuing with local registration:', err);
-        }
-      }
-
-      // 2. Persist to local registry as resilient backup
-      let registeredAdmins = [];
-      try {
-        registeredAdmins = JSON.parse(localStorage.getItem('registeredAdmins') || '[]');
-      } catch(e) {}
-
-      const newAdmin = { name, email: email.toLowerCase(), password, registeredAt: new Date().toISOString() };
-      const existingIdx = registeredAdmins.findIndex(a => a.email && a.email.toLowerCase() === email.toLowerCase());
-      if (existingIdx !== -1) {
-        registeredAdmins[existingIdx] = newAdmin;
+      if (result.success) {
+        showAlert('Admin account created! Please login.', 'success');
+        setTimeout(() => {
+          document.getElementById('registerForm').reset();
+          document.querySelector('[onclick="switchTab(\'login\')"]').click();
+        }, 1000);
       } else {
-        registeredAdmins.push(newAdmin);
+        showAlert(result.error || 'Registration failed', 'danger');
       }
+    }
 
-      try {
-        localStorage.setItem('registeredAdmins', JSON.stringify(registeredAdmins));
-        localStorage.setItem('adminProfile', JSON.stringify(newAdmin));
-      } catch(e) {}
-
-      showAlert('registerAlert', 'Administrator registered successfully! Launching dashboard...', 'success');
-
+    function showAlert(message, type) {
+      const alertContainer = document.getElementById('alertContainer');
+      alertContainer.innerHTML = `<div class="alert ${type}">${message}</div>`;
       setTimeout(() => {
-        completeAdminLogin(email, name, authToken);
-      }, 500);
-
-      return false;
+        alertContainer.innerHTML = '';
+      }, 4000);
     }
   </script>
 </body>

@@ -3,389 +3,217 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Analytics & Oversight - Alumni Connect</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="../shared/css/style.css">
+  <title>Admin Analytics - Alumni Connect</title>
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
-    body { 
-      font-family: var(--font-sans, 'Plus Jakarta Sans', sans-serif); 
-      background: #f8fafc; 
-      color: #0f172a; 
-      min-height: 100vh;
+    body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #f0fdf4; }
+    
+    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+    @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+
+    .navbar { background: linear-gradient(135deg, #16a34a 0%, #15803d 100%); color: white; padding: 1.2rem 2rem; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 8px 20px rgba(22, 163, 74, 0.2); position: sticky; top: 0; z-index: 1000; }
+    .navbar h1 { font-size: 1.5rem; font-weight: 700; }
+    .nav-menu { display: flex; gap: 2rem; list-style: none; align-items: center; }
+    .nav-menu a { color: white; text-decoration: none; font-weight: 600; transition: all 0.3s; cursor: pointer; }
+    .nav-menu a.active { color: #fbbf24; }
+    .logout-btn { background: rgba(255, 255, 255, 0.2); color: white; padding: 8px 16px; border: 1px solid rgba(255, 255, 255, 0.3); border-radius: 6px; cursor: pointer; font-weight: 600; }
+    .logout-btn:hover { background: rgba(255, 255, 255, 0.3); }
+
+    .container { max-width: 1600px; margin: 0 auto; padding: 2rem; }
+    .section { display: none; animation: fadeIn 0.3s ease-out; }
+    .section.active { display: block; }
+
+    .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1.5rem; margin-bottom: 3rem; }
+    .stat-card { background: white; padding: 2rem; border-radius: 12px; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06); border-left: 4px solid #16a34a; animation: slideUp 0.3s ease-out; }
+    .stat-number { font-size: 2.8rem; color: #16a34a; font-weight: 700; }
+    .stat-label { color: #666; margin-top: 0.5rem; font-weight: 600; }
+    .stat-subtext { font-size: 0.85rem; color: #999; margin-top: 0.5rem; }
+
+    .dashboard-grid { display: grid; grid-template-columns: 2fr 1fr; gap: 2rem; margin-bottom: 2rem; }
+    .card { background: white; padding: 2rem; border-radius: 12px; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06); }
+    .card h3 { color: #16a34a; margin-bottom: 1.5rem; font-size: 1.2rem; border-bottom: 2px solid #f0fdf4; padding-bottom: 1rem; }
+
+    .table { width: 100%; border-collapse: collapse; }
+    .table th { background: #f0fdf4; padding: 1rem; text-align: left; color: #333; font-weight: 600; border-bottom: 2px solid #16a34a; }
+    .table td { padding: 1rem; border-bottom: 1px solid #e5e7eb; }
+    .table tr:hover { background: #f9fafb; }
+
+    .chart-container { height: 300px; margin: 1rem 0; }
+    .mini-stat { padding: 1rem; background: #f9fafb; border-left: 3px solid #16a34a; margin-bottom: 1rem; border-radius: 6px; }
+    .mini-stat strong { color: #16a34a; font-size: 1.3rem; }
+
+    .badge { display: inline-block; padding: 0.4rem 0.8rem; border-radius: 20px; font-size: 0.85rem; font-weight: 600; }
+    .badge-approved { background: #dcfce7; color: #166534; }
+    .badge-pending { background: #fef3c7; color: #92400e; }
+    .badge-rejected { background: #fee2e2; color: #7f1d1d; }
+
+    .btn { padding: 0.6rem 1.2rem; border: none; border-radius: 6px; cursor: pointer; font-weight: 600; transition: all 0.3s; }
+    .btn-primary { background: #16a34a; color: white; }
+    .btn-primary:hover { background: #15803d; }
+    .btn-danger { background: #ef4444; color: white; }
+    .btn-danger:hover { background: #dc2626; }
+    .btn-success { background: #10b981; color: white; }
+
+    @media (max-width: 1024px) {
+      .dashboard-grid { grid-template-columns: 1fr; }
     }
 
-    .admin-nav {
-      background: #0f172a;
-      color: #ffffff;
-      padding: 0.85rem 2rem;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      position: sticky;
-      top: 0;
-      z-index: 1000;
-    }
-
-    .brand-section {
-      display: flex;
-      align-items: center;
-      gap: 0.75rem;
-    }
-
-    .brand-mark {
-      width: 30px;
-      height: 30px;
-      background: #2563eb;
-      border-radius: 6px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: white;
-      font-weight: 800;
-      font-size: 0.85rem;
-    }
-
-    .brand-title {
-      font-size: 1.05rem;
-      font-weight: 700;
-      letter-spacing: -0.02em;
-      color: #ffffff;
-    }
-
-    .nav-menu {
-      display: flex;
-      gap: 0.5rem;
-      list-style: none;
-      align-items: center;
-    }
-
-    .nav-tab-btn {
-      padding: 0.45rem 0.85rem;
-      border-radius: 6px;
-      font-size: 0.85rem;
-      font-weight: 600;
-      color: #94a3b8;
-      text-decoration: none;
-      cursor: pointer;
-      transition: all 0.15s ease;
-    }
-
-    .nav-tab-btn:hover {
-      color: #ffffff;
-      background: rgba(255, 255, 255, 0.06);
-    }
-
-    .nav-tab-btn.active {
-      color: #ffffff;
-      background: rgba(255, 255, 255, 0.12);
-    }
-
-    .container-analytics {
-      max-width: 1400px;
-      margin: 0 auto;
-      padding: 2.25rem 1.5rem;
-    }
-
-    .section-view {
-      display: none;
-      animation: fadeIn 0.2s ease-out;
-    }
-
-    .section-view.active {
-      display: block;
-    }
-
-    .page-head {
-      margin-bottom: 1.75rem;
-    }
-
-    .page-head h2 {
-      font-size: 1.5rem;
-      font-weight: 800;
-      letter-spacing: -0.03em;
-      color: #0f172a;
-    }
-
-    /* Executive Metrics Strip */
-    .kpi-row {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 1.25rem;
-      margin-bottom: 2rem;
-    }
-
-    .kpi-card {
-      background: #ffffff;
-      border: 1px solid #e2e8f0;
-      border-radius: 12px;
-      padding: 1.6rem 1.4rem;
-      box-shadow: 0 1px 3px rgba(15, 23, 42, 0.04);
-    }
-
-    .kpi-num {
-      font-size: 2.25rem;
-      font-weight: 800;
-      color: #0f172a;
-      letter-spacing: -0.04em;
-    }
-
-    .kpi-label {
-      font-size: 0.85rem;
-      font-weight: 600;
-      color: #64748b;
-      margin-top: 0.25rem;
-    }
-
-    .kpi-sub {
-      font-size: 0.775rem;
-      color: #94a3b8;
-      margin-top: 0.35rem;
-    }
-
-    /* Analytics Split Layout */
-    .analytics-grid-2 {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 1.5rem;
-      margin-bottom: 1.5rem;
-    }
-
-    .report-card {
-      background: #ffffff;
-      border: 1px solid #e2e8f0;
-      border-radius: 12px;
-      padding: 1.75rem;
-      box-shadow: 0 1px 3px rgba(15, 23, 42, 0.04);
-    }
-
-    .report-card h3 {
-      font-size: 1.05rem;
-      font-weight: 700;
-      color: #0f172a;
-      letter-spacing: -0.02em;
-      margin-bottom: 1.25rem;
-      padding-bottom: 0.75rem;
-      border-bottom: 1px solid #f1f5f9;
-    }
-
-    .stat-bar-row {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 0.75rem 1rem;
-      background: #f8fafc;
-      border: 1px solid #e2e8f0;
-      border-radius: 6px;
-      margin-bottom: 0.65rem;
-    }
-
-    .stat-bar-row strong {
-      color: #0f172a;
-      font-size: 1rem;
-    }
-
-    .stat-bar-row span {
-      font-size: 0.85rem;
-      color: #64748b;
-    }
-
-    @media (max-width: 900px) {
-      .kpi-row { grid-template-columns: repeat(2, 1fr); }
-      .analytics-grid-2 { grid-template-columns: 1fr; }
-      .admin-nav { flex-direction: column; gap: 0.75rem; padding: 0.75rem 1rem; }
-      .nav-menu { flex-wrap: wrap; justify-content: center; }
+    @media (max-width: 768px) {
+      .nav-menu { gap: 0.5rem; font-size: 0.9rem; }
+      .stats-grid { grid-template-columns: 1fr 1fr; }
     }
   </style>
 </head>
 <body>
-  <!-- Admin Header -->
-  <header class="admin-nav">
-    <div class="brand-section">
-      <div class="brand-mark">AC</div>
-      <span class="brand-title">Analytics & Intelligence</span>
-    </div>
+  <nav class="navbar">
+    <h1>📊 Admin Analytics Dashboard</h1>
+    <ul class="nav-menu">
+      <li><a id="dashboardLink" onclick="switchTab('dashboard')" class="active">Dashboard</a></li>
+      <li><a id="approvalsLink" onclick="switchTab('approvals')">Approvals</a></li>
+      <li><a id="reportsLink" onclick="switchTab('reports')">Reports</a></li>
+      <li><a id="dataLink" onclick="switchTab('data')">Data</a></li>
+      <li><a href="../admin/dashboard.html" style="color: #fbbf24;">← Admin</a></li>
+      <li><button class="logout-btn" onclick="logout()">Logout</button></li>
+    </ul>
+  </nav>
 
-    <nav>
-      <ul class="nav-menu">
-        <li><a id="dashboardLink" onclick="switchTab('dashboard')" class="nav-tab-btn active">Overview</a></li>
-        <li><a id="approvalsLink" onclick="switchTab('approvals')" class="nav-tab-btn">Approvals</a></li>
-        <li><a id="reportsLink" onclick="switchTab('reports')" class="nav-tab-btn">Reports & Export</a></li>
-        <li><a id="dataLink" onclick="switchTab('data')" class="nav-tab-btn">Data Management</a></li>
-        <li><a href="../admin/dashboard.html" class="nav-tab-btn" style="color: #60a5fa;">&larr; Operations</a></li>
-      </ul>
-    </nav>
+  <div class="container">
+    <!-- Dashboard Section -->
+    <div id="dashboard" class="section active">
+      <h2 style="color: #16a34a; font-size: 1.8rem; margin-bottom: 1.5rem;">📈 Overview</h2>
 
-    <div>
-      <button class="btn btn-sm btn-secondary" onclick="logout()" style="background: transparent; color: #cbd5e1; border-color: rgba(255,255,255,0.2);">Sign Out</button>
-    </div>
-  </header>
-
-  <main class="container-analytics">
-    <!-- Overview Tab -->
-    <section id="dashboard" class="section-view active">
-      <div class="page-head">
-        <h2>Institutional Overview & Key Metrics</h2>
-      </div>
-
-      <div class="kpi-row">
-        <div class="kpi-card">
-          <div class="kpi-num" id="totalAlumni">0</div>
-          <div class="kpi-label">Active Alumni</div>
-          <div class="kpi-sub">Verified network members</div>
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-number" id="totalAlumni">0</div>
+          <div class="stat-label">Total Approved Alumni</div>
+          <div class="stat-subtext">Active members in network</div>
         </div>
-        <div class="kpi-card">
-          <div class="kpi-num" id="totalApplications">0</div>
-          <div class="kpi-label">Applications Submitted</div>
-          <div class="kpi-sub">Across all posted openings</div>
+        <div class="stat-card">
+          <div class="stat-number" id="totalApplications">0</div>
+          <div class="stat-label">Total Applications</div>
+          <div class="stat-subtext">Across all opportunities</div>
         </div>
-        <div class="kpi-card">
-          <div class="kpi-num" id="totalOpportunities">0</div>
-          <div class="kpi-label">Career Drives</div>
-          <div class="kpi-sub">Internships & full-time roles</div>
+        <div class="stat-card">
+          <div class="stat-number" id="totalOpportunities">0</div>
+          <div class="stat-label">Active Opportunities</div>
+          <div class="stat-subtext">Internships + Placements</div>
         </div>
-        <div class="kpi-card">
-          <div class="kpi-num" id="totalEvents">0</div>
-          <div class="kpi-label">Scheduled Summits</div>
-          <div class="kpi-sub">Events organized</div>
+        <div class="stat-card">
+          <div class="stat-number" id="totalEvents">0</div>
+          <div class="stat-label">Total Events</div>
+          <div class="stat-subtext">Organized this quarter</div>
         </div>
       </div>
 
-      <div class="analytics-grid-2">
-        <div class="report-card">
-          <h3>Faculty & Department Cohorts</h3>
+      <div class="dashboard-grid">
+        <div class="card">
+          <h3>📊 Department Distribution</h3>
           <div id="departmentStats"></div>
         </div>
-        <div class="report-card">
-          <h3>Application Pipeline Distribution</h3>
+        <div class="card">
+          <h3>🎯 Application Status</h3>
           <div id="applicationStats"></div>
         </div>
       </div>
 
-      <div class="analytics-grid-2">
-        <div class="report-card">
-          <h3>Recent Opportunity Submissions</h3>
-          <div class="table-responsive">
-            <table class="table">
-              <thead>
-                <tr>
-                  <th>Applicant</th>
-                  <th>Position</th>
-                  <th>Organization</th>
-                  <th>Status</th>
-                </tr>
-              </thead>
-              <tbody id="recentApps"></tbody>
-            </table>
-          </div>
+      <div class="dashboard-grid">
+        <div class="card">
+          <h3>📅 Recent Applications</h3>
+          <table class="table">
+            <thead>
+              <tr>
+                <th>Alumni</th>
+                <th>Position</th>
+                <th>Company</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody id="recentApps"></tbody>
+          </table>
         </div>
-        <div class="report-card">
-          <h3>Top Active Departments</h3>
+        <div class="card">
+          <h3>🎓 Top Departments</h3>
           <div id="topDepts"></div>
         </div>
       </div>
-    </section>
+    </div>
 
-    <!-- Approvals Tab -->
-    <section id="approvals" class="section-view">
-      <div class="page-head">
-        <h2>Pending Registration Approvals</h2>
-      </div>
-      <div class="table-responsive">
+    <!-- Approvals Section -->
+    <div id="approvals" class="section">
+      <h2 style="color: #16a34a; font-size: 1.8rem; margin-bottom: 1.5rem;">✅ Pending Approvals</h2>
+      
+      <div class="card">
         <table class="table">
           <thead>
             <tr>
-              <th>Applicant Name</th>
+              <th>Name</th>
               <th>Email</th>
               <th>Department</th>
-              <th>Graduation Batch</th>
+              <th>Batch</th>
               <th>Actions</th>
             </tr>
           </thead>
           <tbody id="approvalsTable"></tbody>
         </table>
       </div>
-    </section>
+    </div>
 
-    <!-- Reports & Export Tab -->
-    <section id="reports" class="section-view">
-      <div class="page-head">
-        <h2>System Reports & Data Portability</h2>
-      </div>
-
-      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 1.5rem; margin-bottom: 2rem;">
-        <div class="report-card">
-          <h3>Alumni Engagement Ratio</h3>
+    <!-- Reports Section -->
+    <div id="reports" class="section">
+      <h2 style="color: #16a34a; font-size: 1.8rem; margin-bottom: 1.5rem;">📋 Reports</h2>
+      
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 2rem;">
+        <div class="card">
+          <h3>Alumni Metrics</h3>
           <div id="metricsReport"></div>
         </div>
-        <div class="report-card">
-          <h3>Career Placement Scope</h3>
+        <div class="card">
+          <h3>Opportunity Analytics</h3>
           <div id="oppReport"></div>
         </div>
-        <div class="report-card">
-          <h3>Event Turnout Coverage</h3>
+        <div class="card">
+          <h3>Event Coverage</h3>
           <div id="eventReport"></div>
         </div>
       </div>
 
-      <div class="report-card">
-        <h3>Export Institutional Datasets</h3>
-        <p style="color: #64748b; font-size: 0.9rem; margin-bottom: 1.25rem;">Download sanitized database snapshots for compliance reporting or offline archive.</p>
-        <div style="display: flex; gap: 0.75rem; flex-wrap: wrap;">
-          <button class="btn btn-secondary" onclick="exportToCSV('alumni')">Export Alumni Directory (CSV)</button>
-          <button class="btn btn-secondary" onclick="exportToCSV('applications')">Export Applications (CSV)</button>
-          <button class="btn btn-secondary" onclick="exportToCSV('events')">Export Events (CSV)</button>
-          <button class="btn btn-primary" onclick="exportToJSON()">Download Complete JSON Archive</button>
+      <div class="card" style="margin-top: 2rem;">
+        <h3>Export Data</h3>
+        <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
+          <button class="btn btn-primary" onclick="exportToCSV('alumni')">📥 Alumni List (CSV)</button>
+          <button class="btn btn-primary" onclick="exportToCSV('applications')">📥 Applications (CSV)</button>
+          <button class="btn btn-primary" onclick="exportToCSV('events')">📥 Events (CSV)</button>
+          <button class="btn btn-primary" onclick="exportToJSON()">📥 All Data (JSON)</button>
         </div>
       </div>
-    </section>
+    </div>
 
-    <!-- Data Management Tab -->
-    <section id="data" class="section-view">
-      <div class="page-head">
-        <h2>Database Integrity & Snapshot Restore</h2>
-      </div>
+    <!-- Data Management -->
+    <div id="data" class="section">
+      <h2 style="color: #16a34a; font-size: 1.8rem; margin-bottom: 1.5rem;">🗂️ Data Management</h2>
+      
+      <div style="display: grid; grid-template-columns: 1fr; gap: 2rem;">
+        <div class="card">
+          <h3>💾 Backup & Restore</h3>
+          <div style="display: flex; gap: 1rem; flex-wrap: wrap; margin: 1rem 0;">
+            <button class="btn btn-primary" onclick="backupData()">💾 Backup All Data</button>
+            <button class="btn btn-success" onclick="document.getElementById('restoreFile').click()">♻️ Restore Data</button>
+            <input type="file" id="restoreFile" accept=".json" style="display: none;" onchange="restoreData(event)">
+          </div>
+        </div>
 
-      <div class="report-card" style="margin-bottom: 1.5rem;">
-        <h3>Snapshot Backup & Restore</h3>
-        <p style="color: #64748b; font-size: 0.9rem; margin-bottom: 1.25rem;">Produce encrypted client-side data backups or restore state from an existing snapshot JSON.</p>
-        <div style="display: flex; gap: 0.75rem; flex-wrap: wrap;">
-          <button class="btn btn-primary" onclick="backupData()">Generate Instant Backup</button>
-          <button class="btn btn-secondary" onclick="document.getElementById('restoreFile').click()">Restore From File</button>
-          <input type="file" id="restoreFile" accept=".json" style="display: none;" onchange="restoreData(event)">
+        <div class="card">
+          <h3>🔧 Quick Stats</h3>
+          <div id="quickStats"></div>
         </div>
       </div>
-
-      <div class="report-card">
-        <h3>System Record Counts</h3>
-        <div id="quickStats"></div>
-      </div>
-    </section>
-  </main>
+    </div>
+  </div>
 
   <script>
     document.addEventListener('DOMContentLoaded', function() {
-      let isAdminLoggedIn = false;
-      try {
-        isAdminLoggedIn = localStorage.getItem('isAdminLoggedIn') === 'true' || 
-                          sessionStorage.getItem('isAdminLoggedIn') === 'true' ||
-                          document.cookie.includes('isAdminLoggedIn=true');
-      } catch(e) {
-        isAdminLoggedIn = true;
-      }
-      
-      if (!isAdminLoggedIn) {
-        try {
-          if (localStorage.getItem('adminEmail') || localStorage.getItem('userType') === 'admin') {
-            isAdminLoggedIn = true;
-            localStorage.setItem('isAdminLoggedIn', 'true');
-          }
-        } catch(e) {}
-      }
-
-      if(!isAdminLoggedIn) {
+      const isAdminLoggedIn = localStorage.getItem('isAdminLoggedIn');
+      if(!isAdminLoggedIn || isAdminLoggedIn !== 'true') {
         window.location.href = '../admin/login.html';
         return;
       }
@@ -400,6 +228,7 @@
       const placements = JSON.parse(localStorage.getItem('adminPlacements')) || [];
       const events = JSON.parse(localStorage.getItem('adminEvents')) || [];
       
+      // Update stats
       document.getElementById('totalAlumni').textContent = approvedAlumni.length;
       document.getElementById('totalApplications').textContent = applications.length;
       document.getElementById('totalOpportunities').textContent = internships.length + placements.length;
@@ -408,96 +237,93 @@
       // Department Distribution
       const deptMap = {};
       approvedAlumni.forEach(a => {
-        const d = a.department || 'General';
-        deptMap[d] = (deptMap[d] || 0) + 1;
+        deptMap[a.department] = (deptMap[a.department] || 0) + 1;
       });
       const deptHtml = Object.entries(deptMap).map(([dept, count]) => 
-        `<div class="stat-bar-row"><span>${dept}</span><strong>${count} members</strong></div>`
+        `<div class="mini-stat"><strong>${count}</strong> from ${dept}</div>`
       ).join('');
-      document.getElementById('departmentStats').innerHTML = deptHtml || '<p class="text-muted">No cohort records available.</p>';
+      document.getElementById('departmentStats').innerHTML = deptHtml || '<p>No data</p>';
 
       // Application Status
-      const statusMap = { pending: 0, accepted: 0, rejected: 0 };
+      const statusMap = {
+        pending: 0,
+        accepted: 0,
+        rejected: 0
+      };
       applications.forEach(a => {
-        if(statusMap[a.status] !== undefined) statusMap[a.status]++;
+        statusMap[a.status]++;
       });
       const statusHtml = Object.entries(statusMap).map(([status, count]) =>
-        `<div class="stat-bar-row"><span>${status.toUpperCase()}</span><strong>${count}</strong></div>`
+        `<div class="mini-stat"><strong>${count}</strong> ${status.toUpperCase()}</div>`
       ).join('');
       document.getElementById('applicationStats').innerHTML = statusHtml;
 
       // Recent Applications
       const recent = applications.slice(-5).reverse().map(app => `
         <tr>
-          <td style="font-weight: 600;">${app.email}</td>
+          <td>${app.email}</td>
           <td>${app.position}</td>
           <td>${app.company}</td>
-          <td><span class="badge badge-${app.status}">${app.status.toUpperCase()}</span></td>
+          <td><span class="badge badge-${app.status}">${app.status}</span></td>
         </tr>
-      `).join('') || '<tr><td colspan="4" class="text-center text-muted" style="padding: 1.5rem;">No recent submissions.</td></tr>';
+      `).join('') || '<tr><td colspan="4" style="text-align: center;">No applications</td></tr>';
       document.getElementById('recentApps').innerHTML = recent;
 
       // Top Departments
       const topDepts = Object.entries(deptMap)
         .sort((a, b) => b[1] - a[1])
         .slice(0, 5)
-        .map(([dept, count]) => `<div class="stat-bar-row"><span>${dept}</span><strong>${count}</strong></div>`)
+        .map(([dept, count]) => `<div class="mini-stat"><strong>${count}</strong> ${dept}</div>`)
         .join('');
-      document.getElementById('topDepts').innerHTML = topDepts || '<p class="text-muted">No department ranking available.</p>';
+      document.getElementById('topDepts').innerHTML = topDepts;
 
-      // Approvals Queue
+      // Load Approvals
       const pendingAlumni = JSON.parse(localStorage.getItem('pendingAlumni')) || [];
       const approvalHtml = pendingAlumni.map(alum => `
         <tr>
-          <td><strong style="color: #0f172a;">${alum.firstName} ${alum.lastName}</strong></td>
+          <td>${alum.firstName} ${alum.lastName}</td>
           <td>${alum.email}</td>
           <td>${alum.department}</td>
-          <td>Batch ${alum.batch}</td>
+          <td>${alum.batch}</td>
           <td>
-            <div style="display: flex; gap: 0.5rem;">
-              <button class="btn btn-sm btn-success" onclick="approveAlumni('${alum.id}')">Approve</button>
-              <button class="btn btn-sm btn-danger" onclick="rejectAlumni('${alum.id}')">Reject</button>
-            </div>
+            <button class="btn btn-success" onclick="approveAlumni('${alum.id}')">Approve</button>
+            <button class="btn btn-danger" onclick="rejectAlumni('${alum.id}')">Reject</button>
           </td>
         </tr>
-      `).join('') || '<tr><td colspan="5" class="text-center text-muted" style="padding: 2.5rem;">No pending approvals in queue.</td></tr>';
+      `).join('') || '<tr><td colspan="5" style="text-align: center;">No pending approvals</td></tr>';
       document.getElementById('approvalsTable').innerHTML = approvalHtml;
 
-      // Reports Summaries
+      // Reports
       document.getElementById('metricsReport').innerHTML = `
-        <div class="stat-bar-row"><span>Verified Alumni</span><strong>${approvedAlumni.length}</strong></div>
-        <div class="stat-bar-row"><span>Pending In Queue</span><strong>${pendingAlumni.length}</strong></div>
-        <div class="stat-bar-row"><span>Application Velocity</span><strong>${approvedAlumni.length > 0 ? (applications.length / approvedAlumni.length).toFixed(1) : 0} / member</strong></div>
+        <div class="mini-stat"><strong>Alumni</strong><br>${approvedAlumni.length} approved</div>
+        <div class="mini-stat"><strong>Pending</strong><br>${pendingAlumni.length} awaiting approval</div>
+        <div class="mini-stat"><strong>Avg Applications</strong><br>${approvedAlumni.length > 0 ? (applications.length / approvedAlumni.length).toFixed(1) : 0} per alumni</div>
       `;
 
       document.getElementById('oppReport').innerHTML = `
-        <div class="stat-bar-row"><span>Internships Active</span><strong>${internships.length}</strong></div>
-        <div class="stat-bar-row"><span>Placement Drives</span><strong>${placements.length}</strong></div>
-        <div class="stat-bar-row"><span>Total Inflow</span><strong>${applications.length} applications</strong></div>
+        <div class="mini-stat"><strong>Internships</strong><br>${internships.length} posted</div>
+        <div class="mini-stat"><strong>Placements</strong><br>${placements.length} posted</div>
+        <div class="mini-stat"><strong>Total Applied</strong><br>${applications.length} submissions</div>
       `;
 
       document.getElementById('eventReport').innerHTML = `
-        <div class="stat-bar-row"><span>Published Summits</span><strong>${events.length}</strong></div>
-        <div class="stat-bar-row"><span>Total RSVPs</span><strong>${(JSON.parse(localStorage.getItem('eventRegistrations') || '[]')).length}</strong></div>
+        <div class="mini-stat"><strong>Events Organized</strong><br>${events.length}</div>
+        <div class="mini-stat"><strong>Registrations</strong><br>${JSON.parse(localStorage.getItem('eventRegistrations') || '[]').length}</div>
       `;
 
       document.getElementById('quickStats').innerHTML = `
-        <div class="stat-bar-row"><span>Active Alumni Records</span><strong>${approvedAlumni.length}</strong></div>
-        <div class="stat-bar-row"><span>Pending Verification</span><strong>${pendingAlumni.length}</strong></div>
-        <div class="stat-bar-row"><span>Job Listings</span><strong>${internships.length + placements.length}</strong></div>
-        <div class="stat-bar-row"><span>Total Applications</span><strong>${applications.length}</strong></div>
+        <div class="mini-stat"><strong>${approvedAlumni.length}</strong> Active Alumni</div>
+        <div class="mini-stat"><strong>${pendingAlumni.length}</strong> Pending Approvals</div>
+        <div class="mini-stat"><strong>${internships.length + placements.length}</strong> Open Positions</div>
+        <div class="mini-stat"><strong>${applications.length}</strong> Total Applications</div>
       `;
     }
 
     function switchTab(tab) {
-      document.querySelectorAll('.section-view').forEach(s => s.classList.remove('active'));
+      document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
       document.querySelectorAll('.nav-menu a').forEach(a => a.classList.remove('active'));
-      
-      const targetSec = document.getElementById(tab);
-      if(targetSec) targetSec.classList.add('active');
-      
-      const targetLink = document.getElementById(tab + 'Link');
-      if(targetLink) targetLink.classList.add('active');
+      document.getElementById(tab).classList.add('active');
+      document.getElementById(tab + 'Link').classList.add('active');
     }
 
     function approveAlumni(id) {
@@ -508,16 +334,17 @@
       if(!alumni) return;
       
       localStorage.setItem('pendingAlumni', JSON.stringify(pendingAlumni.filter(a => a.id !== id)));
-      alumni.status = 'approved';
       approvedAlumni.push(alumni);
       localStorage.setItem('approvedAlumni', JSON.stringify(approvedAlumni));
+      alert('✅ Alumni approved!');
       loadAnalytics();
     }
 
     function rejectAlumni(id) {
-      if(!confirm('Confirm rejection of this registration?')) return;
+      if(!confirm('Reject this application?')) return;
       const pending = JSON.parse(localStorage.getItem('pendingAlumni')) || [];
       localStorage.setItem('pendingAlumni', JSON.stringify(pending.filter(a => a.id !== id)));
+      alert('❌ Application rejected');
       loadAnalytics();
     }
 
@@ -539,7 +366,7 @@
         data = events.map(e => [e.title, new Date(e.date).toLocaleDateString(), e.location, e.description]);
       }
       
-      const csv = [headers, ...data].map(row => row.map(cell => `"${cell || ''}"`).join(',')).join('\n');
+      const csv = [headers, ...data].map(row => row.map(cell => `"${cell}"`).join(',')).join('\\n');
       const blob = new Blob([csv], { type: 'text/csv' });
       const url = window.URL.createObjectURL(blob);
       const a = document.createElement('a');
@@ -570,6 +397,7 @@
 
     function backupData() {
       exportToJSON();
+      alert('✅ Backup created successfully!');
     }
 
     function restoreData(event) {
@@ -587,17 +415,17 @@
           if(data.internships) localStorage.setItem('adminInternships', JSON.stringify(data.internships));
           if(data.placements) localStorage.setItem('adminPlacements', JSON.stringify(data.placements));
           
-          alert('System data restored successfully.');
+          alert('✅ Data restored successfully!');
           loadAnalytics();
         } catch(err) {
-          alert('Invalid backup archive.');
+          alert('❌ Invalid backup file');
         }
       };
       reader.readAsText(file);
     }   
 
     function logout() {
-      if(confirm('Confirm administrative sign out?')) {
+      if(confirm('Logout?')) {
         localStorage.removeItem('isAdminLoggedIn');
         window.location.href = '../admin/login.html';
       }

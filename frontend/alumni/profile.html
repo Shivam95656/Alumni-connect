@@ -3,534 +3,327 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Alumni Profile & Portfolio - Alumni Connect</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="../shared/css/style.css">
+  <title>Profile - Alumni Connect</title>
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
-    body { 
-      font-family: var(--font-sans, 'Plus Jakarta Sans', sans-serif); 
-      background: #f8fafc; 
-      color: #0f172a; 
-      min-height: 100vh;
-    }
+    body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #f8f9fa; }
+    
+    @keyframes slideUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
+    @keyframes scaleIn { from { opacity: 0; transform: scale(0.9); } to { opacity: 1; transform: scale(1); } }
 
-    .top-nav {
-      background: #ffffff;
-      border-bottom: 1px solid #e2e8f0;
-      padding: 0.85rem 2rem;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      position: sticky;
-      top: 0;
-      z-index: 1000;
-      backdrop-filter: blur(12px);
-    }
+    .navbar { background: linear-gradient(135deg, #16a34a 0%, #15803d 100%); color: white; padding: 1.2rem 2rem; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 8px 20px rgba(22, 163, 74, 0.2); position: sticky; top: 0; z-index: 1000; }
+    .navbar h1 { font-size: 1.5rem; font-weight: 700; }
+    .nav-menu { display: flex; gap: 1.5rem; list-style: none; align-items: center; }
+    .nav-menu a { color: #e0e0e0; text-decoration: none; font-weight: 500; transition: color 0.3s; cursor: pointer; }
+    .nav-menu a:hover { color: white; }
+    .logout-btn { background: rgba(255, 255, 255, 0.2); color: white; padding: 8px 16px; border: 1px solid rgba(255, 255, 255, 0.3); border-radius: 6px; cursor: pointer; transition: all 0.3s; }
+    .logout-btn:hover { background: rgba(255, 255, 255, 0.3); }
 
-    .brand-link {
-      display: flex;
-      align-items: center;
-      gap: 0.6rem;
-      text-decoration: none;
-      color: #0f172a;
-      font-weight: 700;
-      font-size: 0.95rem;
-    }
+    .container { max-width: 1200px; margin: 0 auto; padding: 2rem; }
+    .section { animation: slideUp 0.5s ease-out; }
+    .hidden { display: none; }
 
-    .nav-actions {
-      display: flex;
-      align-items: center;
-      gap: 1rem;
-    }
+    /* Profile Header */
+    .profile-header { background: linear-gradient(135deg, #16a34a 0%, #15803d 100%); color: white; padding: 3rem 2rem; border-radius: 16px; margin-bottom: 2rem; box-shadow: 0 8px 20px rgba(22, 163, 74, 0.2); display: grid; grid-template-columns: auto 1fr; gap: 2rem; align-items: center; }
+    .profile-avatar { width: 120px; height: 120px; border-radius: 50%; background: linear-gradient(135deg, #4ade80 0%, #86efac 100%); display: flex; align-items: center; justify-content: center; font-size: 3rem; border: 4px solid white; box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2); }
+    .profile-info h2 { font-size: 2rem; margin-bottom: 0.5rem; }
+    .profile-info p { opacity: 0.9; margin: 0.3rem 0; }
+    .profile-meta { display: flex; gap: 2rem; margin-top: 1rem; }
+    .meta-item { display: flex; flex-direction: column; }
+    .meta-item span { font-size: 0.9rem; opacity: 0.8; }
+    .meta-item strong { font-size: 1.2rem; }
 
-    .profile-container {
-      max-width: 1100px;
-      margin: 0 auto;
-      padding: 2.25rem 1.5rem 5rem;
-    }
+    /* Completion Tracker */
+    .completion-card { background: white; padding: 2rem; border-radius: 12px; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08); margin-bottom: 2rem; animation: slideUp 0.5s ease-out 0.1s both; }
+    .completion-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; }
+    .completion-header h3 { color: #6366f1; font-size: 1.3rem; }
+    .completion-percent { font-size: 2rem; font-weight: 700; color: #10b981; }
+    .completion-bar { width: 100%; height: 10px; background: #e5e7eb; border-radius: 10px; overflow: hidden; margin-bottom: 1rem; }
+    .completion-fill { height: 100%; background: linear-gradient(90deg, #10b981, #06b6d4); border-radius: 10px; transition: width 0.3s ease; width: 60%; }
+    .completion-items { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; }
+    .completion-item { display: flex; align-items: center; gap: 0.75rem; padding: 0.75rem; background: #f8f9fa; border-radius: 8px; }
+    .completion-item.done { background: #d1fae5; }
+    .completion-checkbox { width: 24px; height: 24px; border-radius: 50%; background: #e5e7eb; display: flex; align-items: center; justify-content: center; font-size: 0.8rem; }
+    .completion-item.done .completion-checkbox { background: #10b981; color: white; }
 
-    /* Executive Profile Header */
-    .profile-hero-card {
-      background: #0f172a;
-      color: #ffffff;
-      padding: 2.5rem;
-      border-radius: 14px;
-      margin-bottom: 2rem;
-      box-shadow: 0 4px 20px rgba(15, 23, 42, 0.08);
-      display: grid;
-      grid-template-columns: auto 1fr;
-      gap: 2rem;
-      align-items: center;
-      position: relative;
-      overflow: hidden;
-    }
+    /* Tabs */
+    .section-tabs { display: flex; gap: 0; border-bottom: 2px solid #e5e7eb; margin-bottom: 2rem; }
+    .tab-btn { padding: 1rem 1.5rem; background: none; border: none; cursor: pointer; font-size: 1rem; font-weight: 500; color: #666; border-bottom: 3px solid transparent; transition: all 0.3s; }
+    .tab-btn.active { color: #6366f1; border-bottom-color: #6366f1; }
+    .tab-btn:hover { color: #6366f1; }
 
-    .profile-hero-card::after {
-      content: '';
-      position: absolute;
-      top: -50%;
-      right: -10%;
-      width: 400px;
-      height: 400px;
-      background: radial-gradient(circle, rgba(37, 99, 235, 0.2) 0%, transparent 70%);
-      pointer-events: none;
-    }
+    /* Tab Content */
+    .tab-content { animation: slideUp 0.3s ease-out; }
 
-    .profile-avatar-circle {
-      width: 96px;
-      height: 96px;
-      border-radius: 14px;
-      background: #1e293b;
-      border: 2px solid rgba(255, 255, 255, 0.15);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 2.25rem;
-      font-weight: 800;
-      color: #93c5fd;
-    }
+    /* Form Styles */
+    .form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.5rem; margin-bottom: 2rem; }
+    .form-group { display: flex; flex-direction: column; }
+    .form-group label { font-weight: 600; color: #333; margin-bottom: 0.5rem; }
+    .form-group input, .form-group textarea, .form-group select { padding: 0.75rem; border: 1px solid #ddd; border-radius: 8px; font-size: 1rem; font-family: inherit; transition: border-color 0.3s; }
+    .form-group input:focus, .form-group textarea:focus, .form-group select:focus { outline: none; border-color: #6366f1; box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1); }
+    .form-group textarea { resize: vertical; min-height: 120px; }
 
-    .profile-hero-info h2 {
-      font-size: 1.85rem;
-      font-weight: 800;
-      color: #ffffff;
-      letter-spacing: -0.03em;
-      margin-bottom: 0.25rem;
-    }
+    /* Cards */
+    .data-card { background: white; padding: 1.5rem; border-radius: 12px; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06); margin-bottom: 1rem; animation: slideUp 0.5s ease-out both; display: grid; grid-template-columns: 1fr auto; gap: 2rem; align-items: center; }
+    .data-card:hover { box-shadow: 0 4px 15px rgba(99, 102, 241, 0.1); }
+    .card-content h4 { color: #6366f1; margin-bottom: 0.3rem; }
+    .card-content p { color: #666; margin: 0.2rem 0; }
+    .card-actions { display: flex; gap: 0.5rem; }
+    .btn-sm { padding: 6px 12px; font-size: 0.85rem; border: none; border-radius: 6px; cursor: pointer; transition: all 0.3s; }
+    .btn-edit { background: #6366f1; color: white; }
+    .btn-edit:hover { background: #4f46e5; }
+    .btn-delete { background: #ef4444; color: white; }
+    .btn-delete:hover { background: #dc2626; }
+    .btn-add { background: #10b981; color: white; padding: 0.75rem 1.5rem; display: inline-block; margin-bottom: 1rem; }
+    .btn-add:hover { background: #059669; }
 
-    .profile-hero-info p {
-      color: #94a3b8;
-      font-size: 0.95rem;
-      margin-bottom: 0.75rem;
-    }
+    /* Section Styling */
+    .content-section { background: white; padding: 2rem; border-radius: 12px; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08); margin-bottom: 2rem; animation: slideUp 0.5s ease-out both; }
+    .content-section h3 { color: #6366f1; font-size: 1.3rem; margin-bottom: 1.5rem; padding-bottom: 1rem; border-bottom: 2px solid #e5e7eb; }
 
-    .hero-meta-row {
-      display: flex;
-      gap: 2rem;
-      flex-wrap: wrap;
-    }
+    /* Stats Grid */
+    .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 1rem; margin-bottom: 2rem; }
+    .stat-box { background: linear-gradient(135deg, #6366f1 0%, #818cf8 100%); color: white; padding: 1.5rem; border-radius: 12px; text-align: center; }
+    .stat-box h4 { font-size: 1.8rem; margin-bottom: 0.5rem; }
+    .stat-box p { font-size: 0.9rem; opacity: 0.9; }
 
-    .meta-col {
-      display: flex;
-      flex-direction: column;
-    }
+    /* Modal */
+    .modal { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0, 0, 0, 0.5); z-index: 2000; align-items: center; justify-content: center; }
+    .modal.show { display: flex; animation: scaleIn 0.3s ease-out; }
+    .modal-content { background: white; padding: 2rem; border-radius: 16px; max-width: 600px; width: 90%; max-height: 90vh; overflow-y: auto; box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3); }
+    .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; }
+    .modal-header h2 { color: #6366f1; }
+    .modal-close { background: none; border: none; font-size: 1.5rem; cursor: pointer; }
+    .modal-buttons { display: flex; gap: 1rem; justify-content: flex-end; margin-top: 1.5rem; }
+    .btn-primary { background: #6366f1; color: white; padding: 0.75rem 1.5rem; border: none; border-radius: 8px; cursor: pointer; }
+    .btn-primary:hover { background: #4f46e5; }
+    .btn-secondary { background: #e5e7eb; color: #333; padding: 0.75rem 1.5rem; border: none; border-radius: 8px; cursor: pointer; }
+    .btn-secondary:hover { background: #d1d5db; }
 
-    .meta-col span {
-      font-size: 0.75rem;
-      text-transform: uppercase;
-      letter-spacing: 0.06em;
-      color: #64748b;
-      font-weight: 600;
-    }
-
-    .meta-col strong {
-      font-size: 1.05rem;
-      color: #f1f5f9;
-      font-weight: 700;
-    }
-
-    /* Completion Progress Card */
-    .completion-card {
-      background: #ffffff;
-      border: 1px solid #e2e8f0;
-      border-radius: 12px;
-      padding: 1.75rem;
-      box-shadow: 0 1px 3px rgba(15, 23, 42, 0.04);
-      margin-bottom: 2rem;
-    }
-
-    .completion-head {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 0.75rem;
-    }
-
-    .completion-head h3 {
-      font-size: 1.05rem;
-      font-weight: 700;
-      color: #0f172a;
-    }
-
-    .completion-percent {
-      font-size: 1.25rem;
-      font-weight: 800;
-      color: #2563eb;
-    }
-
-    .progress-track {
-      width: 100%;
-      height: 8px;
-      background: #f1f5f9;
-      border-radius: 9999px;
-      overflow: hidden;
-      margin-bottom: 1.25rem;
-    }
-
-    .progress-fill {
-      height: 100%;
-      background: #2563eb;
-      border-radius: 9999px;
-      transition: width 0.3s ease;
-      width: 65%;
-    }
-
-    .checklist-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
-      gap: 0.75rem;
-    }
-
-    .check-pill {
-      display: flex;
-      align-items: center;
-      gap: 0.6rem;
-      padding: 0.5rem 0.85rem;
-      background: #f8fafc;
-      border: 1px solid #e2e8f0;
-      border-radius: 6px;
-      font-size: 0.825rem;
-      font-weight: 600;
-      color: #475569;
-    }
-
-    .check-pill.done {
-      background: #eff6ff;
-      border-color: #bfdbfe;
-      color: #1e40af;
-    }
-
-    .check-circle {
-      width: 18px;
-      height: 18px;
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 0.7rem;
-      background: #e2e8f0;
-      color: #64748b;
-    }
-
-    .check-pill.done .check-circle {
-      background: #2563eb;
-      color: #ffffff;
-    }
-
-    /* Tab Controls */
-    .tab-strip {
-      display: flex;
-      border-bottom: 1px solid #e2e8f0;
-      margin-bottom: 1.75rem;
-      gap: 0.5rem;
-      overflow-x: auto;
-    }
-
-    .tab-item {
-      padding: 0.75rem 1.25rem;
-      background: none;
-      border: none;
-      border-bottom: 2px solid transparent;
-      font-family: inherit;
-      font-size: 0.9rem;
-      font-weight: 600;
-      color: #64748b;
-      cursor: pointer;
-      transition: all 0.15s ease;
-      white-space: nowrap;
-    }
-
-    .tab-item:hover {
-      color: #0f172a;
-    }
-
-    .tab-item.active {
-      color: #0f172a;
-      border-bottom-color: #0f172a;
-    }
-
-    /* Content Box */
-    .content-box {
-      background: #ffffff;
-      border: 1px solid #e2e8f0;
-      border-radius: 12px;
-      padding: 2rem;
-      box-shadow: 0 1px 3px rgba(15, 23, 42, 0.04);
-      margin-bottom: 2rem;
-    }
-
-    .content-box-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 1.5rem;
-      padding-bottom: 1rem;
-      border-bottom: 1px solid #f1f5f9;
-    }
-
-    .content-box-header h3 {
-      font-size: 1.2rem;
-      font-weight: 700;
-      color: #0f172a;
-      letter-spacing: -0.02em;
-    }
-
-    .entry-card {
-      background: #f8fafc;
-      border: 1px solid #e2e8f0;
-      border-radius: 8px;
-      padding: 1.25rem;
-      margin-bottom: 1rem;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 1rem;
-    }
-
-    .entry-title {
-      font-size: 0.95rem;
-      font-weight: 700;
-      color: #0f172a;
-    }
-
-    .entry-sub {
-      font-size: 0.85rem;
-      color: #64748b;
-      margin-top: 0.2rem;
-    }
+    /* Alerts */
+    .alert { padding: 1rem; border-radius: 8px; margin-bottom: 1rem; animation: slideUp 0.3s ease-out; }
+    .alert-success { background: #d1fae5; color: #065f46; border-left: 4px solid #10b981; }
+    .alert-error { background: #fee2e2; color: #7f1d1d; border-left: 4px solid #ef4444; }
 
     @media (max-width: 768px) {
-      .profile-hero-card { grid-template-columns: 1fr; text-align: center; }
-      .profile-avatar-circle { margin: 0 auto; }
-      .hero-meta-row { justify-content: center; }
+      .profile-header { grid-template-columns: 1fr; text-align: center; }
+      .profile-meta { justify-content: center; }
+      .data-card { grid-template-columns: 1fr; }
+      .form-grid { grid-template-columns: 1fr; }
+      .completion-items { grid-template-columns: 1fr; }
     }
   </style>
 </head>
 <body>
-  <!-- Top Navigation -->
-  <header class="top-nav">
-    <a href="./dashboard.html" class="brand-link">
-      <span>&larr;</span>
-      <span>Workspace Dashboard</span>
-    </a>
+  <nav class="navbar">
+    <h1>🎓 Alumni Connect</h1>
+    <ul class="nav-menu">
+      <li><a id="goToDashboard">← Dashboard</a></li>
+      <li><button class="logout-btn" onclick="logout()">Logout</button></li>
+    </ul>
+  </nav>
 
-    <div class="nav-actions">
-      <button class="btn btn-sm btn-secondary" onclick="logout()">Sign Out</button>
-    </div>
-  </header>
-
-  <main class="profile-container">
-    <!-- Profile Hero Card -->
-    <div class="profile-hero-card">
-      <div class="profile-avatar-circle" id="profileAvatar">--</div>
-      <div class="profile-hero-info">
-        <h2 id="profileName">Loading Profile...</h2>
-        <p id="profileEmail">user@institution.edu</p>
-        <div class="hero-meta-row">
-          <div class="meta-col">
-            <span>Graduation Cohort</span>
-            <strong id="profileBatch">----</strong>
-          </div>
-          <div class="meta-col">
-            <span>Faculty / Dept</span>
-            <strong id="profileDept">----</strong>
-          </div>
-          <div class="meta-col">
-            <span>Year Standing</span>
-            <strong id="profileYear">--</strong>
-          </div>
+  <div class="container">
+    <!-- Profile Header -->
+    <div class="profile-header">
+      <div class="profile-avatar" id="profileAvatar">👤</div>
+      <div class="profile-info">
+        <h2 id="profileName">John Doe</h2>
+        <p id="profileEmail">john@example.com</p>
+        <div class="profile-meta">
+          <div class="meta-item"><span>Batch</span><strong id="profileBatch">2022</strong></div>
+          <div class="meta-item"><span>Department</span><strong id="profileDept">CSE</strong></div>
+          <div class="meta-item"><span>Year</span><strong id="profileYear">3</strong></div>
         </div>
       </div>
     </div>
 
-    <!-- Completion Tracker -->
+    <!-- Profile Completion Tracker -->
     <div class="completion-card">
-      <div class="completion-head">
-        <h3>Institutional Profile Readiness</h3>
-        <div class="completion-percent" id="completionPercent">75%</div>
+      <div class="completion-header">
+        <h3>📊 Profile Completion</h3>
+        <div class="completion-percent" id="completionPercent">60%</div>
       </div>
-      <div class="progress-track">
-        <div class="progress-fill" id="completionFill"></div>
+      <div class="completion-bar">
+        <div class="completion-fill" id="completionFill"></div>
       </div>
-      <div class="checklist-grid">
-        <div class="check-pill done">
-          <div class="check-circle">&#10003;</div>
-          <span>Basic Credentials</span>
+      <div class="completion-items">
+        <div class="completion-item done">
+          <div class="completion-checkbox">✓</div>
+          <span>Basic Info</span>
         </div>
-        <div class="check-pill done">
-          <div class="check-circle">&#10003;</div>
-          <span>Contact Info</span>
+        <div class="completion-item done">
+          <div class="completion-checkbox">✓</div>
+          <span>Contact Details</span>
         </div>
-        <div class="check-pill done">
-          <div class="check-circle">&#10003;</div>
-          <span>Key Skills</span>
+        <div class="completion-item">
+          <div class="completion-checkbox">○</div>
+          <span>Skills</span>
         </div>
-        <div class="check-pill done">
-          <div class="check-circle">&#10003;</div>
+        <div class="completion-item">
+          <div class="completion-checkbox">○</div>
           <span>Experience</span>
         </div>
-        <div class="check-pill">
-          <div class="check-circle">&#9675;</div>
-          <span>Resume Document</span>
+        <div class="completion-item">
+          <div class="completion-checkbox">○</div>
+          <span>Achievements</span>
+        </div>
+        <div class="completion-item">
+          <div class="completion-checkbox">○</div>
+          <span>Resume</span>
         </div>
       </div>
     </div>
 
-    <!-- Segmented Tabs -->
-    <div class="tab-strip">
-      <button class="tab-item active" onclick="switchTab('personal')">Personal Profile</button>
-      <button class="tab-item" onclick="switchTab('professional')">Career Experience</button>
-      <button class="tab-item" onclick="switchTab('skills')">Skills & Capabilities</button>
-      <button class="tab-item" onclick="switchTab('achievements')">Honors & Awards</button>
-      <button class="tab-item" onclick="switchTab('resume')">Resume Document</button>
-    </div>
+    <!-- Tabs -->
+    <div style="margin-bottom: 2rem;">
+      <div class="section-tabs">
+        <button class="tab-btn active" onclick="switchTab('personal')">👤 Personal Info</button>
+        <button class="tab-btn" onclick="switchTab('professional')">💼 Professional</button>
+        <button class="tab-btn" onclick="switchTab('skills')">⭐ Skills</button>
+        <button class="tab-btn" onclick="switchTab('achievements')">🏆 Achievements</button>
+        <button class="tab-btn" onclick="switchTab('resume')">📄 Resume</button>
+      </div>
 
-    <!-- Personal Tab -->
-    <div id="personal" class="content-box tab-content">
-      <div class="content-box-header">
-        <h3>Personal Details</h3>
+      <!-- Personal Info Tab -->
+      <div id="personal" class="tab-content content-section">
+        <h3>Personal Information</h3>
+        <div class="form-grid">
+          <div class="form-group">
+            <label>First Name</label>
+            <input type="text" id="firstName" value="John">
+          </div>
+          <div class="form-group">
+            <label>Last Name</label>
+            <input type="text" id="lastName" value="Doe">
+          </div>
+          <div class="form-group">
+            <label>Email</label>
+            <input type="email" id="email" value="john@example.com">
+          </div>
+          <div class="form-group">
+            <label>Phone</label>
+            <input type="text" id="phone" value="">
+          </div>
+          <div class="form-group">
+            <label>Date of Birth</label>
+            <input type="date" id="dob">
+          </div>
+          <div class="form-group">
+            <label>Location</label>
+            <input type="text" id="location" placeholder="City, Country">
+          </div>
+          <div class="form-group" style="grid-column: 1/-1;">
+            <label>Bio</label>
+            <textarea id="bio" placeholder="Tell us about yourself..."></textarea>
+          </div>
+        </div>
+        <button class="btn-add" onclick="saveProfile()">💾 Save Changes</button>
       </div>
-      <div class="form-grid">
-        <div class="form-group">
-          <label>First Name</label>
-          <input type="text" id="firstName">
-        </div>
-        <div class="form-group">
-          <label>Last Name</label>
-          <input type="text" id="lastName">
-        </div>
-        <div class="form-group">
-          <label>Institutional Email</label>
-          <input type="email" id="email" readonly style="background: #f8fafc;">
-        </div>
-        <div class="form-group">
-          <label>Phone Number</label>
-          <input type="text" id="phone">
-        </div>
-        <div class="form-group">
-          <label>Geographic Location</label>
-          <input type="text" id="location" placeholder="e.g. San Francisco, CA / Bengaluru">
-        </div>
-        <div class="form-group" style="grid-column: 1/-1;">
-          <label>Professional Bio & Objective</label>
-          <textarea id="bio" rows="4" placeholder="Brief executive summary of your background, achievements, and focus areas..."></textarea>
-        </div>
-      </div>
-      <div style="display: flex; justify-content: flex-end; margin-top: 1rem;">
-        <button class="btn btn-primary" onclick="saveProfile()">Save Changes</button>
-      </div>
-    </div>
 
-    <!-- Professional Tab -->
-    <div id="professional" class="content-box tab-content hidden">
-      <div class="content-box-header">
-        <h3>Career Background</h3>
-        <button class="btn btn-sm btn-primary" onclick="showAddExperienceModal()">+ Add Position</button>
-      </div>
-      <div class="form-grid" style="margin-bottom: 2rem;">
-        <div class="form-group">
-          <label>Current Company / Organization</label>
-          <input type="text" id="company" placeholder="e.g. Google, Microsoft, Startup">
+      <!-- Professional Tab -->
+      <div id="professional" class="tab-content content-section hidden">
+        <h3>Professional Information</h3>
+        <div class="form-grid">
+          <div class="form-group">
+            <label>Current Company</label>
+            <input type="text" id="company" placeholder="e.g., Google, Microsoft">
+          </div>
+          <div class="form-group">
+            <label>Current Position</label>
+            <input type="text" id="position" placeholder="e.g., Software Engineer">
+          </div>
+          <div class="form-group">
+            <label>Years of Experience</label>
+            <input type="number" id="experience" min="0" max="50">
+          </div>
+          <div class="form-group">
+            <label>LinkedIn Profile</label>
+            <input type="url" id="linkedin" placeholder="https://linkedin.com/in/yourprofile">
+          </div>
+          <div class="form-group">
+            <label>GitHub Profile</label>
+            <input type="url" id="github" placeholder="https://github.com/yourprofile">
+          </div>
+          <div class="form-group">
+            <label>Portfolio Website</label>
+            <input type="url" id="portfolio" placeholder="https://yourportfolio.com">
+          </div>
         </div>
+        <h4 style="margin-top: 2rem; color: #6366f1;">Work Experience</h4>
+        <button class="btn-add" onclick="showAddExperienceModal()">+ Add Experience</button>
+        <div id="experienceList"></div>
+      </div>
+
+      <!-- Skills Tab -->
+      <div id="skills" class="tab-content content-section hidden">
+        <h3>Skills</h3>
+        <button class="btn-add" onclick="showAddSkillModal()">+ Add Skill</button>
+        <div id="skillsList"></div>
+      </div>
+
+      <!-- Achievements Tab -->
+      <div id="achievements" class="tab-content content-section hidden">
+        <h3>Achievements & Certifications</h3>
+        <button class="btn-add" onclick="showAddAchievementModal()">+ Add Achievement</button>
+        <div id="achievementsList"></div>
+      </div>
+
+      <!-- Resume Tab -->
+      <div id="resume" class="tab-content content-section hidden">
+        <h3>Resume</h3>
         <div class="form-group">
-          <label>Current Title</label>
-          <input type="text" id="position" placeholder="e.g. Staff Software Engineer">
+          <label>Upload Resume (PDF)</label>
+          <input type="file" id="resumeFile" accept=".pdf,.doc,.docx">
         </div>
-        <div class="form-group">
-          <label>Years of Experience</label>
-          <input type="number" id="experience" min="0" max="60" placeholder="5">
-        </div>
-        <div class="form-group">
-          <label>LinkedIn Profile URL</label>
-          <input type="url" id="linkedin" placeholder="https://linkedin.com/in/username">
-        </div>
-      </div>
-      <h4 style="font-size: 0.95rem; font-weight: 700; color: #0f172a; margin-bottom: 1rem; text-transform: uppercase; letter-spacing: 0.04em;">Recorded Roles</h4>
-      <div id="experienceList"></div>
-      <div style="display: flex; justify-content: flex-end; margin-top: 1.5rem;">
-        <button class="btn btn-secondary" onclick="saveProfile()">Update Information</button>
-      </div>
-    </div>
-
-    <!-- Skills Tab -->
-    <div id="skills" class="content-box tab-content hidden">
-      <div class="content-box-header">
-        <h3>Verified Skills</h3>
-        <button class="btn btn-sm btn-primary" onclick="showAddSkillModal()">+ Add Skill</button>
-      </div>
-      <div id="skillsList"></div>
-    </div>
-
-    <!-- Achievements Tab -->
-    <div id="achievements" class="content-box tab-content hidden">
-      <div class="content-box-header">
-        <h3>Honors & Certifications</h3>
-        <button class="btn btn-sm btn-primary" onclick="showAddAchievementModal()">+ Add Honor</button>
-      </div>
-      <div id="achievementsList"></div>
-    </div>
-
-    <!-- Resume Tab -->
-    <div id="resume" class="content-box tab-content hidden">
-      <div class="content-box-header">
-        <h3>Resume Document</h3>
-      </div>
-      <p style="color: #64748b; font-size: 0.9rem; margin-bottom: 1.5rem;">Upload your latest CV in PDF format for institutional job drives and referrals.</p>
-      <div class="form-group">
-        <label>Select PDF Document</label>
-        <input type="file" id="resumeFile" accept=".pdf">
-      </div>
-      <button class="btn btn-primary" onclick="uploadResume()">Upload Resume</button>
-      <div id="resumeInfo" style="margin-top: 1.5rem;"></div>
-    </div>
-  </main>
-
-  <!-- Add Skill Modal -->
-  <div id="addSkillModal" class="modal">
-    <div class="modal-content">
-      <div class="content-box-header">
-        <h3>Add Skill</h3>
-        <span class="cursor-pointer" onclick="closeModal('addSkillModal')">&times;</span>
-      </div>
-      <div class="form-group">
-        <label>Skill Name</label>
-        <input type="text" id="skilName" placeholder="e.g. Distributed Systems, Kubernetes, Go">
-      </div>
-      <div class="form-group">
-        <label>Proficiency</label>
-        <select id="skillLevel">
-          <option>Intermediate</option>
-          <option>Advanced</option>
-          <option>Expert / Lead</option>
-          <option>Foundational</option>
-        </select>
-      </div>
-      <div style="display: flex; gap: 0.75rem; justify-content: flex-end; margin-top: 1.5rem;">
-        <button class="btn btn-secondary" onclick="closeModal('addSkillModal')">Cancel</button>
-        <button class="btn btn-primary" onclick="addSkill()">Add Skill</button>
+        <button class="btn-add" onclick="uploadResume()">📤 Upload Resume</button>
+        <div id="resumeInfo" style="margin-top: 1rem;"></div>
       </div>
     </div>
   </div>
 
-  <!-- Add Experience Modal -->
+  <!-- Modals -->
+  <div id="addSkillModal" class="modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2>Add Skill</h2>
+        <button class="modal-close" onclick="closeModal('addSkillModal')">×</button>
+      </div>
+      <div class="form-group">
+        <label>Skill Name</label>
+        <input type="text" id="skilName" placeholder="e.g., Python, JavaScript">
+      </div>
+      <div class="form-group">
+        <label>Proficiency Level</label>
+        <select id="skillLevel">
+          <option>Beginner</option>
+          <option>Intermediate</option>
+          <option>Advanced</option>
+          <option>Expert</option>
+        </select>
+      </div>
+      <div class="modal-buttons">
+        <button class="btn-secondary" onclick="closeModal('addSkillModal')">Cancel</button>
+        <button class="btn-primary" onclick="addSkill()">Add Skill</button>
+      </div>
+    </div>
+  </div>
+
   <div id="addExperienceModal" class="modal">
     <div class="modal-content">
-      <div class="content-box-header">
-        <h3>Add Work Experience</h3>
-        <span class="cursor-pointer" onclick="closeModal('addExperienceModal')">&times;</span>
+      <div class="modal-header">
+        <h2>Add Work Experience</h2>
+        <button class="modal-close" onclick="closeModal('addExperienceModal')">×</button>
       </div>
       <div class="form-group">
-        <label>Company / Institution</label>
-        <input type="text" id="expCompany" placeholder="e.g. Stripe, AWS">
+        <label>Company</label>
+        <input type="text" id="expCompany" placeholder="Company name">
       </div>
       <div class="form-group">
-        <label>Position Title</label>
-        <input type="text" id="expPosition" placeholder="e.g. Senior Software Engineer">
+        <label>Position</label>
+        <input type="text" id="expPosition" placeholder="Job title">
       </div>
-      <div class="form-grid">
+      <div class="form-grid" style="grid-template-columns: 1fr 1fr;">
         <div class="form-group">
           <label>Start Date</label>
           <input type="date" id="expStart">
@@ -541,93 +334,54 @@
         </div>
       </div>
       <div class="form-group">
-        <label>Role Summary & Impact</label>
-        <textarea id="expDescription" rows="3" placeholder="Key projects delivered and technical scope..."></textarea>
+        <label>Description</label>
+        <textarea id="expDescription" placeholder="What did you do here?"></textarea>
       </div>
-      <div style="display: flex; gap: 0.75rem; justify-content: flex-end; margin-top: 1.5rem;">
-        <button class="btn btn-secondary" onclick="closeModal('addExperienceModal')">Cancel</button>
-        <button class="btn btn-primary" onclick="addExperience()">Save Experience</button>
+      <div class="modal-buttons">
+        <button class="btn-secondary" onclick="closeModal('addExperienceModal')">Cancel</button>
+        <button class="btn-primary" onclick="addExperience()">Add Experience</button>
       </div>
     </div>
   </div>
 
-  <!-- Add Achievement Modal -->
   <div id="addAchievementModal" class="modal">
     <div class="modal-content">
-      <div class="content-box-header">
-        <h3>Add Honor or Certification</h3>
-        <span class="cursor-pointer" onclick="closeModal('addAchievementModal')">&times;</span>
+      <div class="modal-header">
+        <h2>Add Achievement</h2>
+        <button class="modal-close" onclick="closeModal('addAchievementModal')">×</button>
       </div>
       <div class="form-group">
-        <label>Title</label>
-        <input type="text" id="achTitle" placeholder="e.g. Best Capstone Architecture Award">
+        <label>Achievement Title</label>
+        <input type="text" id="achTitle" placeholder="e.g., Best Project Award">
       </div>
       <div class="form-group">
-        <label>Issuing Body / Description</label>
-        <textarea id="achDescription" rows="2" placeholder="Brief context..."></textarea>
+        <label>Description</label>
+        <textarea id="achDescription" placeholder="Tell us about this achievement"></textarea>
       </div>
       <div class="form-group">
-        <label>Date Awarded</label>
+        <label>Date</label>
         <input type="date" id="achDate">
       </div>
-      <div style="display: flex; gap: 0.75rem; justify-content: flex-end; margin-top: 1.5rem;">
-        <button class="btn btn-secondary" onclick="closeModal('addAchievementModal')">Cancel</button>
-        <button class="btn btn-primary" onclick="addAchievement()">Save Achievement</button>
+      <div class="modal-buttons">
+        <button class="btn-secondary" onclick="closeModal('addAchievementModal')">Cancel</button>
+        <button class="btn-primary" onclick="addAchievement()">Add Achievement</button>
       </div>
     </div>
   </div>
 
   <script>
-    function getActiveUserData() {
-      const userEmail = (localStorage.getItem('userEmail') || '').toLowerCase();
-      if(!userEmail) {
-        window.location.href = './login.html';
-        return null;
-      }
-      const approvedAlumni = JSON.parse(localStorage.getItem('approvedAlumni')) || [];
-      const pendingAlumni = JSON.parse(localStorage.getItem('pendingAlumni')) || [];
-      const currentUser = JSON.parse(localStorage.getItem('currentUser')) || {};
-
-      let matched = approvedAlumni.find(a => a.email && a.email.toLowerCase() === userEmail);
-      if(!matched) matched = pendingAlumni.find(a => a.email && a.email.toLowerCase() === userEmail);
-      if(!matched && currentUser.email && currentUser.email.toLowerCase() === userEmail) matched = currentUser;
-
-      const profile = JSON.parse(localStorage.getItem('userProfile_' + userEmail)) || JSON.parse(localStorage.getItem('userProfile')) || {};
-
-      const firstName = profile.firstName || matched?.firstName || '';
-      const lastName = profile.lastName || matched?.lastName || '';
-      const email = userEmail;
-      const department = matched?.department || profile.department || 'Alumni Member';
-      const batch = matched?.batch || profile.batch || 'Cohort';
-      const year = matched?.year || profile.year || 'Member';
-      const phone = profile.phone || matched?.phone || '';
-      const company = profile.company || '';
-      const position = profile.position || '';
-      const experience = profile.experience || '';
-      const bio = profile.bio || '';
-      const location = profile.location || '';
-
-      return { firstName, lastName, email, department, batch, year, phone, company, position, experience, bio, location };
-    }
-
+    // Load profile data
     function loadProfile() {
-      const user = getActiveUserData();
-      if(!user) return;
-
-      document.getElementById('firstName').value = user.firstName || '';
-      document.getElementById('lastName').value = user.lastName || '';
-      document.getElementById('email').value = user.email || '';
-      document.getElementById('phone').value = user.phone || '';
-      document.getElementById('company').value = user.company || '';
-      document.getElementById('position').value = user.position || '';
-      document.getElementById('experience').value = user.experience || '';
-      document.getElementById('bio').value = user.bio || '';
-      document.getElementById('location').value = user.location || '';
-      
-      document.getElementById('profileBatch').textContent = user.batch ? 'Cohort ' + user.batch : 'Member';
-      document.getElementById('profileDept').textContent = user.department || 'General';
-      document.getElementById('profileYear').textContent = user.year || 'Member';
-
+      const profile = JSON.parse(localStorage.getItem('userProfile')) || {};
+      document.getElementById('firstName').value = profile.firstName || 'John';
+      document.getElementById('lastName').value = profile.lastName || 'Doe';
+      document.getElementById('email').value = profile.email || 'john@example.com';
+      document.getElementById('phone').value = profile.phone || '';
+      document.getElementById('company').value = profile.company || '';
+      document.getElementById('position').value = profile.position || '';
+      document.getElementById('experience').value = profile.experience || '';
+      document.getElementById('bio').value = profile.bio || '';
+      document.getElementById('location').value = profile.location || '';
       updateDisplay();
       loadSkills();
       loadExperience();
@@ -635,144 +389,140 @@
     }
 
     function saveProfile() {
-      const userEmail = (localStorage.getItem('userEmail') || '').toLowerCase();
-      if(!userEmail) return;
-
-      const fName = document.getElementById('firstName').value.trim();
-      const lName = document.getElementById('lastName').value.trim();
-
       const profile = {
-        firstName: fName,
-        lastName: lName,
-        email: userEmail,
-        phone: document.getElementById('phone').value.trim(),
-        company: document.getElementById('company').value.trim(),
-        position: document.getElementById('position').value.trim(),
-        experience: document.getElementById('experience').value.trim(),
-        bio: document.getElementById('bio').value.trim(),
-        location: document.getElementById('location').value.trim()
+        firstName: document.getElementById('firstName').value,
+        lastName: document.getElementById('lastName').value,
+        email: document.getElementById('email').value,
+        phone: document.getElementById('phone').value,
+        company: document.getElementById('company').value,
+        position: document.getElementById('position').value,
+        experience: document.getElementById('experience').value,
+        bio: document.getElementById('bio').value,
+        location: document.getElementById('location').value
       };
-
-      localStorage.setItem('userProfile_' + userEmail, JSON.stringify(profile));
       localStorage.setItem('userProfile', JSON.stringify(profile));
-
-      // Also sync approvedAlumni & currentUser
-      const approvedAlumni = JSON.parse(localStorage.getItem('approvedAlumni')) || [];
-      const idx = approvedAlumni.findIndex(a => a.email && a.email.toLowerCase() === userEmail);
-      if(idx !== -1) {
-        approvedAlumni[idx].firstName = fName;
-        approvedAlumni[idx].lastName = lName;
-        if(profile.phone) approvedAlumni[idx].phone = profile.phone;
-        localStorage.setItem('approvedAlumni', JSON.stringify(approvedAlumni));
-      }
-
-      showAlert('Profile saved successfully.', 'success');
+      showAlert('✅ Profile saved successfully!', 'success');
       updateDisplay();
     }
 
     function updateDisplay() {
-      const user = getActiveUserData();
-      if(!user) return;
-
-      const fullName = (user.firstName + ' ' + user.lastName).trim() || user.email;
-      document.getElementById('profileName').textContent = fullName;
-      document.getElementById('profileEmail').textContent = user.email;
-
-      const initial1 = user.firstName ? user.firstName[0].toUpperCase() : 'A';
-      const initial2 = user.lastName ? user.lastName[0].toUpperCase() : (user.firstName && user.firstName.length > 1 ? user.firstName[1].toUpperCase() : 'M');
-      document.getElementById('profileAvatar').textContent = initial1 + initial2;
+      const profile = JSON.parse(localStorage.getItem('userProfile')) || {};
+      document.getElementById('profileName').textContent = `${profile.firstName || 'John'} ${profile.lastName || 'Doe'}`;
+      document.getElementById('profileEmail').textContent = profile.email || 'john@example.com';
     }
 
     function switchTab(tab) {
       document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
-      document.querySelectorAll('.tab-item').forEach(el => el.classList.remove('active'));
+      document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
       document.getElementById(tab).classList.remove('hidden');
       event.target.classList.add('active');
     }
 
-    function showAddSkillModal() { document.getElementById('addSkillModal').classList.add('show'); }
-    function showAddExperienceModal() { document.getElementById('addExperienceModal').classList.add('show'); }
-    function showAddAchievementModal() { document.getElementById('addAchievementModal').classList.add('show'); }
-    function closeModal(id) { document.getElementById(id).classList.remove('show'); }
+    function showAddSkillModal() {
+      document.getElementById('addSkillModal').classList.add('show');
+    }
+
+    function showAddExperienceModal() {
+      document.getElementById('addExperienceModal').classList.add('show');
+    }
+
+    function showAddAchievementModal() {
+      document.getElementById('addAchievementModal').classList.add('show');
+    }
+
+    function closeModal(modalId) {
+      document.getElementById(modalId).classList.remove('show');
+    }
 
     function addSkill() {
-      const name = document.getElementById('skilName').value.trim();
+      const name = document.getElementById('skilName').value;
       const level = document.getElementById('skillLevel').value;
-      if(!name) { showAlert('Please enter a skill title', 'danger'); return; }
+      if(!name) {showAlert('Please enter skill name', 'error'); return;}
       let skills = JSON.parse(localStorage.getItem('skills') || '[]');
       skills.push({name, level});
       localStorage.setItem('skills', JSON.stringify(skills));
       closeModal('addSkillModal');
       loadSkills();
       document.getElementById('skilName').value = '';
+      showAlert('✅ Skill added!', 'success');
     }
 
     function addExperience() {
-      const company = document.getElementById('expCompany').value.trim();
-      const position = document.getElementById('expPosition').value.trim();
+      const company = document.getElementById('expCompany').value;
+      const position = document.getElementById('expPosition').value;
       const start = document.getElementById('expStart').value;
       const end = document.getElementById('expEnd').value;
       const description = document.getElementById('expDescription').value;
-      if(!company || !position) { showAlert('Please fill required fields', 'danger'); return; }
+      if(!company || !position) {showAlert('Please fill required fields', 'error'); return;}
       let experiences = JSON.parse(localStorage.getItem('experiences') || '[]');
       experiences.push({company, position, start, end, description});
       localStorage.setItem('experiences', JSON.stringify(experiences));
       closeModal('addExperienceModal');
       loadExperience();
+      showAlert('✅ Experience added!', 'success');
     }
 
     function addAchievement() {
-      const title = document.getElementById('achTitle').value.trim();
+      const title = document.getElementById('achTitle').value;
       const description = document.getElementById('achDescription').value;
       const date = document.getElementById('achDate').value;
-      if(!title) { showAlert('Please enter honor title', 'danger'); return; }
+      if(!title) {showAlert('Please enter achievement title', 'error'); return;}
       let achievements = JSON.parse(localStorage.getItem('achievements') || '[]');
       achievements.push({title, description, date});
       localStorage.setItem('achievements', JSON.stringify(achievements));
       closeModal('addAchievementModal');
       loadAchievements();
+      showAlert('✅ Achievement added!', 'success');
     }
 
     function loadSkills() {
       const skills = JSON.parse(localStorage.getItem('skills') || '[]');
       const list = document.getElementById('skillsList');
-      list.innerHTML = skills.length ? skills.map((skill, i) => `
-        <div class="entry-card">
-          <div>
-            <div class="entry-title">${skill.name}</div>
-            <div class="entry-sub">${skill.level}</div>
+      list.innerHTML = skills.map((skill, i) => `
+        <div class="data-card">
+          <div class="card-content">
+            <h4>${skill.name}</h4>
+            <p>${skill.level}</p>
           </div>
-          <button class="btn btn-sm btn-secondary" onclick="deleteSkill(${i})">Remove</button>
+          <div class="card-actions">
+            <button class="btn-sm btn-delete" onclick="deleteSkill(${i})">Delete</button>
+          </div>
         </div>
-      `).join('') : '<p class="text-muted" style="font-size: 0.9rem;">No specialized skills added yet.</p>';
+      `).join('');
     }
 
     function loadExperience() {
       const experiences = JSON.parse(localStorage.getItem('experiences') || '[]');
       const list = document.getElementById('experienceList');
-      list.innerHTML = experiences.length ? experiences.map((exp, i) => `
-        <div class="entry-card">
-          <div>
-            <div class="entry-title">${exp.position} &middot; <span style="font-weight: 500; color: #475569;">${exp.company}</span></div>
-            <div class="entry-sub">${exp.start || ''} &mdash; ${exp.end || 'Present'} &middot; ${exp.description || ''}</div>
+      list.innerHTML = experiences.map((exp, i) => `
+        <div class="data-card">
+          <div class="card-content">
+            <h4>${exp.position} at ${exp.company}</h4>
+            <p>${exp.start} to ${exp.end}</p>
+            <p>${exp.description}</p>
           </div>
-          <button class="btn btn-sm btn-secondary" onclick="deleteExperience(${i})">Remove</button>
+          <div class="card-actions">
+            <button class="btn-sm btn-delete" onclick="deleteExperience(${i})">Delete</button>
+          </div>
         </div>
-      `).join('') : '<p class="text-muted" style="font-size: 0.9rem;">No professional experience logged yet.</p>';
+      `).join('');
     }
 
     function loadAchievements() {
       const achievements = JSON.parse(localStorage.getItem('achievements') || '[]');
       const list = document.getElementById('achievementsList');
-      list.innerHTML = achievements.length ? achievements.map((ach, i) => `
-        <div class="entry-card">
-          <div>
-            <div class="entry-title">${ach.title}</div>
-            <div class="entry-sub">${ach.date ? new Date(ach.date).toLocaleDateString() : ''} &middot; ${ach.description || ''}</div>
+      list.innerHTML = achievements.map((ach, i) => `
+        <div class="data-card">
+          <div class="card-content">
+            <h4>${ach.title}</h4>
+            <p>${ach.date}</p>
+            <p>${ach.description}</p>
           </div>
-          <button class="btn btn-sm btn-secondary" onclick="deleteAchievement(${i})">Remove</button>
+          <div class="card-actions">
+            <button class="btn-sm btn-delete" onclick="deleteAchievement(${i})">Delete</button>
+          </div>
         </div>
-      `).join('') : '<p class="text-muted" style="font-size: 0.9rem;">No honors or certifications logged yet.</p>';
+      `).join('');
     }
 
     function deleteSkill(i) {
@@ -780,6 +530,7 @@
       skills.splice(i, 1);
       localStorage.setItem('skills', JSON.stringify(skills));
       loadSkills();
+      showAlert('✅ Skill deleted!', 'success');
     }
 
     function deleteExperience(i) {
@@ -787,6 +538,7 @@
       experiences.splice(i, 1);
       localStorage.setItem('experiences', JSON.stringify(experiences));
       loadExperience();
+      showAlert('✅ Experience deleted!', 'success');
     }
 
     function deleteAchievement(i) {
@@ -794,32 +546,36 @@
       achievements.splice(i, 1);
       localStorage.setItem('achievements', JSON.stringify(achievements));
       loadAchievements();
+      showAlert('✅ Achievement deleted!', 'success');
     }
 
     function uploadResume() {
       const file = document.getElementById('resumeFile').files[0];
-      if(!file) { showAlert('Please select a PDF document', 'danger'); return; }
-      localStorage.setItem('resume', JSON.stringify({name: file.name, size: file.size, uploadedAt: new Date().toISOString()}));
-      showAlert('Resume uploaded successfully.', 'success');
-      document.getElementById('resumeInfo').innerHTML = `<p style="font-size: 0.85rem; color: #059669; font-weight: 600;">Active: ${file.name} (${Math.round(file.size/1024)} KB)</p>`;
+      if(!file) {showAlert('Please select a file', 'error'); return;}
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        localStorage.setItem('resume', JSON.stringify({name: file.name, size: file.size, type: file.type}));
+        showAlert('✅ Resume uploaded!', 'success');
+      };
+      reader.readAsDataURL(file);
     }
 
     function showAlert(msg, type) {
       const alert = document.createElement('div');
       alert.className = `alert alert-${type}`;
       alert.textContent = msg;
-      document.querySelector('.profile-container').insertBefore(alert, document.querySelector('.profile-hero-card'));
+      document.body.insertBefore(alert, document.querySelector('.container'));
       setTimeout(() => alert.remove(), 3000);
     }
 
     function logout() {
-      if(confirm('Confirm sign out?')) {
-        localStorage.removeItem('isLoggedIn');
-        localStorage.removeItem('userEmail');
+      if(confirm('Are you sure?')) {
+        localStorage.removeItem('token');
         window.location.href = 'login.html';
       }
     }
 
+    document.getElementById('goToDashboard').onclick = () => window.location.href = 'dashboard.html';
     loadProfile();
   </script>
 </body>

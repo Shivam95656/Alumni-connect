@@ -3,552 +3,276 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Alumni Portal - Workspace Dashboard</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="../shared/css/style.css">
+  <title>Dashboard - Alumni Connect</title>
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
-    body { 
-      font-family: var(--font-sans, 'Plus Jakarta Sans', sans-serif); 
-      background: #f8fafc; 
-      color: #0f172a; 
-      min-height: 100vh;
-    }
+    body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #f0fdf4; color: #333; }
+    
+    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+    @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
 
-    /* Executive Top Navigation */
-    .top-nav {
-      background: #ffffff;
-      border-bottom: 1px solid #e2e8f0;
-      padding: 0.85rem 2rem;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      position: sticky;
-      top: 0;
-      z-index: 1000;
-      backdrop-filter: blur(12px);
-    }
+    .navbar { background: linear-gradient(135deg, #16a34a 0%, #15803d 100%); color: white; padding: 1rem 2rem; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 8px 20px rgba(22, 163, 74, 0.2); position: sticky; top: 0; z-index: 1000; }
+    .navbar h1 { font-size: 1.3rem; font-weight: 700; }
+    .nav-menu { display: flex; gap: 2rem; list-style: none; align-items: center; flex-wrap: wrap; }
+    .nav-menu a { color: white; text-decoration: none; font-weight: 600; cursor: pointer; transition: all 0.3s; border-bottom: 3px solid transparent; padding: 0.5rem 0; }
+    .nav-menu a.active { color: #fbbf24; border-bottom-color: #fbbf24; }
+    .nav-menu a:hover { color: #fbbf24; }
+    .logout-btn { background: rgba(255, 255, 255, 0.2); color: white; padding: 8px 16px; border: 1px solid rgba(255, 255, 255, 0.3); border-radius: 6px; cursor: pointer; font-weight: 600; transition: all 0.3s; }
+    .logout-btn:hover { background: rgba(255, 255, 255, 0.3); }
 
-    .brand-group {
-      display: flex;
-      align-items: center;
-      gap: 0.75rem;
-      text-decoration: none;
-      color: #0f172a;
-    }
+    .container { max-width: 1400px; margin: 0 auto; padding: 2rem; }
+    .section { display: none; animation: fadeIn 0.3s ease-out; }
+    .section.active { display: block; }
+    
+    .section-title { font-size: 2rem; color: #16a34a; margin-bottom: 2rem; font-weight: 700; }
 
-    .brand-mark {
-      width: 32px;
-      height: 32px;
-      background: #0f172a;
-      border-radius: 6px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: white;
-      font-weight: 800;
-      font-size: 0.85rem;
-    }
+    .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-bottom: 2rem; }
+    .stat-card { background: white; padding: 1.5rem; border-radius: 12px; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06); border-left: 4px solid #16a34a; text-align: center; animation: slideUp 0.3s ease-out; }
+    .stat-number { font-size: 2rem; color: #16a34a; font-weight: 700; }
+    .stat-label { color: #666; margin-top: 0.5rem; font-size: 0.9rem; font-weight: 600; }
 
-    .brand-title {
-      font-size: 1.05rem;
-      font-weight: 700;
-      letter-spacing: -0.02em;
-    }
+    .card { background: white; padding: 2rem; border-radius: 12px; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06); margin-bottom: 2rem; animation: slideUp 0.3s ease-out; }
+    .card h3 { color: #16a34a; margin-bottom: 1.5rem; font-size: 1.3rem; border-bottom: 2px solid #f0fdf4; padding-bottom: 1rem; }
 
-    .nav-tabs {
-      display: flex;
-      gap: 0.4rem;
-      list-style: none;
-      align-items: center;
-    }
+    .form-group { margin-bottom: 1rem; }
+    .form-group label { display: block; margin-bottom: 0.4rem; color: #333; font-weight: 600; }
+    .form-group input, .form-group textarea, .form-group select { width: 100%; padding: 0.6rem; border: 1px solid #ddd; border-radius: 6px; font-size: 1rem; font-family: inherit; }
+    .form-group input:focus, .form-group textarea:focus, .form-group select:focus { outline: none; border-color: #16a34a; box-shadow: 0 0 0 3px rgba(22, 163, 74, 0.1); }
+    .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
 
-    .nav-tab-btn {
-      padding: 0.5rem 0.95rem;
-      border-radius: 6px;
-      font-size: 0.85rem;
-      font-weight: 600;
-      color: #64748b;
-      text-decoration: none;
-      cursor: pointer;
-      transition: all 0.15s ease;
-      display: inline-flex;
-      align-items: center;
-      gap: 0.4rem;
-    }
+    .btn { padding: 0.6rem 1.2rem; border: none; border-radius: 6px; cursor: pointer; font-weight: 600; transition: all 0.3s; font-size: 1rem; }
+    .btn-primary { background: #16a34a; color: white; }
+    .btn-primary:hover { background: #15803d; transform: translateY(-2px); box-shadow: 0 4px 8px rgba(22, 163, 74, 0.3); }
+    .btn-secondary { background: #e5e7eb; color: #333; }
+    .btn-secondary:hover { background: #d1d5db; }
+    .btn-danger { background: #ef4444; color: white; }
+    .btn-danger:hover { background: #dc2626; }
 
-    .nav-tab-btn:hover {
-      color: #0f172a;
-      background: #f1f5f9;
-    }
+    .modal { display: none; position: fixed; z-index: 2000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.5); animation: fadeIn 0.3s ease-out; align-items: center; justify-content: center; }
+    .modal.active { display: flex; }
+    .modal-content { background: white; padding: 2.5rem; border-radius: 12px; max-width: 500px; width: 90%; box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3); animation: slideUp 0.3s ease-out; }
+    .modal-close { float: right; font-size: 2rem; cursor: pointer; color: #999; line-height: 1; }
+    .modal-close:hover { color: #333; }
 
-    .nav-tab-btn.active {
-      color: #0f172a;
-      background: #f1f5f9;
-    }
+    .opportunity-card { background: white; border: 1px solid #e5e7eb; padding: 1.5rem; border-radius: 10px; margin-bottom: 1rem; transition: all 0.3s; }
+    .opportunity-card:hover { box-shadow: 0 8px 16px rgba(22, 163, 74, 0.2); border-color: #16a34a; }
+    .opp-header { display: flex; justify-content: space-between; align-items: start; margin-bottom: 0.8rem; }
+    .opp-title { font-size: 1.2rem; font-weight: 700; color: #16a34a; }
+    .opp-company { color: #666; font-weight: 600; margin-bottom: 0.5rem; }
+    .opp-badge { display: inline-block; background: #dcfce7; color: #166534; padding: 0.3rem 0.8rem; border-radius: 20px; font-size: 0.8rem; font-weight: 600; }
+    .opp-details { color: #666; font-size: 0.9rem; margin-top: 0.8rem; }
+    .opp-details span { display: block; margin: 0.4rem 0; }
 
-    .nav-actions {
-      display: flex;
-      align-items: center;
-      gap: 1rem;
-    }
+    .table { width: 100%; border-collapse: collapse; background: white; }
+    .table th { background: #f0fdf4; padding: 1rem; text-align: left; color: #333; font-weight: 600; border-bottom: 2px solid #16a34a; }
+    .table td { padding: 1rem; border-bottom: 1px solid #e5e7eb; }
+    .table tr:hover { background: #f9fafb; }
 
-    .btn-signout {
-      padding: 0.45rem 0.95rem;
-      border: 1px solid #e2e8f0;
-      background: #ffffff;
-      color: #64748b;
-      border-radius: 6px;
-      cursor: pointer;
-      font-size: 0.825rem;
-      font-weight: 600;
-      transition: all 0.15s ease;
-      font-family: inherit;
-    }
+    .badge { display: inline-block; padding: 0.3rem 0.8rem; border-radius: 20px; font-size: 0.8rem; font-weight: 600; }
+    .badge-pending { background: #fef3c7; color: #92400e; }
+    .badge-accepted { background: #dcfce7; color: #166534; }
+    .badge-rejected { background: #fee2e2; color: #7f1d1d; }
 
-    .btn-signout:hover {
-      background: #fef2f2;
-      color: #dc2626;
-      border-color: #fecaca;
-    }
+    .search-box { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1rem; margin-bottom: 2rem; }
+    .search-box input, .search-box select { padding: 0.6rem; border: 1px solid #ddd; border-radius: 6px; font-size: 1rem; }
+    .search-box input:focus, .search-box select:focus { outline: none; border-color: #16a34a; box-shadow: 0 0 0 3px rgba(22, 163, 74, 0.1); }
 
-    /* Main Container */
-    .dashboard-container {
-      max-width: 1280px;
-      margin: 0 auto;
-      padding: 2.25rem 1.5rem;
-    }
+    .profile-header { display: flex; align-items: center; gap: 2rem; margin-bottom: 2rem; }
+    .profile-avatar { width: 120px; height: 120px; background: linear-gradient(135deg, #16a34a 0%, #15803d 100%); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-size: 3rem; box-shadow: 0 4px 12px rgba(22, 163, 74, 0.3); }
+    .profile-info h2 { color: #16a34a; font-size: 1.5rem; margin-bottom: 0.5rem; }
+    .profile-info p { color: #666; margin: 0.3rem 0; }
 
-    .section-view {
-      display: none;
-      animation: fadeIn 0.2s ease-out;
-    }
+    .empty-state { text-align: center; padding: 3rem; color: #999; }
+    .empty-state-icon { font-size: 3rem; margin-bottom: 1rem; }
 
-    .section-view.active {
-      display: block;
-    }
-
-    .view-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 1.75rem;
-    }
-
-    .view-title {
-      font-size: 1.5rem;
-      font-weight: 800;
-      color: #0f172a;
-      letter-spacing: -0.03em;
-    }
-
-    /* Profile Hero Card */
-    .profile-banner-card {
-      background: #ffffff;
-      border: 1px solid #e2e8f0;
-      border-radius: 12px;
-      padding: 2rem;
-      box-shadow: 0 1px 3px rgba(15, 23, 42, 0.04);
-      margin-bottom: 1.75rem;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      flex-wrap: wrap;
-      gap: 1.5rem;
-    }
-
-    .profile-hero {
-      display: flex;
-      align-items: center;
-      gap: 1.5rem;
-    }
-
-    .avatar-initials {
-      width: 72px;
-      height: 72px;
-      border-radius: 12px;
-      background: #0f172a;
-      color: #ffffff;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 1.5rem;
-      font-weight: 700;
-      letter-spacing: -0.02em;
-    }
-
-    .profile-details h2 {
-      font-size: 1.35rem;
-      font-weight: 700;
-      color: #0f172a;
-      letter-spacing: -0.02em;
-      margin-bottom: 0.25rem;
-    }
-
-    .profile-details p {
-      color: #64748b;
-      font-size: 0.875rem;
-      margin: 0.15rem 0;
-    }
-
-    .profile-tags {
-      display: flex;
-      gap: 0.5rem;
-      margin-top: 0.5rem;
-    }
-
-    .meta-tag {
-      font-size: 0.75rem;
-      font-weight: 600;
-      padding: 0.2rem 0.6rem;
-      border-radius: 4px;
-      background: #f1f5f9;
-      color: #475569;
-    }
-
-    /* Metric Strip */
-    .metrics-row {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 1.25rem;
-      margin-bottom: 1.75rem;
-    }
-
-    .metric-box {
-      background: #ffffff;
-      border: 1px solid #e2e8f0;
-      border-radius: 10px;
-      padding: 1.35rem 1.25rem;
-      box-shadow: 0 1px 2px rgba(15, 23, 42, 0.03);
-    }
-
-    .metric-box .number {
-      font-size: 1.85rem;
-      font-weight: 800;
-      color: #0f172a;
-      letter-spacing: -0.03em;
-    }
-
-    .metric-box .label {
-      font-size: 0.8rem;
-      color: #64748b;
-      font-weight: 600;
-      margin-top: 0.2rem;
-      text-transform: uppercase;
-      letter-spacing: 0.04em;
-    }
-
-    /* Filter Bar */
-    .filter-bar {
-      display: flex;
-      gap: 1rem;
-      margin-bottom: 1.5rem;
-      flex-wrap: wrap;
-    }
-
-    .filter-bar input, .filter-bar select {
-      padding: 0.65rem 0.9rem;
-      border: 1px solid #e2e8f0;
-      border-radius: 6px;
-      font-size: 0.875rem;
-      font-family: inherit;
-      color: #0f172a;
-      background: #ffffff;
-    }
-
-    .filter-bar input {
-      flex: 1;
-      min-width: 240px;
-    }
-
-    .filter-bar input:focus, .filter-bar select:focus {
-      outline: none;
-      border-color: #2563eb;
-      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12);
-    }
-
-    /* Cards Grid */
-    .cards-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
-      gap: 1.25rem;
-    }
-
-    .item-card {
-      background: #ffffff;
-      border: 1px solid #e2e8f0;
-      border-radius: 10px;
-      padding: 1.5rem;
-      box-shadow: 0 1px 3px rgba(15, 23, 42, 0.04);
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
-      transition: all 0.15s ease;
-    }
-
-    .item-card:hover {
-      border-color: #cbd5e1;
-      box-shadow: 0 4px 12px rgba(15, 23, 42, 0.06);
-      transform: translateY(-1px);
-    }
-
-    .card-top {
-      display: flex;
-      justify-content: space-between;
-      align-items: flex-start;
-      margin-bottom: 0.85rem;
-    }
-
-    .item-title {
-      font-size: 1.05rem;
-      font-weight: 700;
-      color: #0f172a;
-      letter-spacing: -0.02em;
-    }
-
-    .item-company {
-      font-size: 0.85rem;
-      font-weight: 600;
-      color: #2563eb;
-      margin-top: 0.15rem;
-    }
-
-    .type-pill {
-      font-size: 0.725rem;
-      font-weight: 700;
-      padding: 0.2rem 0.55rem;
-      border-radius: 4px;
-      text-transform: uppercase;
-      letter-spacing: 0.04em;
-      background: #f1f5f9;
-      color: #334155;
-    }
-
-    .item-meta {
-      color: #64748b;
-      font-size: 0.825rem;
-      margin: 0.75rem 0 1.25rem;
-      display: flex;
-      flex-direction: column;
-      gap: 0.35rem;
-    }
-
-    .meta-line {
-      display: flex;
-      align-items: center;
-      gap: 0.4rem;
-    }
-
-    .empty-state-panel {
-      text-align: center;
-      padding: 4rem 2rem;
-      background: #ffffff;
-      border: 1px dashed #cbd5e1;
-      border-radius: 10px;
-      color: #64748b;
-    }
-
-    @media (max-width: 900px) {
-      .metrics-row { grid-template-columns: repeat(2, 1fr); }
-      .cards-grid { grid-template-columns: 1fr; }
-      .top-nav { flex-direction: column; gap: 0.75rem; padding: 0.75rem 1rem; }
-      .nav-tabs { flex-wrap: wrap; justify-content: center; }
+    @media (max-width: 768px) {
+      .form-grid { grid-template-columns: 1fr; }
+      .search-box { grid-template-columns: 1fr; }
+      .stats-grid { grid-template-columns: 1fr 1fr; }
+      .profile-header { flex-direction: column; text-align: center; }
+      .navbar { flex-direction: column; gap: 1rem; }
+      .nav-menu { gap: 1rem; justify-content: center; }
+      .modal-content { width: 95%; padding: 1.5rem; }
     }
   </style>
 </head>
 <body>
-  <!-- Top Navigation -->
-  <header class="top-nav">
-    <a href="../../index.html" class="brand-group">
-      <div class="brand-mark">AC</div>
-      <span class="brand-title">Alumni Portal</span>
-    </a>
+  <nav class="navbar">
+    <h1>🎓 Alumni Dashboard</h1>
+    <ul class="nav-menu">
+      <li><a id="profileLink" onclick="switchSection('profile')" class="active">👤 Profile</a></li>
+      <li><a id="oppLink" onclick="switchSection('opportunities')">🚀 Opportunities</a></li>
+      <li><a id="appLink" onclick="switchSection('applications')">📋 Applications</a></li>
+      <li><a id="eventLink" onclick="switchSection('events')">📅 Events</a></li>
+      <li><a id="networkLink" onclick="switchSection('network')">🤝 Network</a></li>
+      <li><a href="./messages.html">💬 Messages</a></li>
+      <li><a href="./profile.html">👁 Full Profile</a></li>
+      <li><a href="../../index.html" style="color: #fbbf24;">🏠</a></li>
+      <li><button class="logout-btn" onclick="logout()">Logout</button></li>
+    </ul>
+  </nav>
 
-    <nav>
-      <ul class="nav-tabs">
-        <li><a id="profileLink" onclick="switchSection('profile')" class="nav-tab-btn active">Profile</a></li>
-        <li><a id="oppLink" onclick="switchSection('opportunities')" class="nav-tab-btn">Opportunities</a></li>
-        <li><a id="appLink" onclick="switchSection('applications')" class="nav-tab-btn">Applications</a></li>
-        <li><a id="eventLink" onclick="switchSection('events')" class="nav-tab-btn">Events</a></li>
-        <li><a id="networkLink" onclick="switchSection('network')" class="nav-tab-btn">Directory</a></li>
-        <li><a href="./messages.html" class="nav-tab-btn">Messages</a></li>
-        <li><a href="./profile.html" class="nav-tab-btn">Full Portfolio</a></li>
-      </ul>
-    </nav>
-
-    <div class="nav-actions">
-      <button class="btn-signout" onclick="logout()">Sign Out</button>
-    </div>
-  </header>
-
-  <main class="dashboard-container">
-    <!-- Profile View -->
-    <section id="profile" class="section-view active">
-      <div class="profile-banner-card">
-        <div class="profile-hero">
-          <div class="avatar-initials" id="profileAvatar">--</div>
-          <div class="profile-details">
-            <h2 id="profileName">Loading Profile...</h2>
-            <p id="profileEmail">user@institution.edu</p>
-            <div class="profile-tags">
-              <span class="meta-tag" id="profileDept">Department</span>
-              <span class="meta-tag" id="profileBatch">Cohort</span>
-            </div>
+  <div class="container">
+    <!-- Profile Section -->
+    <div id="profile" class="section active">
+      <h2 class="section-title">👤 My Profile</h2>
+      
+      <div class="card">
+        <div class="profile-header">
+          <div class="profile-avatar" id="profileAvatar">👤</div>
+          <div class="profile-info">
+            <h2 id="profileName">Loading...</h2>
+            <p id="profileEmail"></p>
+            <p id="profileDept"></p>
+            <p id="profileBatch"></p>
+            <button class="btn btn-primary" onclick="openEditProfileModal()">✏️ Edit Profile</button>
           </div>
-        </div>
-        <div>
-          <button class="btn btn-secondary" onclick="openEditProfileModal()">Edit Details</button>
         </div>
       </div>
 
-      <div class="metrics-row">
-        <div class="metric-box">
-          <div class="number" id="appCount">0</div>
-          <div class="label">Applications Submitted</div>
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-number" id="appCount">0</div>
+          <div class="stat-label">Applications Sent</div>
         </div>
-        <div class="metric-box">
-          <div class="number" id="offerCount">0</div>
-          <div class="label">Offers Received</div>
+        <div class="stat-card">
+          <div class="stat-number" id="offerCount">0</div>
+          <div class="stat-label">Offers Received</div>
         </div>
-        <div class="metric-box">
-          <div class="number" id="eventCount">0</div>
-          <div class="label">Events Attended</div>
+        <div class="stat-card">
+          <div class="stat-number" id="eventCount">0</div>
+          <div class="stat-label">Events Attended</div>
         </div>
-        <div class="metric-box">
-          <div class="number" id="connCount">0</div>
-          <div class="label">Network Connections</div>
+        <div class="stat-card">
+          <div class="stat-number" id="connCount">0</div>
+          <div class="stat-label">Connections</div>
         </div>
       </div>
 
       <div class="card">
-        <div class="card-title">Professional Background</div>
+        <h3>📝 Extended Profile</h3>
         <div id="extendedProfile"></div>
       </div>
-    </section>
+    </div>
 
-    <!-- Opportunities View -->
-    <section id="opportunities" class="section-view">
-      <div class="view-header">
-        <h2 class="view-title">Career Opportunities</h2>
-        <span class="badge badge-info" id="oppCount">0 Openings</span>
+    <!-- Opportunities Section -->
+    <div id="opportunities" class="section">
+      <h2 class="section-title">🚀 Opportunities</h2>
+
+      <div class="card">
+        <div class="search-box">
+          <input type="text" id="oppSearch" placeholder="Search by company or position..." onkeyup="filterOpportunities()">
+          <select id="oppTypeFilter" onchange="filterOpportunities()">
+            <option value="all">All Types</option>
+            <option value="internship">Internships</option>
+            <option value="placement">Placements</option>
+          </select>
+          <div style="padding: 0.6rem; background: #f0fdf4; border-radius: 6px; text-align: center;">
+            <span id="oppCount">0</span> opportunities
+          </div>
+        </div>
+        
+        <div id="opportunitiesContainer"></div>
       </div>
+    </div>
 
-      <div class="filter-bar">
-        <input type="text" id="oppSearch" placeholder="Search by role title, keyword, or organization..." onkeyup="filterOpportunities()">
-        <select id="oppTypeFilter" onchange="filterOpportunities()">
-          <option value="all">All Opportunity Types</option>
-          <option value="internship">Internships</option>
-          <option value="placement">Full-time Placements</option>
-        </select>
-      </div>
+    <!-- Applications Section -->
+    <div id="applications" class="section">
+      <h2 class="section-title">📋 My Applications</h2>
 
-      <div id="opportunitiesContainer" class="cards-grid"></div>
-    </section>
-
-    <!-- Applications View -->
-    <section id="applications" class="section-view">
-      <div class="view-header">
-        <h2 class="view-title">My Application History</h2>
-      </div>
-
-      <div class="table-responsive">
+      <div class="card">
         <table class="table">
           <thead>
             <tr>
-              <th>Role Position</th>
-              <th>Organization</th>
+              <th>Position</th>
+              <th>Company</th>
               <th>Type</th>
               <th>Status</th>
-              <th>Submitted Date</th>
+              <th>Applied On</th>
               <th>Action</th>
             </tr>
           </thead>
           <tbody id="appsTable">
-            <tr><td colspan="6" class="text-center text-muted" style="padding: 2.5rem;">No applications registered yet.</td></tr>
+            <tr><td colspan="6" style="text-align: center; color: #999;">No applications yet</td></tr>
           </tbody>
         </table>
       </div>
-    </section>
+    </div>
 
-    <!-- Events View -->
-    <section id="events" class="section-view">
-      <div class="view-header">
-        <h2 class="view-title">Seminars, Summits & Workshops</h2>
-        <span class="badge badge-info" id="eventsCount">0 Events</span>
+    <!-- Events Section -->
+    <div id="events" class="section">
+      <h2 class="section-title">📅 Events & Workshops</h2>
+
+      <div class="card">
+        <div class="search-box">
+          <input type="text" id="eventSearch" placeholder="Search events..." onkeyup="filterEvents()">
+          <select id="eventFilter" onchange="filterEvents()">
+            <option value="all">All Events</option>
+            <option value="upcoming">Upcoming</option>
+            <option value="past">Past</option>
+          </select>
+          <div style="padding: 0.6rem; background: #f0fdf4; border-radius: 6px; text-align: center;">
+            <span id="eventsCount">0</span> events
+          </div>
+        </div>
+
+        <div id="eventsContainer"></div>
       </div>
+    </div>
 
-      <div class="filter-bar">
-        <input type="text" id="eventSearch" placeholder="Search events by title or location..." onkeyup="filterEvents()">
-        <select id="eventFilter" onchange="filterEvents()">
-          <option value="all">All Dates</option>
-          <option value="upcoming">Upcoming Events</option>
-          <option value="past">Past Events</option>
-        </select>
+    <!-- Network Section -->
+    <div id="network" class="section">
+      <h2 class="section-title">🤝 Alumni Network</h2>
+
+      <div class="card">
+        <div class="search-box">
+          <input type="text" id="networkSearch" placeholder="Search alumni..." onkeyup="searchAlumni()">
+          <select id="batchFilter" onchange="searchAlumni();">
+            <option value="">All Batches</option>
+          </select>
+          <select id="deptFilter" onchange="searchAlumni();">
+            <option value="">All Departments</option>
+          </select>
+        </div>
+
+        <div id="networkContainer"></div>
       </div>
-
-      <div id="eventsContainer" class="cards-grid"></div>
-    </section>
-
-    <!-- Network Directory View -->
-    <section id="network" class="section-view">
-      <div class="view-header">
-        <h2 class="view-title">Verified Alumni Directory</h2>
-      </div>
-
-      <div class="filter-bar">
-        <input type="text" id="networkSearch" placeholder="Search members by name or email..." onkeyup="searchAlumni()">
-        <select id="batchFilter" onchange="searchAlumni()">
-          <option value="">All Batches</option>
-        </select>
-        <select id="deptFilter" onchange="searchAlumni()">
-          <option value="">All Departments</option>
-        </select>
-      </div>
-
-      <div id="networkContainer" class="cards-grid"></div>
-    </section>
-  </main>
+    </div>
+  </div>
 
   <!-- Edit Profile Modal -->
   <div id="editProfileModal" class="modal">
     <div class="modal-content">
-      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.25rem;">
-        <h3 style="font-weight: 700; color: #0f172a;">Update Profile Information</h3>
-        <span class="cursor-pointer" onclick="closeEditProfileModal()" style="font-size: 1.5rem; color: #94a3b8;">&times;</span>
-      </div>
+      <span class="modal-close" onclick="closeEditProfileModal()">&times;</span>
+      <h2 style="color: #16a34a; margin-bottom: 1.5rem;">Edit Profile</h2>
       <form onsubmit="saveProfile(event)">
         <div class="form-grid">
           <div class="form-group">
             <label>First Name</label>
-            <input type="text" id="editFirstName" placeholder="Enter first name" required>
+            <input type="text" id="editFirstName" required>
           </div>
           <div class="form-group">
             <label>Last Name</label>
-            <input type="text" id="editLastName" placeholder="Enter last name" required>
+            <input type="text" id="editLastName" required>
           </div>
         </div>
         <div class="form-group">
-          <label>Phone Number</label>
-          <input type="tel" id="editPhone" placeholder="Enter phone number">
+          <label>Phone</label>
+          <input type="tel" id="editPhone">
         </div>
         <div class="form-group">
-          <label>Professional Bio</label>
-          <textarea id="editBio" rows="3" placeholder="Brief professional overview..."></textarea>
+          <label>Bio</label>
+          <textarea id="editBio" rows="3" placeholder="Tell us about yourself..."></textarea>
         </div>
         <div class="form-group">
-          <label>Core Skills (comma-separated)</label>
-          <input type="text" id="editSkills" placeholder="e.g. Distributed Systems, Product Strategy, Machine Learning">
+          <label>Skills</label>
+          <input type="text" id="editSkills" placeholder="e.g., Python, JavaScript, Data Analysis">
         </div>
         <div class="form-group">
-          <label>Current Role & Organization</label>
-          <input type="text" id="editPosition" placeholder="e.g. Software Engineer at Google">
+          <label>Current Position</label>
+          <input type="text" id="editPosition" placeholder="e.g., Software Engineer at Google">
         </div>
-        <div style="display: flex; gap: 0.75rem; justify-content: flex-end; margin-top: 1.5rem;">
-          <button type="button" class="btn btn-secondary" onclick="closeEditProfileModal()">Cancel</button>
-          <button type="submit" class="btn btn-primary">Save Changes</button>
-        </div>
+        <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 1rem;">Save Changes</button>
       </form>
     </div>
   </div>
@@ -556,27 +280,22 @@
   <!-- Apply Modal -->
   <div id="applyModal" class="modal">
     <div class="modal-content">
-      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.25rem;">
-        <h3 style="font-weight: 700; color: #0f172a;">Submit Application</h3>
-        <span class="cursor-pointer" onclick="closeApplyModal()" style="font-size: 1.5rem; color: #94a3b8;">&times;</span>
-      </div>
+      <span class="modal-close" onclick="closeApplyModal()">&times;</span>
+      <h2 style="color: #16a34a; margin-bottom: 1.5rem;">Apply for Position</h2>
       <form onsubmit="submitApplication(event)">
         <div class="form-group">
           <label>Position</label>
-          <input type="text" id="applyPosition" readonly style="background: #f8fafc;">
+          <input type="text" id="applyPosition" readonly>
         </div>
         <div class="form-group">
-          <label>Company / Organization</label>
-          <input type="text" id="applyCompany" readonly style="background: #f8fafc;">
+          <label>Company</label>
+          <input type="text" id="applyCompany" readonly>
         </div>
         <div class="form-group">
-          <label>Statement of Interest / Cover Letter</label>
-          <textarea id="applyLetter" rows="4" placeholder="Highlight relevant skills, achievements, and motivation..." required></textarea>
+          <label>Cover Letter</label>
+          <textarea id="applyLetter" rows="5" placeholder="Tell them why you're interested..." required></textarea>
         </div>
-        <div style="display: flex; gap: 0.75rem; justify-content: flex-end; margin-top: 1.5rem;">
-          <button type="button" class="btn btn-secondary" onclick="closeApplyModal()">Cancel</button>
-          <button type="submit" class="btn btn-primary">Submit Application</button>
-        </div>
+        <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 1rem;">Submit Application</button>
       </form>
     </div>
   </div>
@@ -584,10 +303,11 @@
   <script>
     document.addEventListener('DOMContentLoaded', function() {
       const isLoggedIn = localStorage.getItem('isLoggedIn');
+      const approvedAlumni = JSON.parse(localStorage.getItem('approvedAlumni')) || [];
       const userEmail = localStorage.getItem('userEmail');
       
-      if(!isLoggedIn || !userEmail) {
-        window.location.href = './login.html';
+      if(!isLoggedIn || !userEmail || !approvedAlumni.find(a => a.email === userEmail)) {
+        window.location.href = '../alumni/login.html';
         return;
       }
 
@@ -599,86 +319,58 @@
       updateStatistics();
     });
 
-    function getActiveUserData() {
-      const userEmail = (localStorage.getItem('userEmail') || '').toLowerCase();
-      const approvedAlumni = JSON.parse(localStorage.getItem('approvedAlumni')) || [];
-      const pendingAlumni = JSON.parse(localStorage.getItem('pendingAlumni')) || [];
-      const currentUser = JSON.parse(localStorage.getItem('currentUser')) || {};
-      
-      let matched = approvedAlumni.find(a => a.email && a.email.toLowerCase() === userEmail);
-      if(!matched) matched = pendingAlumni.find(a => a.email && a.email.toLowerCase() === userEmail);
-      if(!matched && currentUser.email && currentUser.email.toLowerCase() === userEmail) matched = currentUser;
-
-      const profile = JSON.parse(localStorage.getItem('userProfile_' + userEmail)) || JSON.parse(localStorage.getItem('userProfile')) || {};
-
-      const firstName = profile.firstName || matched?.firstName || (userEmail.split('@')[0] || 'Member');
-      const lastName = profile.lastName || matched?.lastName || '';
-      const email = userEmail;
-      const department = matched?.department || profile.department || 'General';
-      const batch = matched?.batch || profile.batch || 'Network';
-      const phone = profile.phone || matched?.phone || '';
-      const bio = profile.bio || '';
-      const skills = profile.skills || '';
-      const position = profile.position || '';
-
-      return { firstName, lastName, email, department, batch, phone, bio, skills, position };
-    }
-
     function switchSection(section) {
-      document.querySelectorAll('.section-view').forEach(s => s.classList.remove('active'));
-      document.querySelectorAll('.nav-tabs a').forEach(a => a.classList.remove('active'));
-      
-      const targetSec = document.getElementById(section);
-      if (targetSec) targetSec.classList.add('active');
-      
-      const targetLink = document.getElementById(section + 'Link');
-      if (targetLink) targetLink.classList.add('active');
+      document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+      document.querySelectorAll('.nav-menu a').forEach(a => a.classList.remove('active'));
+      document.getElementById(section).classList.add('active');
+      document.getElementById(section + 'Link').classList.add('active');
     }
 
     function loadProfileData() {
-      const user = getActiveUserData();
+      const userEmail = localStorage.getItem('userEmail');
+      const approvedAlumni = JSON.parse(localStorage.getItem('approvedAlumni')) || [];
+      const alumni = approvedAlumni.find(a => a.email === userEmail);
+      const profile = JSON.parse(localStorage.getItem('userProfile_' + userEmail)) || {};
 
-      const fullName = (user.firstName + ' ' + user.lastName).trim() || user.email;
-      document.getElementById('profileName').textContent = fullName;
-      document.getElementById('profileEmail').textContent = user.email;
-      document.getElementById('profileDept').textContent = user.department;
-      document.getElementById('profileBatch').textContent = user.batch ? 'Cohort ' + user.batch : 'Member';
-      
-      const initial1 = user.firstName ? user.firstName[0].toUpperCase() : 'A';
-      const initial2 = user.lastName ? user.lastName[0].toUpperCase() : (user.firstName && user.firstName.length > 1 ? user.firstName[1].toUpperCase() : 'M');
-      document.getElementById('profileAvatar').textContent = initial1 + initial2;
+      if(alumni) {
+        document.getElementById('profileName').textContent = alumni.firstName + ' ' + alumni.lastName;
+        document.getElementById('profileEmail').textContent = '📧 ' + alumni.email;
+        document.getElementById('profileDept').textContent = '🏢 ' + alumni.department;
+        document.getElementById('profileBatch').textContent = '📚 Batch ' + alumni.batch;
+        document.getElementById('profileAvatar').textContent = (alumni.firstName[0] + alumni.lastName[0]).toUpperCase();
+      }
 
       const extendedHtml = `
-        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 1.25rem;">
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
           <div>
-            <p style="font-size: 0.8rem; text-transform: uppercase; color: #64748b; font-weight: 600;">Phone</p>
-            <p style="font-weight: 600; color: #0f172a;">${user.phone || 'Not provided'}</p>
+            <p><strong>Phone:</strong> ${profile.phone || 'Not provided'}</p>
+            <p><strong>Current Position:</strong> ${profile.position || 'Not provided'}</p>
           </div>
           <div>
-            <p style="font-size: 0.8rem; text-transform: uppercase; color: #64748b; font-weight: 600;">Current Role</p>
-            <p style="font-weight: 600; color: #0f172a;">${user.position || 'Not specified'}</p>
-          </div>
-          <div>
-            <p style="font-size: 0.8rem; text-transform: uppercase; color: #64748b; font-weight: 600;">Key Skills</p>
-            <p style="font-weight: 600; color: #0f172a;">${user.skills || 'None added'}</p>
+            <p><strong>Skills:</strong> ${profile.skills || 'Not provided'}</p>
+            <p><strong>Year:</strong> ${alumni.year || 'Not provided'}</p>
           </div>
         </div>
-        <div style="margin-top: 1.25rem; padding-top: 1rem; border-top: 1px solid #e2e8f0;">
-          <p style="font-size: 0.8rem; text-transform: uppercase; color: #64748b; font-weight: 600; margin-bottom: 0.35rem;">Bio</p>
-          <p style="color: #475569; font-size: 0.925rem;">${user.bio || 'No professional bio provided yet. Click Edit Details to add your summary.'}</p>
+        <div style="margin-top: 1rem;">
+          <p><strong>Bio:</strong></p>
+          <p>${profile.bio || 'No bio added yet'}</p>
         </div>
       `;
       document.getElementById('extendedProfile').innerHTML = extendedHtml;
     }
 
     function openEditProfileModal() {
-      const user = getActiveUserData();
-      document.getElementById('editFirstName').value = user.firstName || '';
-      document.getElementById('editLastName').value = user.lastName || '';
-      document.getElementById('editPhone').value = user.phone || '';
-      document.getElementById('editBio').value = user.bio || '';
-      document.getElementById('editSkills').value = user.skills || '';
-      document.getElementById('editPosition').value = user.position || '';
+      const userEmail = localStorage.getItem('userEmail');
+      const approvedAlumni = JSON.parse(localStorage.getItem('approvedAlumni')) || [];
+      const alumni = approvedAlumni.find(a => a.email === userEmail);
+      const profile = JSON.parse(localStorage.getItem('userProfile_' + userEmail)) || {};
+
+      document.getElementById('editFirstName').value = alumni.firstName;
+      document.getElementById('editLastName').value = alumni.lastName;
+      document.getElementById('editPhone').value = profile.phone || '';
+      document.getElementById('editBio').value = profile.bio || '';
+      document.getElementById('editSkills').value = profile.skills || '';
+      document.getElementById('editPosition').value = profile.position || '';
 
       document.getElementById('editProfileModal').classList.add('active');
     }
@@ -689,46 +381,29 @@
 
     function saveProfile(e) {
       e.preventDefault();
-      const userEmail = (localStorage.getItem('userEmail') || '').toLowerCase();
-      const fName = document.getElementById('editFirstName').value.trim();
-      const lName = document.getElementById('editLastName').value.trim();
-      
+      const userEmail = localStorage.getItem('userEmail');
       const profile = {
-        firstName: fName,
-        lastName: lName,
-        phone: document.getElementById('editPhone').value.trim(),
-        bio: document.getElementById('editBio').value.trim(),
-        skills: document.getElementById('editSkills').value.trim(),
-        position: document.getElementById('editPosition').value.trim()
+        phone: document.getElementById('editPhone').value,
+        bio: document.getElementById('editBio').value,
+        skills: document.getElementById('editSkills').value,
+        position: document.getElementById('editPosition').value
       };
-      
       localStorage.setItem('userProfile_' + userEmail, JSON.stringify(profile));
-      localStorage.setItem('userProfile', JSON.stringify(profile));
-
-      // Also sync currentUser & approvedAlumni
-      const approvedAlumni = JSON.parse(localStorage.getItem('approvedAlumni')) || [];
-      const idx = approvedAlumni.findIndex(a => a.email && a.email.toLowerCase() === userEmail);
-      if(idx !== -1) {
-        approvedAlumni[idx].firstName = fName;
-        approvedAlumni[idx].lastName = lName;
-        if(profile.phone) approvedAlumni[idx].phone = profile.phone;
-        localStorage.setItem('approvedAlumni', JSON.stringify(approvedAlumni));
-      }
-
+      alert('✅ Profile updated!');
       closeEditProfileModal();
       loadProfileData();
     }
 
     function updateStatistics() {
-      const userEmail = (localStorage.getItem('userEmail') || '').toLowerCase();
+      const userEmail = localStorage.getItem('userEmail');
       const applications = JSON.parse(localStorage.getItem('applications')) || [];
       const eventRegs = JSON.parse(localStorage.getItem('eventRegistrations')) || [];
       const connections = JSON.parse(localStorage.getItem('connections')) || [];
 
-      const userApps = applications.filter(a => a.email && a.email.toLowerCase() === userEmail);
+      const userApps = applications.filter(a => a.email === userEmail);
       const userOffers = userApps.filter(a => a.status === 'accepted').length;
-      const userEvents = eventRegs.filter(e => e.email && e.email.toLowerCase() === userEmail).length;
-      const userConns = connections.filter(c => (c.from && c.from.toLowerCase() === userEmail) || (c.to && c.to.toLowerCase() === userEmail)).length;
+      const userEvents = eventRegs.filter(e => e.email === userEmail).length;
+      const userConns = connections.filter(c => c.from === userEmail || c.to === userEmail).length;
 
       document.getElementById('appCount').textContent = userApps.length;
       document.getElementById('offerCount').textContent = userOffers;
@@ -737,13 +412,8 @@
     }
 
     function loadOpportunitiesData() {
-      const internships = JSON.parse(localStorage.getItem('adminInternships')) || [
-        { id: 1, position: 'Software Engineer Intern', company: 'Google Cloud', stipend: '60,000 / month', location: 'Bengaluru / Hybrid', deadline: '2026-05-30', description: 'Distributed systems and backend engineering internship.' },
-        { id: 2, position: 'Associate Product Manager', company: 'Microsoft', stipend: '50,000 / month', location: 'Hyderabad', deadline: '2026-06-15', description: 'Product specifications and user experience analysis.' }
-      ];
-      const placements = JSON.parse(localStorage.getItem('adminPlacements')) || [
-        { id: 3, position: 'Full Stack Engineer', company: 'Atlassian', salary: '18-22 LPA', location: 'Bengaluru', deadline: '2026-05-20', description: 'Enterprise collaboration tooling and microservices.' }
-      ];
+      const internships = JSON.parse(localStorage.getItem('adminInternships')) || [];
+      const placements = JSON.parse(localStorage.getItem('adminPlacements')) || [];
       
       const opportunities = [
         ...internships.map(i => ({...i, type: 'internship'})),
@@ -751,46 +421,40 @@
       ];
 
       window.allOpportunities = opportunities;
-      document.getElementById('oppCount').textContent = opportunities.length + ' Openings';
+      document.getElementById('oppCount').textContent = opportunities.length;
       filterOpportunities();
     }
 
     function filterOpportunities() {
-      const search = (document.getElementById('oppSearch').value || '').toLowerCase();
+      const search = document.getElementById('oppSearch').value.toLowerCase();
       const typeFilter = document.getElementById('oppTypeFilter').value;
 
-      const filtered = (window.allOpportunities || []).filter(opp => {
-        const matchesSearch = (opp.company || '').toLowerCase().includes(search) || (opp.position || '').toLowerCase().includes(search);
+      const filtered = window.allOpportunities.filter(opp => {
+        const matchesSearch = opp.company.toLowerCase().includes(search) || opp.position.toLowerCase().includes(search);
         const matchesType = typeFilter === 'all' || opp.type === typeFilter;
         return matchesSearch && matchesType;
       });
 
       const html = filtered.map(opp => `
-        <div class="item-card">
-          <div>
-            <div class="card-top">
-              <div>
-                <div class="item-title">${opp.position}</div>
-                <div class="item-company">${opp.company}</div>
-              </div>
-              <span class="type-pill">${opp.type}</span>
-            </div>
-            <div class="item-meta">
-              <span class="meta-line">📍 ${opp.location || 'Remote / Hybrid'}</span>
-              <span class="meta-line">💰 ${opp.stipend ? '₹' + opp.stipend : (opp.salary ? '₹' + opp.salary : 'Market Competitive')}</span>
-              <span class="meta-line">📅 Apply before: ${opp.deadline ? new Date(opp.deadline).toLocaleDateString() : 'Rolling'}</span>
-              <p style="margin-top: 0.5rem; color: #475569; font-size: 0.825rem;">${opp.description || 'Verified institutional opening'}</p>
+        <div class="opportunity-card">
+          <div class="opp-header">
+            <div>
+              <div class="opp-title">${opp.position}</div>
+              <div class="opp-company">${opp.company}</div>
+              <span class="opp-badge">${opp.type.toUpperCase()}</span>
             </div>
           </div>
-          <button class="btn btn-primary" style="width: 100%;" onclick="openApplyModal('${escapeAttr(opp.position)}', '${escapeAttr(opp.company)}')">Apply for Position</button>
+          <div class="opp-details">
+            <span>📍 ${opp.location || 'Location TBD'}</span>
+            <span>💰 ${opp.stipend ? '₹' + opp.stipend : (opp.salary ? '₹' + opp.salary : 'TBD')}</span>
+            <span>⏰ Deadline: ${new Date(opp.deadline).toLocaleDateString()}</span>
+            <span>📄 ${opp.description ? opp.description.substring(0, 100) + '...' : 'More info available'}</span>
+          </div>
+          <button class="btn btn-primary" style="margin-top: 1rem; width: 100%;" onclick="openApplyModal('${opp.position}', '${opp.company}')">Apply Now</button>
         </div>
       `).join('');
 
-      document.getElementById('opportunitiesContainer').innerHTML = html || '<div class="empty-state-panel"><p>No opportunities match your filter criteria.</p></div>';
-    }
-
-    function escapeAttr(str) {
-      return (str || '').replace(/'/g, "\\'").replace(/"/g, '&quot;');
+      document.getElementById('opportunitiesContainer').innerHTML = html || '<div class="empty-state"><div class="empty-state-icon">📭</div><p>No opportunities found</p></div>';
     }
 
     function openApplyModal(position, company) {
@@ -805,7 +469,7 @@
 
     function submitApplication(e) {
       e.preventDefault();
-      const userEmail = (localStorage.getItem('userEmail') || '').toLowerCase();
+      const userEmail = localStorage.getItem('userEmail');
       const applications = JSON.parse(localStorage.getItem('applications')) || [];
 
       applications.push({
@@ -818,6 +482,7 @@
       });
 
       localStorage.setItem('applications', JSON.stringify(applications));
+      alert('✅ Application submitted!');
       closeApplyModal();
       document.getElementById('applyLetter').value = '';
       loadApplications();
@@ -825,108 +490,105 @@
     }
 
     function loadApplications() {
-      const userEmail = (localStorage.getItem('userEmail') || '').toLowerCase();
+      const userEmail = localStorage.getItem('userEmail');
       const applications = JSON.parse(localStorage.getItem('applications')) || [];
-      const userApps = applications.filter(a => a.email && a.email.toLowerCase() === userEmail);
+      const userApps = applications.filter(a => a.email === userEmail);
 
       const html = userApps.map(app => `
         <tr>
-          <td style="font-weight: 600;">${app.position}</td>
+          <td>${app.position}</td>
           <td>${app.company}</td>
-          <td><span class="badge badge-info">Career Drive</span></td>
+          <td>Job</td>
           <td><span class="badge badge-${app.status}">${app.status.toUpperCase()}</span></td>
-          <td style="color: #64748b;">${new Date(app.appliedAt).toLocaleDateString()}</td>
-          <td><button class="btn btn-sm btn-secondary" onclick="withdrawApplication('${app.email}', '${escapeAttr(app.company)}', '${escapeAttr(app.position)}')">Withdraw</button></td>
+          <td>${new Date(app.appliedAt).toLocaleDateString()}</td>
+          <td><button class="btn btn-danger" onclick="withdrawApplication('${app.email}', '${app.company}', '${app.position}')">Withdraw</button></td>
         </tr>
-      `).join('') || '<tr><td colspan="6" class="text-center text-muted" style="padding: 2.5rem;">No applications filed yet. Check Openings to apply.</td></tr>';
+      `).join('') || '<tr><td colspan="6" style="text-align: center; color: #999;">No applications yet!</td></tr>';
 
       document.getElementById('appsTable').innerHTML = html;
     }
 
     function withdrawApplication(email, company, position) {
-      if(!confirm('Confirm withdrawing this application?')) return;
+      if(!confirm('Withdraw this application?')) return;
       const applications = JSON.parse(localStorage.getItem('applications')) || [];
       localStorage.setItem('applications', JSON.stringify(
         applications.filter(a => !(a.email === email && a.company === company && a.position === position))
       ));
+      alert('Application withdrawn');
       loadApplications();
       updateStatistics();
     }
 
     function loadEventsData() {
-      const events = JSON.parse(localStorage.getItem('adminEvents')) || [
-        { id: 1, title: 'Global Alumni Tech Summit 2026', date: '2026-06-15', location: 'Main Auditorium / Online', description: 'Keynotes on engineering leadership and startup incubation.' },
-        { id: 2, title: 'Resume Review & Mentorship Roundtable', date: '2026-05-10', location: 'Conference Hall A', description: 'One-on-one portfolio evaluations with staff and alumni executives.' }
-      ];
+      const events = JSON.parse(localStorage.getItem('adminEvents')) || [];
       window.allEvents = events;
-      document.getElementById('eventsCount').textContent = events.length + ' Events';
+      document.getElementById('eventsCount').textContent = events.length;
       filterEvents();
     }
 
     function filterEvents() {
-      const search = (document.getElementById('eventSearch').value || '').toLowerCase();
+      const search = document.getElementById('eventSearch').value.toLowerCase();
       const filter = document.getElementById('eventFilter').value;
       const now = new Date();
 
-      let filtered = (window.allEvents || []).filter(evt => {
-        const matchesSearch = (evt.title || '').toLowerCase().includes(search) || (evt.description || '').toLowerCase().includes(search);
+      let filtered = window.allEvents.filter(evt => {
+        const matchesSearch = evt.title.toLowerCase().includes(search) || evt.description.toLowerCase().includes(search);
         const eventDate = new Date(evt.date);
         const matchesFilter = filter === 'all' || (filter === 'upcoming' && eventDate >= now) || (filter === 'past' && eventDate < now);
         return matchesSearch && matchesFilter;
       });
 
-      const html = filtered.map(evt => {
-        const isRegistered = isEventRegistered(String(evt.id || evt.title));
-        return `
-          <div class="item-card">
+      const html = filtered.map(evt => `
+        <div class="opportunity-card">
+          <div class="opp-header">
             <div>
-              <div class="card-top">
-                <div class="item-title">${evt.title}</div>
-                <span class="type-pill">${new Date(evt.date) >= now ? 'Upcoming' : 'Concluded'}</span>
-              </div>
-              <div class="item-meta">
-                <span class="meta-line">📅 ${new Date(evt.date).toLocaleDateString()}</span>
-                <span class="meta-line">📍 ${evt.location}</span>
-                <p style="margin-top: 0.5rem; color: #475569; font-size: 0.825rem;">${evt.description}</p>
-              </div>
+              <div class="opp-title">${evt.title}</div>
+              <span class="opp-badge">${new Date(evt.date) >= now ? 'UPCOMING' : 'PAST'}</span>
             </div>
-            <button class="btn ${isRegistered ? 'btn-secondary' : 'btn-primary'}" style="width: 100%;" onclick="registerEvent('${String(evt.id || evt.title)}')">
-              ${isRegistered ? 'Registered' : 'Register for Event'}
-            </button>
           </div>
-        `;
-      }).join('');
+          <div class="opp-details">
+            <span>📅 ${new Date(evt.date).toLocaleDateString()}</span>
+            <span>📍 ${evt.location}</span>
+            <span>📝 ${evt.description}</span>
+          </div>
+          <button class="btn btn-primary" style="margin-top: 1rem; width: 100%;" onclick="registerEvent('${evt.id || evt.title}')">
+            ${isEventRegistered('${evt.id || evt.title}') ? '✅ Registered' : 'Register'}
+          </button>
+        </div>
+      `).join('');
 
-      document.getElementById('eventsContainer').innerHTML = html || '<div class="empty-state-panel"><p>No institutional events scheduled under this filter.</p></div>';
+      document.getElementById('eventsContainer').innerHTML = html || '<div class="empty-state"><div class="empty-state-icon">📭</div><p>No events found</p></div>';
     }
 
     function isEventRegistered(eventId) {
-      const userEmail = (localStorage.getItem('userEmail') || '').toLowerCase();
+      const userEmail = localStorage.getItem('userEmail');
       const regs = JSON.parse(localStorage.getItem('eventRegistrations')) || [];
-      return regs.some(r => r.email && r.email.toLowerCase() === userEmail && String(r.eventId) === String(eventId));
+      return regs.some(r => r.email === userEmail && r.eventId === eventId);
     }
 
     function registerEvent(eventId) {
-      const userEmail = (localStorage.getItem('userEmail') || '').toLowerCase();
+      const userEmail = localStorage.getItem('userEmail');
       const regs = JSON.parse(localStorage.getItem('eventRegistrations')) || [];
 
       if(isEventRegistered(eventId)) {
+        alert('Already registered!');
         return;
       }
 
       regs.push({email: userEmail, eventId: eventId, registeredAt: new Date().toISOString()});
       localStorage.setItem('eventRegistrations', JSON.stringify(regs));
+      alert('✅ Registered for event!');
       loadEventsData();
       updateStatistics();
     }
 
     function loadNetworkFilters() {
       const approvedAlumni = JSON.parse(localStorage.getItem('approvedAlumni')) || [];
-      const batches = [...new Set(approvedAlumni.map(a => a.batch))].filter(Boolean).sort();
-      const depts = [...new Set(approvedAlumni.map(a => a.department))].filter(Boolean).sort();
+      const batches = [...new Set(approvedAlumni.map(a => a.batch))].sort();
+      const depts = [...new Set(approvedAlumni.map(a => a.department))].sort();
 
       let batchHtml = '<option value="">All Batches</option>';
-      batches.forEach(b => batchHtml += `<option value="${b}">Batch ${b}</option>`);
+      batches.forEach(b => batchHtml += `<option value="${b}">${b}</option>`);
       document.getElementById('batchFilter').innerHTML = batchHtml;
 
       let deptHtml = '<option value="">All Departments</option>';
@@ -937,57 +599,46 @@
     }
 
     function searchAlumni() {
-      const userEmail = (localStorage.getItem('userEmail') || '').toLowerCase();
+      const userEmail = localStorage.getItem('userEmail');
       const approvedAlumni = JSON.parse(localStorage.getItem('approvedAlumni')) || [];
-      const search = (document.getElementById('networkSearch').value || '').toLowerCase();
+      const search = document.getElementById('networkSearch').value.toLowerCase();
       const batch = document.getElementById('batchFilter').value;
       const dept = document.getElementById('deptFilter').value;
 
-      let filtered = approvedAlumni.filter(a => a.email && a.email.toLowerCase() !== userEmail && (
-        (a.firstName || '').toLowerCase().includes(search) || 
-        (a.lastName || '').toLowerCase().includes(search) || 
-        (a.email || '').toLowerCase().includes(search)
+      let filtered = approvedAlumni.filter(a => a.email !== userEmail && (
+        a.firstName.toLowerCase().includes(search) || 
+        a.lastName.toLowerCase().includes(search) || 
+        a.email.toLowerCase().includes(search)
       ));
 
-      if(batch) filtered = filtered.filter(a => String(a.batch) === String(batch));
+      if(batch) filtered = filtered.filter(a => a.batch === batch);
       if(dept) filtered = filtered.filter(a => a.department === dept);
 
-      const html = filtered.map(alumni => {
-        const initials = ((alumni.firstName?.[0] || 'A') + (alumni.lastName?.[0] || 'L')).toUpperCase();
-        return `
-          <div class="item-card">
+      const html = filtered.map(alumni => `
+        <div class="opportunity-card">
+          <div class="opp-header">
             <div>
-              <div class="card-top">
-                <div style="display: flex; align-items: center; gap: 0.75rem;">
-                  <div class="avatar-initials" style="width: 44px; height: 44px; font-size: 1rem; border-radius: 8px;">
-                    ${initials}
-                  </div>
-                  <div>
-                    <div class="item-title">${alumni.firstName} ${alumni.lastName}</div>
-                    <div class="item-company">${alumni.department || 'Alumni'}</div>
-                  </div>
-                </div>
-                <span class="type-pill">Cohort ${alumni.batch || 'Network'}</span>
-              </div>
-              <div class="item-meta">
-                <span class="meta-line">✉️ ${alumni.email}</span>
-              </div>
+              <div class="opp-title">${alumni.firstName} ${alumni.lastName}</div>
+              <div class="opp-company">${alumni.department} - Batch ${alumni.batch}</div>
             </div>
-            <button class="btn btn-secondary" style="width: 100%;" onclick="sendConnection('${alumni.email}')">Connect</button>
           </div>
-        `;
-      }).join('');
+          <div class="opp-details">
+            <span>📧 ${alumni.email}</span>
+            <span>📱 ${alumni.phone || 'Not provided'}</span>
+          </div>
+          <button class="btn btn-primary" style="margin-top: 1rem; width: 100%;" onclick="sendConnection('${alumni.email}')">Send Connection Request</button>
+        </div>
+      `).join('');
 
-      document.getElementById('networkContainer').innerHTML = html || '<div class="empty-state-panel"><p>No alumni matching search query.</p></div>';
+      document.getElementById('networkContainer').innerHTML = html || '<div class="empty-state"><div class="empty-state-icon">👥</div><p>No alumni found</p></div>';
     }
 
     function sendConnection(targetEmail) {
-      const userEmail = (localStorage.getItem('userEmail') || '').toLowerCase();
+      const userEmail = localStorage.getItem('userEmail');
       const connections = JSON.parse(localStorage.getItem('connections')) || [];
 
-      if(connections.some(c => (c.from && c.from.toLowerCase() === userEmail && c.to && c.to.toLowerCase() === targetEmail.toLowerCase()) || 
-                               (c.from && c.from.toLowerCase() === targetEmail.toLowerCase() && c.to && c.to.toLowerCase() === userEmail))) {
-        alert('Connection invitation already exists.');
+      if(connections.some(c => (c.from === userEmail && c.to === targetEmail) || (c.from === targetEmail && c.to === userEmail))) {
+        alert('Already connected!');
         return;
       }
 
@@ -999,18 +650,289 @@
       });
 
       localStorage.setItem('connections', JSON.stringify(connections));
-      alert('Connection invitation sent.');
+      alert('✅ Connection request sent!');
       updateStatistics();
     }
 
     function logout() {
-      if(confirm('Are you sure you want to sign out?')) {
+      if(confirm('Logout?')) {
         localStorage.removeItem('isLoggedIn');
         localStorage.removeItem('userEmail');
-        localStorage.removeItem('userType');
         window.location.href = '../alumni/login.html';
       }
     }
+  </script>
+</body>
+</html>
+      <div class="profile-header">
+        <div class="profile-avatar">👤</div>
+        <div class="profile-info">
+          <h2 id="profileName">John Doe</h2>
+          <p id="profileEmail">john@example.com</p>
+          <p id="profileDept">CSE | Batch 2022 |  <a href="profile.html" style="color: #fbbf24; text-decoration: none;">Edit Profile →</a></p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Opportunities Section -->
+    <div id="opportunitiesSection" class="section hidden">
+      <h2 class="section-title">💼 Career Opportunities</h2>
+      <div style="margin-bottom: 2rem;">
+        <h3 style="color: #6366f1; margin-bottom: 1rem;">🎯 Internships</h3>
+        <div id="internshipsList" class="grid">
+          <p>Loading internships...</p>
+        </div>
+      </div>
+      <div>
+        <h3 style="color: #6366f1; margin-bottom: 1rem;">🏢 Placements</h3>
+        <div id="placementsList" class="grid">
+          <p>Loading placements...</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Applications Section -->
+    <div id="applicationsSection" class="section hidden">
+      <h2 class="section-title">📋 My Applications</h2>
+      <table class="table">
+        <thead>
+          <tr>
+            <th>Position</th>
+            <th>Company</th>
+            <th>Applied Date</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody id="applicationsTable">
+          <tr><td colspan="4" style="text-align: center;">No applications yet. <a href="#" onclick="switchSection('opportunities')">Browse opportunities →</a></td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Network Section -->
+    <div id="networkSection" class="section hidden">
+      <h2 class="section-title">👥 Alumni Network</h2>
+      <div style="margin-bottom: 1.5rem;">
+        <input type="text" id="searchInput" placeholder="🔍 Search alumni by name, batch, department..." style="width: 100%; padding: 0.75rem; border: 1px solid #ddd; border-radius: 8px;">
+      </div>
+      <div id="networkList" class="grid">
+        <p>Search for alumni or load all...</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Apply Modal -->
+  <div id="applyModal" class="modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2>Apply for Opportunity</h2>
+        <button class="modal-close" onclick="closeModal('applyModal')">×</button>
+      </div>
+      <form id="applyForm">
+        <div class="form-group">
+          <label>Position</label>
+          <input type="text" id="applyPosition" disabled>
+        </div>
+        <div class="form-group">
+          <label>Company</label>
+          <input type="text" id="applyCompany" disabled>
+        </div>
+        <div class="form-group">
+          <label>Full Name *</label>
+          <input type="text" id="applyName" required>
+        </div>
+        <div class="form-group">
+          <label>Email *</label>
+          <input type="email" id="applyEmail" required>
+        </div>
+        <div class="form-group">
+          <label>Phone *</label>
+          <input type="tel" id="applyPhone" required>
+        </div>
+        <div class="form-group">
+          <label>Why are you interested? *</label>
+          <textarea id="applyCoverLetter" required></textarea>
+        </div>
+        <div style="display: flex; gap: 1rem; justify-content: flex-end;">
+          <button type="button" class="btn btn-secondary" onclick="closeModal('applyModal')">Cancel</button>
+          <button type="submit" class="btn btn-success">Submit Application</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script src="../shared/js/api.js"></script>
+  <script>
+    // Check if user is logged in and approved on page load
+    document.addEventListener('DOMContentLoaded', function() {
+      const isLoggedIn = localStorage.getItem('isLoggedIn');
+      const userEmail = localStorage.getItem('userEmail');
+      
+      if(!isLoggedIn || isLoggedIn !== 'true' || !userEmail) {
+        // Redirect to login if not logged in
+        window.location.href = 'login.html';
+        return;
+      }
+      
+      // Check if user is approved
+      const approvedAlumni = JSON.parse(localStorage.getItem('approvedAlumni')) || [];
+      const isApproved = approvedAlumni.find(a => a.email === userEmail);
+      
+      if(!isApproved) {
+        // User is not approved, redirect to login with message
+        alert('❌ Your account is not approved yet. Please wait for admin approval.');
+        localStorage.removeItem('isLoggedIn');
+        localStorage.removeItem('userEmail');
+        localStorage.removeItem('currentUser');
+        window.location.href = 'login.html';
+        return;
+      }
+      
+      // Load profile data on page load
+      loadProfileData();
+    });
+
+    function loadProfileData() {
+      const userProfile = JSON.parse(localStorage.getItem('userProfile')) || {};
+      const currentUser = JSON.parse(localStorage.getItem('currentUser')) || {};
+      
+      const profile = Object.keys(userProfile).length > 0 ? userProfile : currentUser;
+      
+      const firstName = profile.firstName || 'Alumni';
+      const lastName = profile.lastName || 'User';
+      const email = profile.email || localStorage.getItem('userEmail') || 'email@example.com';
+      const department = profile.department || 'CSE';
+      const batch = profile.batch || '2024';
+      
+      document.getElementById('profileName').textContent = firstName + ' ' + lastName;
+      document.getElementById('profileEmail').textContent = email;
+      document.getElementById('profileDept').innerHTML = `${department} | Batch ${batch} | <a href="profile.html" style="color: #10b981; text-decoration: none;">Edit Profile →</a>`;
+    }
+
+    let selectedOppId = null, selectedOpping = {};
+
+    function loadOpportunities() {
+      const internships = [
+        { id: 1, title: 'Software Engineer Intern', company: 'Google', stipend: '₹50,000/month', location: 'Bangalore', deadline: '2026-04-30' },
+        { id: 2, title: 'Frontend Developer Intern', company: 'Amazon', stipend: '₹45,000/month', location: 'Delhi', deadline: '2026-05-15' }
+      ];
+      const placements = [
+        { id: 3, title: 'Senior Software Engineer', company: 'Microsoft', salary: '₹15-18 LPA', location: 'Hyderabad', deadline: '2026-04-15' }
+      ];
+      
+      const internshipsHtml = internships.map(opp => `
+        <div class="card">
+          <h3>${opp.title}</h3>
+          <p><strong>${opp.company}</strong></p>
+          <p>💰 ${opp.stipend}</p>
+          <p>📍 ${opp.location}</p>
+          <p style="color: #999; font-size: 0.85rem;">Deadline: ${opp.deadline}</p>
+          <button class="btn btn-primary" style="width: 100%; margin-top: 1rem;" onclick="openApplyModal(${opp.id}, '${opp.title}', '${opp.company}')">🚀 Apply Now</button>
+        </div>
+      `).join('');
+
+      const placementsHtml = placements.map(opp => `
+        <div class="card">
+          <h3>${opp.title}</h3>
+          <p><strong>${opp.company}</strong></p>
+          <p>💰 ${opp.salary}</p>
+          <p>📍 ${opp.location}</p>
+          <p style="color: #999; font-size: 0.85rem;">Deadline: ${opp.deadline}</p>
+          <button class="btn btn-primary" style="width: 100%; margin-top: 1rem;" onclick="openApplyModal(${opp.id}, '${opp.title}', '${opp.company}')">🚀 Apply Now</button>
+        </div>
+      `).join('');
+
+      document.getElementById('internshipsList').innerHTML = internshipsHtml || '<p>No internships available</p>';
+      document.getElementById('placementsList').innerHTML = placementsHtml || '<p>No placements available</p>';
+    }
+
+    function openApplyModal(id, title, company) {
+      selectedOppId = id;
+      selectedOpping = { title, company };
+      document.getElementById('applyPosition').value = title;
+      document.getElementById('applyCompany').value = company;
+      const profile = JSON.parse(localStorage.getItem('userProfile')) || {};
+      document.getElementById('applyName').value = profile.firstName + ' ' + profile.lastName || '';
+      document.getElementById('applyEmail').value = profile.email || '';
+      document.getElementById('applyPhone').value = profile.phone || '';
+      document.getElementById('applyModal').classList.add('show');
+    }
+
+    function closeModal(modalId) {
+      document.getElementById(modalId).classList.remove('show');
+    }
+
+    function loadApplications() {
+      const apps = JSON.parse(localStorage.getItem('applications')) || [];
+      if(apps.length === 0) return;
+      const html = apps.map(app => `
+        <tr>
+          <td>${app.position}</td>
+          <td>${app.company}</td>
+          <td>${new Date(app.date).toLocaleDateString()}</td>
+          <td><span class="badge badge-pending">Pending</span></td>
+        </tr>
+      `).join('');
+      document.getElementById('applicationsTable').innerHTML = html;
+    }
+
+    function switchSection(section) {
+      document.querySelectorAll('.section').forEach(s => s.classList.add('hidden'));
+      document.querySelectorAll('.nav-menu a').forEach(a => a.classList.remove('active'));
+      
+      switch(section) {
+        case 'profile':
+          document.getElementById('profileSection').classList.remove('hidden');
+          document.getElementById('profileLink').classList.add('active');
+          break;
+        case 'opportunities':
+          document.getElementById('opportunitiesSection').classList.remove('hidden');
+          document.getElementById('opportunitiesLink').classList.add('active');
+          loadOpportunities();
+          break;
+        case 'applications':
+          document.getElementById('applicationsSection').classList.remove('hidden');
+          document.getElementById('applicationsLink').classList.add('active');
+          loadApplications();
+          break;
+        case 'network':
+          document.getElementById('networkSection').classList.remove('hidden');
+          document.getElementById('networkLink').classList.add('active');
+          break;
+      }
+    }
+
+    function logout() {
+      if(confirm('Are you sure you want to logout?')) {
+        localStorage.removeItem('isLoggedIn');
+        localStorage.removeItem('userEmail');
+        localStorage.removeItem('userProfile');
+        localStorage.removeItem('currentUser');
+        localStorage.removeItem('userType');
+        window.location.href = 'login.html';
+      }
+    }
+
+    document.getElementById('applyForm').addEventListener('submit', (e) => {
+      e.preventDefault();
+      const app = {
+        id: selectedOppId,
+        position: selectedOpping.title,
+        company: selectedOpping.company,
+        name: document.getElementById('applyName').value,
+        email: document.getElementById('applyEmail').value,
+        phone: document.getElementById('applyPhone').value,
+        coverLetter: document.getElementById('applyCoverLetter').value,
+        date: new Date().toISOString(),
+        status: 'pending'
+      };
+      const apps = JSON.parse(localStorage.getItem('applications')) || [];
+      apps.push(app);
+      localStorage.setItem('applications', JSON.stringify(apps));
+      alert('✅ Application submitted!');
+      closeModal('applyModal');
+      switchSection('applications');
+    });
   </script>
 </body>
 </html>
