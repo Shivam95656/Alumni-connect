@@ -3,302 +3,420 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Admin Dashboard - Alumni Connect</title>
+  <title>Administration Console - Operations</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../shared/css/style.css">
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
-    body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #f0fdf4; }
-    
-    @keyframes slideUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
+    body { 
+      font-family: var(--font-sans, 'Plus Jakarta Sans', sans-serif); 
+      background: #f8fafc; 
+      color: #0f172a; 
+      min-height: 100vh;
+    }
 
-    .navbar { background: linear-gradient(135deg, #16a34a 0%, #15803d 100%); color: white; padding: 1.2rem 2rem; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 8px 20px rgba(22, 163, 74, 0.2); position: sticky; top: 0; z-index: 1000; }
-    .navbar h1 { font-size: 1.5rem; font-weight: 700; }
-    .nav-menu { display: flex; gap: 1.5rem; list-style: none; align-items: center; flex-wrap: wrap; }
-    .nav-menu a { color: #e0e0e0; text-decoration: none; font-weight: 500; transition: all 0.3s; cursor: pointer; }
-    .nav-menu a:hover, .nav-menu a.active { color: white; }
-    .logout-btn { background: rgba(255, 255, 255, 0.2); color: white; padding: 8px 16px; border: 1px solid rgba(255, 255, 255, 0.3); border-radius: 6px; cursor: pointer; transition: all 0.3s; }
-    .logout-btn:hover { background: rgba(255, 255, 255, 0.3); }
+    .admin-nav {
+      background: #0f172a;
+      color: #ffffff;
+      padding: 0.85rem 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    }
 
-    .container { max-width: 1400px; margin: 0 auto; padding: 2rem; }
-    .section { animation: slideUp 0.5s ease-out; }
-    .hidden { display: none !important; }
-    .section-title { font-size: 2rem; color: #16a34a; margin-bottom: 1.5rem; }
+    .brand-section {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
 
-    .card { background: white; padding: 2rem; border-radius: 12px; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06); margin-bottom: 2rem; }
-    .card h3 { color: #16a34a; margin-bottom: 1rem; }
+    .brand-mark {
+      width: 30px;
+      height: 30px;
+      background: #2563eb;
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-weight: 800;
+      font-size: 0.85rem;
+    }
 
-    .form-group { margin-bottom: 1rem; }
-    .form-group label { display: block; margin-bottom: 0.4rem; color: #333; font-weight: 600; }
-    .form-group input, .form-group textarea, .form-group select { width: 100%; padding: 0.6rem; border: 1px solid #ddd; border-radius: 6px; font-size: 1rem; }
-    .form-group input:focus, .form-group textarea:focus { outline: none; border-color: #16a34a; }
-    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+    .brand-title {
+      font-size: 1.05rem;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      color: #ffffff;
+    }
 
-    .btn { padding: 0.6rem 1.2rem; border: none; border-radius: 6px; cursor: pointer; font-weight: 600; transition: all 0.3s; }
-    .btn-primary { background: #16a34a; color: white; }
-    .btn-primary:hover { background: #15803d; }
-    .btn-secondary { background: #e5e7eb; color: #333; }
-    .btn-secondary:hover { background: #d1d5db; }
-    .btn-danger { background: #ef4444; color: white; margin-left: 0.5rem; }
-    .btn-danger:hover { background: #dc2626; }
-    .btn-success { background: #10b981; color: white; }
-    .btn-success:hover { background: #059669; }
+    .admin-role-badge {
+      font-size: 0.7rem;
+      font-weight: 700;
+      padding: 0.2rem 0.5rem;
+      border-radius: 4px;
+      background: rgba(255, 255, 255, 0.1);
+      color: #93c5fd;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
 
-    .table { width: 100%; border-collapse: collapse; background: white; border-radius: 8px; overflow: hidden; }
-    .table th { background: #f0fdf4; padding: 1rem; text-align: left; color: #333; font-weight: 600; border-bottom: 2px solid #16a34a; }
-    .table td { padding: 1rem; border-bottom: 1px solid #e5e7eb; }
-    .table tr:hover { background: #f9fafb; }
+    .admin-menu {
+      display: flex;
+      gap: 0.5rem;
+      list-style: none;
+      align-items: center;
+    }
 
-    @media (max-width: 768px) {
-      .grid-2 { grid-template-columns: 1fr; }
-      .nav-menu { gap: 0.5rem; font-size: 0.9rem; }
+    .admin-tab-btn {
+      padding: 0.45rem 0.85rem;
+      border-radius: 6px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: #94a3b8;
+      text-decoration: none;
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+
+    .admin-tab-btn:hover {
+      color: #ffffff;
+      background: rgba(255, 255, 255, 0.06);
+    }
+
+    .admin-tab-btn.active {
+      color: #ffffff;
+      background: rgba(255, 255, 255, 0.12);
+    }
+
+    .btn-admin-logout {
+      padding: 0.4rem 0.85rem;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      background: transparent;
+      color: #cbd5e1;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 0.825rem;
+      font-weight: 600;
+      transition: all 0.15s ease;
+      font-family: inherit;
+    }
+
+    .btn-admin-logout:hover {
+      background: rgba(239, 68, 68, 0.15);
+      border-color: #ef4444;
+      color: #fca5a5;
+    }
+
+    .admin-container {
+      max-width: 1300px;
+      margin: 0 auto;
+      padding: 2.25rem 1.5rem;
+    }
+
+    .section-title {
+      font-size: 1.45rem;
+      font-weight: 800;
+      color: #0f172a;
+      letter-spacing: -0.03em;
+      margin-bottom: 1.5rem;
+    }
+
+    .admin-card {
+      background: #ffffff;
+      border: 1px solid #e2e8f0;
+      border-radius: 12px;
+      padding: 2rem;
+      box-shadow: 0 1px 3px rgba(15, 23, 42, 0.04);
+      margin-bottom: 2rem;
+    }
+
+    .admin-card h3 {
+      font-size: 1.15rem;
+      font-weight: 700;
+      color: #0f172a;
+      letter-spacing: -0.02em;
+      margin-bottom: 1.25rem;
+    }
+
+    .posted-items-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
+      gap: 1.25rem;
+      margin-top: 1rem;
+    }
+
+    .posted-card {
+      background: #ffffff;
+      border: 1px solid #e2e8f0;
+      border-radius: 10px;
+      padding: 1.5rem;
+      box-shadow: 0 1px 3px rgba(15, 23, 42, 0.04);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .posted-card h4 {
+      font-size: 1.05rem;
+      font-weight: 700;
+      color: #0f172a;
+      margin-bottom: 0.5rem;
+    }
+
+    .posted-meta {
+      font-size: 0.825rem;
+      color: #64748b;
+      margin: 0.5rem 0 1.25rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.25rem;
+    }
+
+    @media (max-width: 850px) {
+      .admin-nav { flex-direction: column; gap: 0.75rem; padding: 0.75rem 1rem; }
+      .admin-menu { flex-wrap: wrap; justify-content: center; }
     }
   </style>
 </head>
 <body>
-  <nav class="navbar">
-    <h1>🎓 Admin Dashboard</h1>
-    <ul class="nav-menu">
-      <li><a id="approvalsLink" onclick="switchSection('approvals')" class="active">✅ Approvals</a></li>
-      <li><a id="eventsLink" onclick="switchSection('events')">📅 Events</a></li>
-      <li><a id="internshipsLink" onclick="switchSection('internships')">🚀 Internships</a></li>
-      <li><a id="placementsLink" onclick="switchSection('placements')">💼 Placements</a></li>
-      <li><a href="./analytics.html" style="color: #fbbf24;">📊 Analytics</a></li>
-      <li><a href="../../index.html" style="color: #fbbf24;">🏠</a></li>
-      <li><button class="logout-btn" onclick="logoutAdmin()">Logout</button></li>
-    </ul>
-  </nav>
+  <!-- Admin Top Navigation -->
+  <header class="admin-nav">
+    <div class="brand-section">
+      <div class="brand-mark">AC</div>
+      <span class="brand-title">Admin Console</span>
+      <span class="admin-role-badge">Superuser</span>
+    </div>
 
-  <div class="container">
+    <nav>
+      <ul class="admin-menu">
+        <li><a id="approvalsLink" onclick="switchSection('approvals')" class="admin-tab-btn active">Approvals</a></li>
+        <li><a id="eventsLink" onclick="switchSection('events')" class="admin-tab-btn">Events</a></li>
+        <li><a id="internshipsLink" onclick="switchSection('internships')" class="admin-tab-btn">Internships</a></li>
+        <li><a id="placementsLink" onclick="switchSection('placements')" class="admin-tab-btn">Placements</a></li>
+        <li><a href="./analytics.html" class="admin-tab-btn" style="color: #60a5fa;">Analytics</a></li>
+        <li><a href="../../index.html" class="admin-tab-btn">Portal Home</a></li>
+      </ul>
+    </nav>
+
+    <div>
+      <button class="btn-admin-logout" onclick="logoutAdmin()">Sign Out</button>
+    </div>
+  </header>
+
+  <main class="admin-container">
     <!-- Approvals Section -->
-    <div id="approvalsSection" class="section">
-      <h2 class="section-title">✅ Alumni Registration Approvals</h2>
-      <div class="card">
+    <section id="approvalsSection" class="section">
+      <h2 class="section-title">Alumni Registration Approvals</h2>
+      <div class="table-responsive">
         <table class="table">
           <thead>
             <tr>
-              <th>Name</th>
-              <th>Email</th>
-              <th>Batch</th>
-              <th>Department</th>
+              <th>Applicant Name</th>
+              <th>Email Address</th>
+              <th>Graduation Batch</th>
+              <th>Department / Faculty</th>
               <th>Actions</th>
             </tr>
           </thead>
           <tbody id="approvalsTable">
-            <tr><td colspan="5" style="text-align: center; padding: 2rem;">No pending approvals</td></tr>
+            <tr><td colspan="5" class="text-center text-muted" style="padding: 2.5rem;">No pending approvals found.</td></tr>
           </tbody>
         </table>
       </div>
-    </div>
+    </section>
 
     <!-- Events Section -->
-    <div id="eventsSection" class="section hidden">
-      <h2 class="section-title">📅 Manage Events</h2>
+    <section id="eventsSection" class="section hidden">
+      <h2 class="section-title">Institutional Events</h2>
       
-      <div class="card">
-        <h3>Create New Event</h3>
+      <div class="admin-card">
+        <h3>Publish New Event</h3>
         <form id="eventForm">
-          <div class="grid-2">
+          <div class="form-grid">
             <div class="form-group">
               <label>Event Title *</label>
-              <input type="text" id="eventTitle" placeholder="Tech Talk 2026" required>
+              <input type="text" id="eventTitle" placeholder="e.g. Annual Alumni Symposium 2026" required>
             </div>
             <div class="form-group">
-              <label>Date *</label>
+              <label>Scheduled Date *</label>
               <input type="date" id="eventDate" required>
             </div>
           </div>
           <div class="form-group">
-            <label>Location</label>
-            <input type="text" id="eventLocation" placeholder="TechHub, Bangalore">
+            <label>Location / Venue</label>
+            <input type="text" id="eventLocation" placeholder="e.g. Virtual via Zoom / Campus Auditorium">
           </div>
           <div class="form-group">
-            <label>Description</label>
-            <textarea id="eventDescription" placeholder="Event details..." style="min-height: 100px;"></textarea>
+            <label>Description & Agenda</label>
+            <textarea id="eventDescription" placeholder="Keynotes, schedule, speakers..." rows="3"></textarea>
           </div>
-          <button type="submit" class="btn btn-primary">Create Event</button>
+          <button type="submit" class="btn btn-primary">Publish Event</button>
         </form>
       </div>
 
-      <h3 style="margin-top: 2rem; color: #16a34a;">Posted Events</h3>
-      <div id="eventsList"></div>
-    </div>
+      <h3 style="font-size: 1.15rem; font-weight: 700; color: #0f172a; margin-bottom: 0.75rem;">Active Scheduled Events</h3>
+      <div id="eventsList" class="posted-items-grid"></div>
+    </section>
 
     <!-- Internships Section -->
-    <div id="internshipsSection" class="section hidden">
-      <h2 class="section-title">🚀 Manage Internships</h2>
+    <section id="internshipsSection" class="section hidden">
+      <h2 class="section-title">Manage Internships</h2>
       
-      <div class="card">
-        <h3>Post New Internship</h3>
+      <div class="admin-card">
+        <h3>Publish Internship Drive</h3>
         <form id="internshipForm">
-          <div class="grid-2">
+          <div class="form-grid">
             <div class="form-group">
               <label>Position Title *</label>
-              <input type="text" id="internshipTitle" placeholder="SDE Intern" required>
+              <input type="text" id="internshipTitle" placeholder="e.g. Machine Learning Research Intern" required>
             </div>
             <div class="form-group">
-              <label>Company *</label>
-              <input type="text" id="internshipCompany" placeholder="Google" required>
+              <label>Organization / Company *</label>
+              <input type="text" id="internshipCompany" placeholder="e.g. DeepMind, Meta" required>
             </div>
           </div>
-          <div class="grid-2">
+          <div class="form-grid">
             <div class="form-group">
               <label>Location</label>
-              <input type="text" id="internshipLocation" placeholder="Bangalore, India">
+              <input type="text" id="internshipLocation" placeholder="e.g. Bengaluru / Hybrid">
             </div>
             <div class="form-group">
-              <label>Stipend</label>
-              <input type="text" id="internshipStipend" placeholder="₹50,000/month">
+              <label>Monthly Stipend</label>
+              <input type="text" id="internshipStipend" placeholder="e.g. 50,000 / month">
             </div>
           </div>
           <div class="form-group">
-            <label>Deadline *</label>
+            <label>Application Deadline *</label>
             <input type="date" id="internshipDeadline" required>
           </div>
           <div class="form-group">
-            <label>Description</label>
-            <textarea id="internshipDescription" placeholder="Job description..." style="min-height: 100px;"></textarea>
+            <label>Role Requirements</label>
+            <textarea id="internshipDescription" placeholder="Qualifications, technical skills, duration..." rows="3"></textarea>
           </div>
-          <button type="submit" class="btn btn-primary">Post Internship</button>
+          <button type="submit" class="btn btn-primary">Publish Internship</button>
         </form>
       </div>
 
-      <h3 style="margin-top: 2rem; color: #16a34a;">Posted Internships</h3>
-      <div id="internshipsList"></div>
-    </div>
+      <h3 style="font-size: 1.15rem; font-weight: 700; color: #0f172a; margin-bottom: 0.75rem;">Active Internship Drives</h3>
+      <div id="internshipsList" class="posted-items-grid"></div>
+    </section>
 
     <!-- Placements Section -->
-    <div id="placementsSection" class="section hidden">
-      <h2 class="section-title">💼 Manage Placements</h2>
+    <section id="placementsSection" class="section hidden">
+      <h2 class="section-title">Manage Full-Time Placements</h2>
       
-      <div class="card">
-        <h3>Post New Placement</h3>
+      <div class="admin-card">
+        <h3>Publish Placement Opportunity</h3>
         <form id="placementForm">
-          <div class="grid-2">
+          <div class="form-grid">
             <div class="form-group">
-              <label>Position Title *</label>
-              <input type="text" id="placementTitle" placeholder="Software Engineer" required>
+              <label>Role Position *</label>
+              <input type="text" id="placementTitle" placeholder="e.g. Systems Engineer II" required>
             </div>
             <div class="form-group">
-              <label>Company *</label>
-              <input type="text" id="placementCompany" placeholder="Microsoft" required>
+              <label>Hiring Organization *</label>
+              <input type="text" id="placementCompany" placeholder="e.g. Stripe, Goldman Sachs" required>
             </div>
           </div>
-          <div class="grid-2">
+          <div class="form-grid">
             <div class="form-group">
               <label>Location</label>
-              <input type="text" id="placementLocation" placeholder="Bangalore, India">
+              <input type="text" id="placementLocation" placeholder="e.g. Hyderabad / Remote">
             </div>
             <div class="form-group">
-              <label>Salary Package</label>
-              <input type="text" id="placementSalary" placeholder="₹15-18 LPA">
+              <label>Compensation Package (CTC)</label>
+              <input type="text" id="placementSalary" placeholder="e.g. 18-24 LPA">
             </div>
           </div>
           <div class="form-group">
-            <label>Deadline *</label>
+            <label>Application Deadline *</label>
             <input type="date" id="placementDeadline" required>
           </div>
           <div class="form-group">
-            <label>Description</label>
-            <textarea id="placementDescription" placeholder="Job description..." style="min-height: 100px;"></textarea>
+            <label>Eligibility & Description</label>
+            <textarea id="placementDescription" placeholder="Batch eligibility, interview pipeline, criteria..." rows="3"></textarea>
           </div>
-          <button type="submit" class="btn btn-primary">Post Placement</button>
+          <button type="submit" class="btn btn-primary">Publish Placement</button>
         </form>
       </div>
 
-      <h3 style="margin-top: 2rem; color: #16a34a;">Posted Placements</h3>
-      <div id="placementsList"></div>
-    </div>
-  </div>
-
+      <h3 style="font-size: 1.15rem; font-weight: 700; color: #0f172a; margin-bottom: 0.75rem;">Active Placement Drives</h3>
+      <div id="placementsList" class="posted-items-grid"></div>
+    </section>
+  </main>
 
   <script>
-    // Authentication check on page load
     document.addEventListener('DOMContentLoaded', function() {
       const isAdminLoggedIn = localStorage.getItem('isAdminLoggedIn');
       
       if(!isAdminLoggedIn || isAdminLoggedIn !== 'true') {
-        // Redirect to login if not authenticated
         window.location.href = 'login.html';
         return;
       }
       
-      // Attach form handlers when page loads
       const eventForm = document.getElementById('eventForm');
-      if(eventForm) {
-        eventForm.addEventListener('submit', handleEventSubmit);
-      }
+      if(eventForm) eventForm.addEventListener('submit', handleEventSubmit);
       
       const internshipForm = document.getElementById('internshipForm');
-      if(internshipForm) {
-        internshipForm.addEventListener('submit', handleInternshipSubmit);
-      }
+      if(internshipForm) internshipForm.addEventListener('submit', handleInternshipSubmit);
       
       const placementForm = document.getElementById('placementForm');
-      if(placementForm) {
-        placementForm.addEventListener('submit', handlePlacementSubmit);
-      }
+      if(placementForm) placementForm.addEventListener('submit', handlePlacementSubmit);
       
-      // Load pending alumni in approvals section
       loadPendingAlumni();
       loadAllData();
     });
 
-    // Switch between sections
     function switchSection(section) {
       document.querySelectorAll('.section').forEach(s => s.classList.add('hidden'));
-      document.querySelectorAll('.nav-menu a').forEach(a => a.classList.remove('active'));
+      document.querySelectorAll('.admin-menu a').forEach(a => a.classList.remove('active'));
       
-      switch(section) {
-        case 'approvals':
-          document.getElementById('approvalsSection').classList.remove('hidden');
-          document.getElementById('approvalsLink').classList.add('active');
-          loadPendingAlumni();
-          break;
-        case 'events':
-          document.getElementById('eventsSection').classList.remove('hidden');
-          document.getElementById('eventsLink').classList.add('active');
-          loadEvents();
-          break;
-        case 'internships':
-          document.getElementById('internshipsSection').classList.remove('hidden');
-          document.getElementById('internshipsLink').classList.add('active');
-          loadInternships();
-          break;
-        case 'placements':
-          document.getElementById('placementsSection').classList.remove('hidden');
-          document.getElementById('placementsLink').classList.add('active');
-          loadPlacements();
-          break;
-      }
+      const targetSec = document.getElementById(section + 'Section');
+      if(targetSec) targetSec.classList.remove('hidden');
+      
+      const targetLink = document.getElementById(section + 'Link');
+      if(targetLink) targetLink.classList.add('active');
+
+      if(section === 'approvals') loadPendingAlumni();
+      if(section === 'events') loadEvents();
+      if(section === 'internships') loadInternships();
+      if(section === 'placements') loadPlacements();
     }
 
-    // Logout function
     function logoutAdmin() {
-      if(confirm('Are you sure you want to logout?')) {
+      if(confirm('Confirm administrative sign out?')) {
         localStorage.removeItem('isAdminLoggedIn');
         localStorage.removeItem('adminEmail');
-        localStorage.removeItem('currentAdmin');
         window.location.href = 'login.html';
       }
     }
 
-    // Load pending alumni registrations
     function loadPendingAlumni() {
       const pendingAlumni = JSON.parse(localStorage.getItem('pendingAlumni')) || [];
       
       if(pendingAlumni.length === 0) {
-        document.getElementById('approvalsTable').innerHTML = '<tr><td colspan="5" style="text-align: center; padding: 2rem;">✅ No pending approvals</td></tr>';
+        document.getElementById('approvalsTable').innerHTML = '<tr><td colspan="5" class="text-center text-muted" style="padding: 2.5rem;">No pending approvals in queue.</td></tr>';
         return;
       }
       
       const html = pendingAlumni.map(alumni => `
         <tr>
-          <td><strong>${alumni.firstName} ${alumni.lastName}</strong></td>
+          <td><strong style="color: #0f172a;">${alumni.firstName} ${alumni.lastName}</strong></td>
           <td>${alumni.email}</td>
-          <td>${alumni.batch}</td>
+          <td>Batch ${alumni.batch}</td>
           <td>${alumni.department}</td>
           <td>
-            <button class="btn btn-success" onclick="approveAlumni('${alumni.id}', '${alumni.email}')">✅ Approve</button>
-            <button class="btn btn-danger" onclick="rejectAlumni('${alumni.id}', '${alumni.email}')">❌ Reject</button>
+            <div style="display: flex; gap: 0.5rem;">
+              <button class="btn btn-sm btn-success" onclick="approveAlumni('${alumni.id}', '${alumni.email}')">Approve</button>
+              <button class="btn btn-sm btn-danger" onclick="rejectAlumni('${alumni.id}', '${alumni.email}')">Reject</button>
+            </div>
           </td>
         </tr>
       `).join('');
@@ -306,52 +424,41 @@
       document.getElementById('approvalsTable').innerHTML = html;
     }
 
-    // Approve alumni registration
     function approveAlumni(alumniId, email) {
       const pendingAlumni = JSON.parse(localStorage.getItem('pendingAlumni')) || [];
       const approvedAlumni = JSON.parse(localStorage.getItem('approvedAlumni')) || [];
       
       const alumniToApprove = pendingAlumni.find(a => a.id === alumniId);
+      if(!alumniToApprove) return;
       
-      if(!alumniToApprove) {
-        alert('❌ Alumni not found');
-        return;
-      }
-      
-      // Move from pending to approved
       const updatedPending = pendingAlumni.filter(a => a.id !== alumniId);
       localStorage.setItem('pendingAlumni', JSON.stringify(updatedPending));
       
+      alumniToApprove.status = 'approved';
       approvedAlumni.push(alumniToApprove);
       localStorage.setItem('approvedAlumni', JSON.stringify(approvedAlumni));
       
-      alert(`✅ ${alumniToApprove.firstName} ${alumniToApprove.lastName} has been approved!`);
       loadPendingAlumni();
     }
 
-    // Reject alumni registration
     function rejectAlumni(alumniId, email) {
-      if(!confirm('Are you sure you want to reject this registration?')) {
-        return;
-      }
+      if(!confirm('Confirm rejection of this applicant?')) return;
       
       const pendingAlumni = JSON.parse(localStorage.getItem('pendingAlumni')) || [];
       const updatedPending = pendingAlumni.filter(a => a.id !== alumniId);
       localStorage.setItem('pendingAlumni', JSON.stringify(updatedPending));
       
-      alert('❌ Registration rejected');
       loadPendingAlumni();
     }
 
-    // Handle event form submission
     function handleEventSubmit(e) {
       e.preventDefault();
       const event = {
         id: Date.now(),
-        title: document.getElementById('eventTitle').value,
+        title: document.getElementById('eventTitle').value.trim(),
         date: document.getElementById('eventDate').value,
-        location: document.getElementById('eventLocation').value,
-        description: document.getElementById('eventDescription').value,
+        location: document.getElementById('eventLocation').value.trim(),
+        description: document.getElementById('eventDescription').value.trim(),
         createdAt: new Date().toISOString()
       };
       
@@ -359,22 +466,20 @@
       events.push(event);
       localStorage.setItem('adminEvents', JSON.stringify(events));
       
-      alert('✅ Event created successfully!');
       document.getElementById('eventForm').reset();
       loadEvents();
     }
 
-    // Handle internship form submission
     function handleInternshipSubmit(e) {
       e.preventDefault();
       const internship = {
         id: Date.now(),
-        title: document.getElementById('internshipTitle').value,
-        company: document.getElementById('internshipCompany').value,
-        location: document.getElementById('internshipLocation').value,
-        stipend: document.getElementById('internshipStipend').value,
+        title: document.getElementById('internshipTitle').value.trim(),
+        company: document.getElementById('internshipCompany').value.trim(),
+        location: document.getElementById('internshipLocation').value.trim(),
+        stipend: document.getElementById('internshipStipend').value.trim(),
         deadline: document.getElementById('internshipDeadline').value,
-        description: document.getElementById('internshipDescription').value,
+        description: document.getElementById('internshipDescription').value.trim(),
         createdAt: new Date().toISOString()
       };
       
@@ -382,22 +487,20 @@
       internships.push(internship);
       localStorage.setItem('adminInternships', JSON.stringify(internships));
       
-      alert('✅ Internship posted successfully!');
       document.getElementById('internshipForm').reset();
       loadInternships();
     }
 
-    // Handle placement form submission
     function handlePlacementSubmit(e) {
       e.preventDefault();
       const placement = {
         id: Date.now(),
-        title: document.getElementById('placementTitle').value,
-        company: document.getElementById('placementCompany').value,
-        location: document.getElementById('placementLocation').value,
-        salary: document.getElementById('placementSalary').value,
+        title: document.getElementById('placementTitle').value.trim(),
+        company: document.getElementById('placementCompany').value.trim(),
+        location: document.getElementById('placementLocation').value.trim(),
+        salary: document.getElementById('placementSalary').value.trim(),
         deadline: document.getElementById('placementDeadline').value,
-        description: document.getElementById('placementDescription').value,
+        description: document.getElementById('placementDescription').value.trim(),
         createdAt: new Date().toISOString()
       };
       
@@ -405,92 +508,93 @@
       placements.push(placement);
       localStorage.setItem('adminPlacements', JSON.stringify(placements));
       
-      alert('✅ Placement posted successfully!');
       document.getElementById('placementForm').reset();
       loadPlacements();
     }
 
-    // Load events from localStorage
     function loadEvents() {
       const events = JSON.parse(localStorage.getItem('adminEvents')) || [];
       const html = events.length > 0 ? events.map(event => `
-        <div class="card" style="border-left: 4px solid #16a34a;">
-          <h4>${event.title}</h4>
-          <p><strong>📅 Date:</strong> ${new Date(event.date).toLocaleDateString()}</p>
-          <p><strong>📍 Location:</strong> ${event.location || 'TBD'}</p>
-          <p><strong>📝 Description:</strong> ${event.description}</p>
-          <button class="btn btn-danger" onclick="deleteEvent(${event.id})">🗑️ Delete Event</button>
+        <div class="posted-card">
+          <div>
+            <h4>${event.title}</h4>
+            <div class="posted-meta">
+              <span>Date: ${new Date(event.date).toLocaleDateString()}</span>
+              <span>Location: ${event.location || 'TBD'}</span>
+              <p style="margin-top: 0.4rem; color: #475569;">${event.description}</p>
+            </div>
+          </div>
+          <button class="btn btn-sm btn-secondary" onclick="deleteEvent(${event.id})">Delete Event</button>
         </div>
-      `).join('') : '<p style="text-align: center; padding: 2rem; color: #999;">📭 No events created yet</p>';
+      `).join('') : '<p class="text-muted" style="padding: 1.5rem 0;">No active events recorded.</p>';
       document.getElementById('eventsList').innerHTML = html;
     }
 
-    // Load internships from localStorage
     function loadInternships() {
       const internships = JSON.parse(localStorage.getItem('adminInternships')) || [];
       const html = internships.length > 0 ? internships.map(int => `
-        <div class="card" style="border-left: 4px solid #16a34a;">
-          <h4>${int.title} - ${int.company}</h4>
-          <p><strong>💰 Stipend:</strong> ${int.stipend}</p>
-          <p><strong>📍 Location:</strong> ${int.location}</p>
-          <p><strong>⏰ Deadline:</strong> ${new Date(int.deadline).toLocaleDateString()}</p>
-          <p><strong>📝 Description:</strong> ${int.description}</p>
-          <button class="btn btn-danger" onclick="deleteInternship(${int.id})">🗑️ Delete</button>
+        <div class="posted-card">
+          <div>
+            <h4>${int.title} &middot; <span style="font-weight: 500; color: #2563eb;">${int.company}</span></h4>
+            <div class="posted-meta">
+              <span>Stipend: ₹${int.stipend || 'Competitive'}</span>
+              <span>Location: ${int.location || 'Hybrid'}</span>
+              <span>Deadline: ${new Date(int.deadline).toLocaleDateString()}</span>
+              <p style="margin-top: 0.4rem; color: #475569;">${int.description}</p>
+            </div>
+          </div>
+          <button class="btn btn-sm btn-secondary" onclick="deleteInternship(${int.id})">Delete Drive</button>
         </div>
-      `).join('') : '<p style="text-align: center; padding: 2rem; color: #999;">📭 No internships posted yet</p>';
+      `).join('') : '<p class="text-muted" style="padding: 1.5rem 0;">No active internships posted.</p>';
       document.getElementById('internshipsList').innerHTML = html;
     }
 
-    // Load placements from localStorage
     function loadPlacements() {
       const placements = JSON.parse(localStorage.getItem('adminPlacements')) || [];
       const html = placements.length > 0 ? placements.map(place => `
-        <div class="card" style="border-left: 4px solid #16a34a;">
-          <h4>${place.title} - ${place.company}</h4>
-          <p><strong>💼 Salary:</strong> ${place.salary}</p>
-          <p><strong>📍 Location:</strong> ${place.location}</p>
-          <p><strong>⏰ Deadline:</strong> ${new Date(place.deadline).toLocaleDateString()}</p>
-          <p><strong>📝 Description:</strong> ${place.description}</p>
-          <button class="btn btn-danger" onclick="deletePlacement(${place.id})">🗑️ Delete</button>
+        <div class="posted-card">
+          <div>
+            <h4>${place.title} &middot; <span style="font-weight: 500; color: #2563eb;">${place.company}</span></h4>
+            <div class="posted-meta">
+              <span>CTC Package: ${place.salary || 'Competitive'}</span>
+              <span>Location: ${place.location || 'Hybrid'}</span>
+              <span>Deadline: ${new Date(place.deadline).toLocaleDateString()}</span>
+              <p style="margin-top: 0.4rem; color: #475569;">${place.description}</p>
+            </div>
+          </div>
+          <button class="btn btn-sm btn-secondary" onclick="deletePlacement(${place.id})">Delete Drive</button>
         </div>
-      `).join('') : '<p style="text-align: center; padding: 2rem; color: #999;">📭 No placements posted yet</p>';
+      `).join('') : '<p class="text-muted" style="padding: 1.5rem 0;">No active placements posted.</p>';
       document.getElementById('placementsList').innerHTML = html;
     }
 
-    // Delete event
     function deleteEvent(id) {
-      if(confirm('🗑️ Delete this event?')) {
+      if(confirm('Confirm deletion of this event?')) {
         let events = JSON.parse(localStorage.getItem('adminEvents')) || [];
         events = events.filter(e => e.id !== id);
         localStorage.setItem('adminEvents', JSON.stringify(events));
         loadEvents();
-        alert('✅ Event deleted!');
       }
     }
 
-    // Delete internship
     function deleteInternship(id) {
-      if(confirm('🗑️ Delete this internship?')) {
+      if(confirm('Confirm deletion of this internship drive?')) {
         let internships = JSON.parse(localStorage.getItem('adminInternships')) || [];
         internships = internships.filter(i => i.id !== id);
         localStorage.setItem('adminInternships', JSON.stringify(internships));
         loadInternships();
-        alert('✅ Internship deleted!');
       }
     }
 
-    // Delete placement
     function deletePlacement(id) {
-      if(confirm('🗑️ Delete this placement?')) {
+      if(confirm('Confirm deletion of this placement opportunity?')) {
         let placements = JSON.parse(localStorage.getItem('adminPlacements')) || [];
         placements = placements.filter(p => p.id !== id);
         localStorage.setItem('adminPlacements', JSON.stringify(placements));
         loadPlacements();
-        alert('✅ Placement deleted!');
       }
     }
 
-    // Load all data on page load
     function loadAllData() {
       loadEvents();
       loadInternships();

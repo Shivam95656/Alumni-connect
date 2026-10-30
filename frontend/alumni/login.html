@@ -3,146 +3,181 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Alumni Login - Alumni Connect</title>
+  <title>Alumni Portal - Authentication</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../shared/css/style.css">
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
-    body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+    body { 
+      font-family: var(--font-sans, 'Plus Jakarta Sans', sans-serif); 
+      background: #f8fafc;
+      color: #0f172a;
+      min-height: 100vh;
+    }
     
-    .container { display: grid; grid-template-columns: 1fr 1fr; height: 100vh; }
+    .auth-layout { 
+      display: grid; 
+      grid-template-columns: 1fr 1fr; 
+      min-height: 100vh; 
+    }
     
-    /* Left Side - Login/Register Form */
-    .left-side { 
-      background: linear-gradient(135deg, #ffffff 0%, #f0fdf4 100%);
+    /* Left Form Column */
+    .form-column { 
+      background: #ffffff;
       display: flex;
       flex-direction: column;
       justify-content: center;
       align-items: center;
-      padding: 2rem;
+      padding: 3rem 2rem;
       overflow-y: auto;
     }
 
-    .logo-section { 
-      text-align: center;
-      margin-bottom: 3rem;
+    .form-wrapper { 
       width: 100%;
+      max-width: 440px;
     }
 
-    .logo-section h1 { 
-      color: #16a34a;
-      font-size: 1.8rem;
+    .brand-header { 
+      margin-bottom: 2rem;
+    }
+
+    .brand-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: #2563eb;
+      background: #eff6ff;
+      padding: 0.3rem 0.75rem;
+      border-radius: 9999px;
+      margin-bottom: 0.75rem;
+      border: 1px solid #dbeafe;
+    }
+
+    .brand-header h1 { 
+      color: #0f172a;
+      font-size: 1.75rem;
       font-weight: 800;
-      margin-bottom: 0.5rem;
+      letter-spacing: -0.03em;
+      margin-bottom: 0.35rem;
     }
 
-    .logo-section p { 
-      color: #999;
-      font-size: 0.9rem;
+    .brand-header p { 
+      color: #64748b;
+      font-size: 0.925rem;
     }
 
-    .form-container { 
-      width: 100%;
-      max-width: 400px;
-    }
-
+    /* Segmented Tab Switch */
     .tab-switch { 
       display: flex;
-      gap: 1rem;
-      margin-bottom: 2rem;
-      background: #f3f4f6;
-      padding: 0.5rem;
-      border-radius: 12px;
+      gap: 0.25rem;
+      margin-bottom: 1.75rem;
+      background: #f1f5f9;
+      padding: 0.3rem;
+      border-radius: 8px;
     }
 
     .tab-btn { 
       flex: 1;
-      padding: 0.75rem;
+      padding: 0.65rem;
       border: none;
       background: transparent;
-      color: #666;
-      border-radius: 8px;
+      color: #64748b;
+      border-radius: 6px;
       cursor: pointer;
       font-weight: 600;
-      transition: all 0.3s;
+      font-size: 0.875rem;
+      transition: all 0.15s ease;
+      font-family: inherit;
     }
 
     .tab-btn.active { 
-      background: linear-gradient(135deg, #16a34a, #15803d);
-      color: white;
+      background: #ffffff;
+      color: #0f172a;
+      box-shadow: 0 1px 3px rgba(15, 23, 42, 0.08);
     }
 
     .form-section { 
-      animation: fadeIn 0.3s ease-out;
+      animation: fadeIn 0.2s ease-out;
     }
 
     @keyframes fadeIn { 
-      from { opacity: 0; transform: translateY(10px); }
+      from { opacity: 0; transform: translateY(4px); }
       to { opacity: 1; transform: translateY(0); }
     }
 
     .hidden { display: none !important; }
 
     .form-group { 
-      margin-bottom: 1.2rem;
+      margin-bottom: 1.15rem;
     }
 
     .form-group label { 
       display: block;
-      margin-bottom: 0.5rem;
-      color: #333;
+      margin-bottom: 0.4rem;
+      color: #0f172a;
       font-weight: 600;
-      font-size: 0.95rem;
+      font-size: 0.85rem;
     }
 
     .form-group input, .form-group select { 
       width: 100%;
-      padding: 0.8rem;
-      border: 1.5px solid #ddd;
-      border-radius: 8px;
-      font-size: 1rem;
-      transition: all 0.3s;
+      padding: 0.7rem 0.9rem;
+      border: 1px solid #e2e8f0;
+      border-radius: 6px;
+      font-size: 0.925rem;
+      font-family: inherit;
+      color: #0f172a;
+      background: #ffffff;
+      transition: all 0.15s ease;
     }
 
     .form-group input:focus, .form-group select:focus { 
       outline: none;
-      border-color: #16a34a;
-      box-shadow: 0 0 0 3px rgba(22, 163, 74, 0.1);
-      background: #f0fdf4;
+      border-color: #2563eb;
+      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12);
     }
 
     .form-grid { 
       display: grid;
       grid-template-columns: 1fr 1fr;
-      gap: 1rem;
+      gap: 0.85rem;
     }
 
     .submit-btn { 
       width: 100%;
-      padding: 1rem;
-      background: linear-gradient(135deg, #16a34a, #15803d);
-      color: white;
+      padding: 0.8rem;
+      background: #0f172a;
+      color: #ffffff;
       border: none;
-      border-radius: 8px;
-      font-size: 1rem;
-      font-weight: 700;
+      border-radius: 6px;
+      font-size: 0.925rem;
+      font-weight: 600;
+      font-family: inherit;
       cursor: pointer;
-      transition: all 0.3s;
-      margin-top: 1.5rem;
+      transition: all 0.15s ease;
+      margin-top: 1.25rem;
+      box-shadow: 0 1px 2px rgba(15, 23, 42, 0.05);
     }
 
     .submit-btn:hover { 
-      transform: translateY(-2px);
-      box-shadow: 0 12px 24px rgba(22, 163, 74, 0.3);
+      background: #1e293b;
+      transform: translateY(-1px);
+      box-shadow: 0 4px 10px rgba(15, 23, 42, 0.1);
     }
 
     .toggle-text { 
       text-align: center;
       margin-top: 1.5rem;
-      color: #666;
-      font-size: 0.95rem;
+      color: #64748b;
+      font-size: 0.875rem;
     }
 
     .toggle-text a { 
-      color: #16a34a;
+      color: #2563eb;
       text-decoration: none;
       font-weight: 600;
       cursor: pointer;
@@ -152,132 +187,130 @@
       text-decoration: underline;
     }
 
-    .alert { 
-      padding: 1rem;
-      border-radius: 8px;
-      margin-bottom: 1.5rem;
-      animation: slideDown 0.3s ease-out;
-    }
-
-    @keyframes slideDown {
-      from { opacity: 0; transform: translateY(-10px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-
-    .alert-success { 
-      background: #dcfce7;
-      color: #166534;
-      border-left: 4px solid #16a34a;
-    }
-
-    .alert-danger { 
-      background: #fee2e2;
-      color: #7f1d1d;
-      border-left: 4px solid #ef4444;
-    }
-
-    /* Right Side - Dashboard Preview */
-    .right-side { 
-      background: linear-gradient(135deg, #16a34a 0%, #15803d 100%);
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-      padding: 3rem 2rem;
-      color: white;
+    .nav-back {
+      margin-top: 1.75rem;
+      padding-top: 1.25rem;
+      border-top: 1px solid #e2e8f0;
       text-align: center;
     }
 
-    .dashboard-preview { 
-      width: 100%;
-      max-width: 350px;
+    .nav-back a {
+      color: #64748b;
+      font-size: 0.85rem;
+      text-decoration: none;
+      font-weight: 500;
     }
 
-    .dashboard-icon { 
-      width: 120px;
-      height: 120px;
-      margin: 0 auto 2rem;
-      background: rgba(255, 255, 255, 0.15);
-      border-radius: 20px;
+    .nav-back a:hover {
+      color: #0f172a;
+    }
+
+    /* Right Showcase Column */
+    .showcase-column { 
+      background: #0f172a;
+      background-image: radial-gradient(circle at 10% 20%, rgba(37, 99, 235, 0.15) 0%, transparent 40%),
+                        radial-gradient(circle at 90% 80%, rgba(59, 130, 246, 0.1) 0%, transparent 40%);
       display: flex;
-      align-items: center;
+      flex-direction: column;
       justify-content: center;
-      font-size: 3rem;
+      align-items: center;
+      padding: 4rem 3rem;
+      color: #ffffff;
+      position: relative;
     }
 
-    .dashboard-preview h2 { 
-      font-size: 1.8rem;
-      margin-bottom: 1rem;
+    .showcase-content { 
+      width: 100%;
+      max-width: 420px;
+    }
+
+    .showcase-badge {
+      display: inline-block;
+      font-size: 0.75rem;
       font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: #93c5fd;
+      margin-bottom: 1rem;
     }
 
-    .dashboard-preview p { 
-      opacity: 0.9;
-      margin-bottom: 2rem;
-      line-height: 1.5;
+    .showcase-content h2 { 
+      font-size: 2.1rem;
+      font-weight: 800;
+      letter-spacing: -0.03em;
+      line-height: 1.2;
+      color: #ffffff;
+      margin-bottom: 1rem;
+    }
+
+    .showcase-content p { 
+      color: #94a3b8;
+      font-size: 1rem;
+      line-height: 1.6;
+      margin-bottom: 2.5rem;
     }
 
     .features-list { 
-      text-align: left;
       display: flex;
       flex-direction: column;
-      gap: 1.2rem;
+      gap: 1.25rem;
     }
 
     .feature-item { 
       display: flex;
       gap: 1rem;
       align-items: flex-start;
-      background: rgba(255, 255, 255, 0.08);
-      padding: 1rem;
+      background: rgba(255, 255, 255, 0.03);
+      padding: 1.15rem;
       border-radius: 8px;
-      border-left: 3px solid rgba(255, 255, 255, 0.3);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      backdrop-filter: blur(8px);
     }
 
-    .feature-icon { 
-      font-size: 1.5rem;
-      min-width: 30px;
+    .feature-icon-svg { 
+      width: 20px;
+      height: 20px;
+      color: #60a5fa;
+      flex-shrink: 0;
+      margin-top: 2px;
     }
 
     .feature-text h4 { 
-      font-size: 0.95rem;
-      margin-bottom: 0.3rem;
+      font-size: 0.925rem;
+      color: #f8fafc;
+      margin-bottom: 0.2rem;
       font-weight: 600;
     }
 
     .feature-text p { 
-      font-size: 0.85rem;
-      opacity: 0.85;
+      font-size: 0.825rem;
+      color: #94a3b8;
       margin: 0;
+      line-height: 1.5;
     }
 
-    @media (max-width: 1200px) {
-      .container { grid-template-columns: 1fr; }
-      .right-side { display: none; }
-      .left-side { height: 100vh; }
-    }
-
-    @media (max-width: 768px) {
-      .left-side { padding: 1.5rem; }
-      .form-container { max-width: 100%; }
-      .form-grid { grid-template-columns: 1fr; }
+    @media (max-width: 960px) {
+      .auth-layout { grid-template-columns: 1fr; }
+      .showcase-column { display: none; }
+      .form-column { padding: 2rem 1.5rem; }
     }
   </style>
 </head>
 <body>
-  <div class="container">
-    <!-- Left Side - Login Form -->
-    <div class="left-side">
-      <div class="logo-section">
-        <h1>🎓 Alumni Connect</h1>
-        <p>Connect your alumni network</p>
-      </div>
+  <div class="auth-layout">
+    <!-- Left Column: Forms -->
+    <div class="form-column">
+      <div class="form-wrapper">
+        <div class="brand-header">
+          <div class="brand-badge">Alumni Network Access</div>
+          <h1>Alumni Portal</h1>
+          <p>Access directory, career openings, and community updates.</p>
+        </div>
 
-      <div class="form-container">
-        <!-- Tab Switch -->
+        <!-- Segmented Tab Switch -->
         <div class="tab-switch">
-          <button class="tab-btn active" onclick="switchTab('login')">Login</button>
-          <button class="tab-btn" onclick="switchTab('register')">Register</button>
+          <button class="tab-btn active" onclick="switchTab('login')">Sign In</button>
+          <button class="tab-btn" onclick="switchTab('register')">Register Profile</button>
         </div>
 
         <!-- Login Form -->
@@ -286,20 +319,20 @@
             <div id="loginAlert"></div>
             
             <div class="form-group">
-              <label>Email Address</label>
-              <input type="email" id="loginEmail" placeholder="your@email.com" required>
+              <label>Institutional / Personal Email</label>
+              <input type="email" id="loginEmail" placeholder="name@domain.com" required>
             </div>
 
             <div class="form-group">
               <label>Password</label>
-              <input type="password" id="loginPassword" placeholder="••••••••" required>
+              <input type="password" id="loginPassword" placeholder="Enter your password" required>
             </div>
 
-            <button type="submit" class="submit-btn">🔓 Login to Dashboard</button>
+            <button type="submit" class="submit-btn">Sign In to Dashboard</button>
           </form>
 
           <div class="toggle-text">
-            Don't have account? <a onclick="switchTab('register')">Register here</a>
+            Need an alumni account? <a onclick="switchTab('register')">Register here</a>
           </div>
         </div>
 
@@ -311,7 +344,7 @@
             <div class="form-grid">
               <div class="form-group">
                 <label>First Name</label>
-                <input type="text" id="firstName" placeholder="John" required>
+                <input type="text" id="firstName" placeholder="Jane" required>
               </div>
               <div class="form-group">
                 <label>Last Name</label>
@@ -321,95 +354,91 @@
 
             <div class="form-group">
               <label>Email Address</label>
-              <input type="email" id="email" placeholder="your@email.com" required>
+              <input type="email" id="email" placeholder="name@domain.com" required>
             </div>
 
             <div class="form-group">
               <label>Password</label>
-              <input type="password" id="password" placeholder="••••••••" required>
+              <input type="password" id="password" placeholder="Create a secure password" required>
             </div>
 
             <div class="form-grid">
               <div class="form-group">
-                <label>Phone</label>
-                <input type="tel" id="phone" placeholder="9876543210" required>
+                <label>Phone Number</label>
+                <input type="tel" id="phone" placeholder="+91 98765 43210" required>
               </div>
               <div class="form-group">
-                <label>Batch Year</label>
-                <input type="number" id="batch" min="2000" max="2099" placeholder="2022" required>
+                <label>Graduation Batch</label>
+                <input type="number" id="batch" min="1970" max="2099" placeholder="2022" required>
               </div>
             </div>
 
             <div class="form-grid">
               <div class="form-group">
-                <label>Year of Study</label>
+                <label>Cohort Year</label>
                 <select id="year" required>
-                  <option value="">Select Year</option>
+                  <option value="">Select Cohort</option>
                   <option value="1">1st Year</option>
                   <option value="2">2nd Year</option>
                   <option value="3">3rd Year</option>
                   <option value="4">4th Year</option>
+                  <option value="Graduate">Graduated</option>
                 </select>
               </div>
               <div class="form-group">
-                <label>Department</label>
-                <input type="text" id="department" placeholder="CSE" required>
+                <label>Department / Faculty</label>
+                <input type="text" id="department" placeholder="e.g. Computer Science" required>
               </div>
             </div>
 
             <div class="form-group">
-              <label>Roll Number (Optional)</label>
-              <input type="text" id="rollNumber" placeholder="2022001">
+              <label>Enrollment / Roll ID (Optional)</label>
+              <input type="text" id="rollNumber" placeholder="e.g. CS2022001">
             </div>
 
-            <button type="submit" class="submit-btn">✅ Submit for Approval</button>
+            <button type="submit" class="submit-btn">Submit for Verification</button>
           </form>
 
           <div class="toggle-text">
-            Already registered? <a onclick="switchTab('login')">Login here</a>
+            Already verified? <a onclick="switchTab('login')">Sign in here</a>
           </div>
+        </div>
+
+        <div class="nav-back">
+          <a href="../../index.html">&larr; Return to main platform</a>
         </div>
       </div>
     </div>
 
-    <!-- Right Side - Dashboard Preview -->
-    <div class="right-side">
-      <div class="dashboard-preview">
-        <div class="dashboard-icon">👤</div>
-        
-        <h2>Alumni Dashboard</h2>
-        <p>Empower your career with expert guidance and AI-assisted recommendations</p>
+    <!-- Right Column: Showcase -->
+    <div class="showcase-column">
+      <div class="showcase-content">
+        <div class="showcase-badge">Verified Institutional Network</div>
+        <h2>Connect with leadership across the global network.</h2>
+        <p>A unified hub dedicated to tracking placement cycles, facilitating peer referrals, and preserving community connections.</p>
 
         <div class="features-list">
           <div class="feature-item">
-            <div class="feature-icon">💼</div>
+            <svg class="feature-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path></svg>
             <div class="feature-text">
-              <h4>Career Opportunities</h4>
-              <p>Access internships & placements</p>
+              <h4>Internal Job Referrals</h4>
+              <p>Direct opportunities from alumni leading top tech, finance, and engineering divisions.</p>
             </div>
           </div>
 
           <div class="feature-item">
-            <div class="feature-icon">📋</div>
+            <svg class="feature-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
             <div class="feature-text">
-              <h4>Track Applications</h4>
-              <p>Monitor your job applications</p>
+              <h4>Global Directory Search</h4>
+              <p>Filter connections by graduation cohort, geographic region, and domain expertise.</p>
             </div>
           </div>
 
           <div class="feature-item">
-            <div class="feature-icon">📅</div>
+            <svg class="feature-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
             <div class="feature-text">
-              <h4>Attend Events</h4>
-              <p>Join networking and skill sessions</p>
-            </div>
-          </div>
-
-          <div class="feature-item">
-            <div class="feature-icon">👥</div>
-            <div class="feature-text">
-              <h4>Network</h4>
-              <p>Connect with fellow alumni</p>
+              <h4>Institutional Events & Summits</h4>
+              <p>Access invitations to technical symposiums, mentorship rounds, and reunions.</p>
             </div>
           </div>
         </div>
@@ -418,17 +447,14 @@
   </div>
 
   <script>
-    // Initialize on page load
     document.addEventListener('DOMContentLoaded', function() {
       localStorage.setItem('userType', 'alumni');
       
-      // Attach login form handler
       const loginForm = document.getElementById('alumniLoginForm');
       if(loginForm) {
         loginForm.addEventListener('submit', handleLoginSubmit);
       }
       
-      // Attach register form handler
       const registerForm = document.getElementById('alumniRegisterForm');
       if(registerForm) {
         registerForm.addEventListener('submit', handleRegisterSubmit);
@@ -453,24 +479,22 @@
       e.preventDefault();
       
       try {
-        const email = document.getElementById('loginEmail').value;
+        const email = document.getElementById('loginEmail').value.trim();
         const password = document.getElementById('loginPassword').value;
         
         if(!email || !password) {
-          showAlert('loginAlert', '❌ Please fill in all fields', 'danger');
+          showAlert('loginAlert', 'Please enter your email and password.', 'danger');
           return;
         }
         
-        // Check if user is approved
         const approvedAlumni = JSON.parse(localStorage.getItem('approvedAlumni')) || [];
-        const user = approvedAlumni.find(u => u.email === email && u.password === password);
+        const user = approvedAlumni.find(u => u.email.toLowerCase() === email.toLowerCase() && u.password === password);
         
         if(!user) {
-          showAlert('loginAlert', '❌ Invalid email/password or account not approved by admin yet', 'danger');
+          showAlert('loginAlert', 'Invalid credentials or your registration is pending admin approval.', 'danger');
           return;
         }
         
-        // Store user data to localStorage
         const userData = {
           email: email,
           firstName: user.firstName,
@@ -488,16 +512,15 @@
         localStorage.setItem('userType', 'alumni');
         localStorage.setItem('isLoggedIn', 'true');
         
-        showAlert('loginAlert', '✅ Login successful! Redirecting...', 'success');
+        showAlert('loginAlert', 'Authentication successful. Redirecting to portal...', 'success');
         
-        // Redirect after 1.5 seconds
         setTimeout(() => {
           window.location.href = './dashboard.html';
-        }, 1500);
+        }, 1200);
         
       } catch(error) {
         console.error('Login error:', error);
-        showAlert('loginAlert', '❌ Login failed. Please try again.', 'danger');
+        showAlert('loginAlert', 'An error occurred during authentication. Please retry.', 'danger');
       }
     }
 
@@ -505,32 +528,30 @@
       e.preventDefault();
       
       try {
-        const firstName = document.getElementById('firstName').value;
-        const lastName = document.getElementById('lastName').value;
-        const email = document.getElementById('email').value;
+        const firstName = document.getElementById('firstName').value.trim();
+        const lastName = document.getElementById('lastName').value.trim();
+        const email = document.getElementById('email').value.trim();
         const password = document.getElementById('password').value;
-        const phone = document.getElementById('phone').value;
+        const phone = document.getElementById('phone').value.trim();
         const batch = document.getElementById('batch').value;
         const year = document.getElementById('year').value;
-        const department = document.getElementById('department').value;
-        const rollNumber = document.getElementById('rollNumber').value;
+        const department = document.getElementById('department').value.trim();
+        const rollNumber = document.getElementById('rollNumber').value.trim();
         
-        // Validate required fields
         if(!firstName || !lastName || !email || !password || !phone || !batch || !year || !department) {
-          showAlert('registerAlert', '❌ Please fill in all required fields', 'danger');
+          showAlert('registerAlert', 'Please complete all required fields.', 'danger');
           return;
         }
         
-        // Check if already registered (pending or approved)
         const pendingAlumni = JSON.parse(localStorage.getItem('pendingAlumni')) || [];
         const approvedAlumni = JSON.parse(localStorage.getItem('approvedAlumni')) || [];
         
-        if(pendingAlumni.find(u => u.email === email) || approvedAlumni.find(u => u.email === email)) {
-          showAlert('registerAlert', '❌ Email already registered. Please login instead.', 'danger');
+        if(pendingAlumni.find(u => u.email.toLowerCase() === email.toLowerCase()) || 
+           approvedAlumni.find(u => u.email.toLowerCase() === email.toLowerCase())) {
+          showAlert('registerAlert', 'This email address is already registered.', 'danger');
           return;
         }
         
-        // Create user profile for pending approval
         const userProfile = {
           id: Date.now().toString(),
           firstName,
@@ -546,23 +567,20 @@
           status: 'pending'
         };
         
-        // Save to pendingAlumni queue (requires admin approval)
-        const pending = JSON.parse(localStorage.getItem('pendingAlumni')) || [];
-        pending.push(userProfile);
-        localStorage.setItem('pendingAlumni', JSON.stringify(pending));
+        pendingAlumni.push(userProfile);
+        localStorage.setItem('pendingAlumni', JSON.stringify(pendingAlumni));
         
-        showAlert('registerAlert', '✅ Registration submitted! Please wait for admin approval. You will receive an email confirmation.', 'success');
+        showAlert('registerAlert', 'Registration submitted. Account will activate upon administrative approval.', 'success');
         
-        // Clear form and show login tab
         document.getElementById('alumniRegisterForm').reset();
         setTimeout(() => {
           switchTab('login');
-          showAlert('loginAlert', '⏳ Your registration is pending admin approval. Please check your email for updates.', 'success');
-        }, 2000);
+          showAlert('loginAlert', 'Profile submitted. You will be able to sign in once approved by the administrator.', 'info');
+        }, 2200);
         
       } catch(error) {
         console.error('Registration error:', error);
-        showAlert('registerAlert', '❌ Registration failed. Please try again.', 'danger');
+        showAlert('registerAlert', 'Failed to submit registration. Please verify details.', 'danger');
       }
     }
   </script>
