@@ -106,7 +106,7 @@
     .tab-btn.active {
       background: #0f172a;
       color: #ffffff;
-      box-shadow: 0 1px 3px rgba(0,0,0,0.3);
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
     }
 
     .form-group {
@@ -182,6 +182,29 @@
     .nav-back-link a:hover {
       color: #94a3b8;
     }
+
+    .hidden {
+      display: none !important;
+    }
+
+    .alert {
+      padding: 0.75rem 1rem;
+      border-radius: 6px;
+      font-size: 0.825rem;
+      font-weight: 500;
+    }
+
+    .alert-success {
+      background: rgba(16, 185, 129, 0.15);
+      border: 1px solid rgba(16, 185, 129, 0.35);
+      color: #6ee7b7;
+    }
+
+    .alert-danger {
+      background: rgba(239, 68, 68, 0.15);
+      border: 1px solid rgba(239, 68, 68, 0.35);
+      color: #fca5a5;
+    }
   </style>
 </head>
 <body>
@@ -199,7 +222,7 @@
 
     <!-- Login Form -->
     <div id="loginForm">
-      <form id="adminLoginForm" onsubmit="event.preventDefault(); handleAdminLogin(event); return false;">
+      <form id="adminLoginForm" onsubmit="return handleAdminLogin(event);">
         <div id="loginAlert"></div>
         <div class="form-group">
           <label for="loginEmail">Administrator Email</label>
@@ -207,9 +230,9 @@
         </div>
         <div class="form-group">
           <label for="loginPassword">Password</label>
-          <input type="password" id="loginPassword" placeholder="••••••••" value="admin123" required autocomplete="current-password" onkeydown="if(event.key === 'Enter'){ event.preventDefault(); handleAdminLogin(event); }">
+          <input type="password" id="loginPassword" placeholder="••••••••" value="admin123" required autocomplete="current-password">
         </div>
-        <button type="button" id="adminLoginBtn" class="submit-btn" onclick="handleAdminLogin(event)">Access Dashboard</button>
+        <button type="submit" id="adminLoginBtn" class="submit-btn">Access Dashboard</button>
         <p style="font-size: 0.775rem; color: #64748b; text-align: center; margin-top: 1rem; line-height: 1.4;">
           Default demo: <strong style="color: #cbd5e1;">admin@example.com</strong> &middot; Password: <strong style="color: #cbd5e1;">admin123</strong><br>
           Or click <strong style="color: #93c5fd; cursor: pointer;" onclick="switchTab('register')">Register Admin</strong> to create your credentials.
@@ -219,7 +242,7 @@
 
     <!-- Register Form -->
     <div id="registerForm" class="hidden">
-      <form id="adminRegisterForm" onsubmit="event.preventDefault(); handleAdminRegister(event); return false;">
+      <form id="adminRegisterForm" onsubmit="return handleAdminRegister(event);">
         <div id="registerAlert"></div>
         <div class="form-group">
           <label for="adminName">Full Name</label>
@@ -235,9 +258,9 @@
         </div>
         <div class="form-group">
           <label for="adminPasswordConfirm">Confirm Password</label>
-          <input type="password" id="adminPasswordConfirm" placeholder="Re-enter password" required onkeydown="if(event.key === 'Enter'){ event.preventDefault(); handleAdminRegister(event); }">
+          <input type="password" id="adminPasswordConfirm" placeholder="Re-enter password" required>
         </div>
-        <button type="button" id="adminRegisterBtn" class="submit-btn" onclick="handleAdminRegister(event)">Create Administrator Profile</button>
+        <button type="submit" id="adminRegisterBtn" class="submit-btn">Create Administrator Profile</button>
       </form>
     </div>
 
@@ -250,7 +273,7 @@
   <script>
     try {
       localStorage.setItem('userType', 'admin');
-    } catch(e) {}
+    } catch (e) {}
 
     function switchTab(tab) {
       const loginSection = document.getElementById('loginForm');
@@ -273,50 +296,61 @@
 
     function showAlert(containerId, msg, type) {
       const alertDiv = document.getElementById(containerId);
-      if(!alertDiv) return;
+      if (!alertDiv) return;
       alertDiv.innerHTML = `<div class="alert alert-${type}" style="margin-bottom: 1.25rem;">${msg}</div>`;
       setTimeout(() => { if (alertDiv) alertDiv.innerHTML = ''; }, 4000);
     }
 
-    function completeAdminLogin(email, name) {
+    function completeAdminLogin(email, name, token = null, adminData = null) {
       const adminName = name || 'Lead Administrator';
-      
-      // Store in all available browser persistence mechanisms
-      try {
-        localStorage.setItem('token', 'admin-session-' + Date.now());
-        localStorage.setItem('adminEmail', email);
-        localStorage.setItem('userType', 'admin');
-        localStorage.setItem('isAdminLoggedIn', 'true');
-        localStorage.setItem('currentAdmin', JSON.stringify({ email, name: adminName }));
-      } catch(e) {}
+      const authToken = token || ('admin-session-' + Date.now());
+      const adminObj = adminData || {
+        id: 'admin-local',
+        email: email,
+        name: adminName,
+        role: 'admin'
+      };
 
       try {
+        localStorage.setItem('token', authToken);
+        localStorage.setItem('adminToken', authToken);
+        localStorage.setItem('adminEmail', email);
+        localStorage.setItem('userType', 'admin');
+        localStorage.setItem('role', 'admin');
+        localStorage.setItem('isAdminLoggedIn', 'true');
+        localStorage.setItem('currentAdmin', JSON.stringify(adminObj));
+        localStorage.setItem('user', JSON.stringify(adminObj));
+      } catch (e) {}
+
+      try {
+        sessionStorage.setItem('token', authToken);
         sessionStorage.setItem('isAdminLoggedIn', 'true');
         sessionStorage.setItem('adminEmail', email);
-      } catch(e) {}
+        sessionStorage.setItem('userType', 'admin');
+      } catch (e) {}
 
       try {
         document.cookie = "isAdminLoggedIn=true; path=/";
-      } catch(e) {}
+      } catch (e) {}
 
       showAlert('loginAlert', 'Authentication verified. Entering dashboard...', 'success');
-      
+
       setTimeout(() => {
-        window.location.href = 'dashboard.html';
+        window.location.href = './dashboard.html';
       }, 400);
     }
 
-    function handleAdminLogin(event) {
+    async function handleAdminLogin(event) {
       if (event && event.preventDefault) event.preventDefault();
-      
+
       const emailInput = document.getElementById('loginEmail');
       const passwordInput = document.getElementById('loginPassword');
       const btn = document.getElementById('adminLoginBtn');
-      
+
       const email = emailInput ? emailInput.value.trim() : '';
       const password = passwordInput ? passwordInput.value : '';
-      
-      if(!email || !password) {
+
+      if (!email || !password) {
         showAlert('loginAlert', 'Please enter your administrator email and password.', 'danger');
         return false;
       }
@@ -326,13 +360,28 @@
 
       const lowerEmail = email.toLowerCase();
 
-      // 1. Master demo credentials check (Instant)
+      // 1. Try Backend API first so real JWT token is stored if server is running
+      if (typeof apiCall === 'function') {
+        try {
+          const res = await apiCall('/admin/login', 'POST', { email, password }, false, 2000);
+          if (res && (res.success || res.token || res.data?.token)) {
+            const realToken = res.token || res.data?.token;
+            const adminUser = res.data?.admin || res.admin || res.user || { email, name: 'Administrator', role: 'admin' };
+            completeAdminLogin(email, adminUser.name || 'Administrator', realToken, adminUser);
+            return false;
+          }
+        } catch (err) {
+          console.warn('Backend login unavailable or rejected, checking local/demo credentials:', err);
+        }
+      }
+
+      // 2. Master demo credentials check
       if ((lowerEmail === 'admin@example.com' || lowerEmail === 'admin@institution.edu') && password === 'admin123') {
         completeAdminLogin(email, 'Lead Administrator');
         return false;
       }
 
-      // 2. Locally registered administrators check
+      // 3. Locally registered administrators check
       let registeredAdmins = [];
       try {
         registeredAdmins = JSON.parse(localStorage.getItem('registeredAdmins') || '[]');
@@ -340,7 +389,7 @@
         if (savedAdmin.email && !registeredAdmins.some(a => a.email && a.email.toLowerCase() === savedAdmin.email.toLowerCase())) {
           registeredAdmins.push(savedAdmin);
         }
-      } catch(e) {}
+      } catch (e) {}
 
       const matchedLocal = registeredAdmins.find(a => a.email && a.email.toLowerCase() === lowerEmail && a.password === password);
       if (matchedLocal) {
@@ -348,66 +397,48 @@
         return false;
       }
 
-      // 3. Fallback: If empty registry or contains 'admin', auto-provision to never lock out
+      // 4. Fallback: Auto-provision if registry is empty or email contains 'admin' / '.edu'
       if (registeredAdmins.length === 0 || lowerEmail.includes('admin') || lowerEmail.endsWith('.edu')) {
         const autoName = email.split('@')[0].replace(/[._-]/g, ' ') || 'Administrator';
         const formattedName = autoName.charAt(0).toUpperCase() + autoName.slice(1);
-        const newAdmin = { name: formattedName, email: lowerEmail, password, registeredAt: new Date().toISOString() };
-        
+        const newAdmin = { name: formattedName, email: lowerEmail, password, role: 'admin', registeredAt: new Date().toISOString() };
+
         try {
           registeredAdmins.push(newAdmin);
           localStorage.setItem('registeredAdmins', JSON.stringify(registeredAdmins));
           localStorage.setItem('adminProfile', JSON.stringify(newAdmin));
-        } catch(e) {}
-
-        // Async background sync if apiCall is available
-        if (typeof apiCall === 'function') {
-          apiCall('/admin/login', 'POST', { email, password }).catch(() => {});
-        }
+        } catch (e) {}
 
         completeAdminLogin(email, formattedName);
         return false;
       }
 
-      // 4. Try backend API if available
-      if (typeof apiCall === 'function') {
-        apiCall('/admin/login', 'POST', { email, password }, false, 2000).then(res => {
-          if (res && res.success) {
-            completeAdminLogin(email, res.data.admin?.name || 'Administrator');
-          } else {
-            btn.disabled = false;
-            btn.textContent = 'Access Dashboard';
-            showAlert('loginAlert', 'Invalid credentials. Use admin@example.com / admin123 or register below.', 'danger');
-          }
-        }).catch(() => {
-          btn.disabled = false;
-          btn.textContent = 'Access Dashboard';
-          showAlert('loginAlert', 'Invalid credentials. Use admin@example.com / admin123.', 'danger');
-        });
-        return false;
-      }
-
       btn.disabled = false;
       btn.textContent = 'Access Dashboard';
-      showAlert('loginAlert', 'Invalid credentials. Use admin@example.com / admin123.', 'danger');
+      showAlert('loginAlert', 'Invalid credentials. Use admin@example.com / admin123 or register below.', 'danger');
       return false;
     }
 
-    function handleAdminRegister(event) {
+    async function handleAdminRegister(event) {
       if (event && event.preventDefault) event.preventDefault();
-      
+
       const name = document.getElementById('adminName').value.trim();
       const email = document.getElementById('adminEmail').value.trim();
       const password = document.getElementById('adminPassword').value;
       const confirmPassword = document.getElementById('adminPasswordConfirm').value;
       const btn = document.getElementById('adminRegisterBtn');
-      
-      if(!name || !email || !password || !confirmPassword) {
+
+      if (!name || !email || !password || !confirmPassword) {
         showAlert('registerAlert', 'Please complete all required fields.', 'danger');
         return false;
       }
-      
-      if(password !== confirmPassword) {
+
+      if (password.length < 6) {
+        showAlert('registerAlert', 'Password must be at least 6 characters.', 'danger');
+        return false;
+      }
+
+      if (password !== confirmPassword) {
         showAlert('registerAlert', 'Passwords do not match.', 'danger');
         return false;
       }
@@ -418,11 +449,11 @@
       let registeredAdmins = [];
       try {
         registeredAdmins = JSON.parse(localStorage.getItem('registeredAdmins') || '[]');
-      } catch(e) {}
+      } catch (e) {}
 
-      const newAdmin = { name, email: email.toLowerCase(), password, registeredAt: new Date().toISOString() };
+      const newAdmin = { name, email: email.toLowerCase(), password, role: 'admin', registeredAt: new Date().toISOString() };
       const existingIdx = registeredAdmins.findIndex(a => a.email && a.email.toLowerCase() === email.toLowerCase());
-      if(existingIdx !== -1) {
+      if (existingIdx !== -1) {
         registeredAdmins[existingIdx] = newAdmin;
       } else {
         registeredAdmins.push(newAdmin);
@@ -431,16 +462,26 @@
       try {
         localStorage.setItem('registeredAdmins', JSON.stringify(registeredAdmins));
         localStorage.setItem('adminProfile', JSON.stringify(newAdmin));
-      } catch(e) {}
+      } catch (e) {}
 
+      let realToken = null;
+      let backendAdmin = null;
       if (typeof apiCall === 'function') {
-        apiCall('/admin/register', 'POST', { name, email, password }, false, 2000).catch(() => {});
+        try {
+          const res = await apiCall('/admin/register', 'POST', { name, email, password }, false, 2000);
+          if (res && (res.success || res.token || res.data?.token)) {
+            realToken = res.token || res.data?.token;
+            backendAdmin = res.data?.admin || res.admin || null;
+          }
+        } catch (err) {
+          console.warn('Backend register unavailable, saved locally:', err);
+        }
       }
 
       showAlert('registerAlert', 'Administrator registered successfully! Launching dashboard...', 'success');
-      
+
       setTimeout(() => {
-        completeAdminLogin(email, name);
+        completeAdminLogin(email, name, realToken, backendAdmin);
       }, 500);
 
       return false;
